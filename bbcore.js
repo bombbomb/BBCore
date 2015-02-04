@@ -3,23 +3,11 @@
  bbcore.js v1.0
 
  BombBomb's App Core API JS Implementation
-
- Created by Brian McGuire
  Copyright 2013 BombBomb, Inc.
-
- CHANGES
-
- 2014-05-01 :   new method implemented
- 2013-12-13 :   fixed label issues in quickSender
- 2013-12-12 :   bunch of cleanup
- updates to getEmbeddedRecorderUrl
- 2013-12-03 :   reordering of methods
- removed xhrFields from sendRequest
- 2013-09-04 :   created
 
  */
 
-// TODO; append script tag to load jQuery as required
+// TODO; append script tag to load jQuery as required, replace with require?
 function jQLoader()
 {
     var jqTag = document.createElement('script');
