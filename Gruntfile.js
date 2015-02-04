@@ -26,7 +26,8 @@ module.exports = function(grunt) {
     // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-install-dependencies');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'jasmine']);
+    grunt.registerTask('default', ['install-dependencies', 'uglify', 'jasmine']);
 };
