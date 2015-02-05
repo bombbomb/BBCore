@@ -63,9 +63,11 @@ var BBCore = (function (bb,$)
     bb.prototype.onError = function(func_or_deet, xhr)
     {
         if (typeof func_or_deet === "function") {
-            this.onerror = func_or_deet
+            this.onerror = func_or_deet;
         } else {
-            (this.onerror && this.onerror.call(this,func_or_deet, xhr));
+            if (this.onerror) {
+                this.onerror.call(this,func_or_deet, xhr);
+            }
         }
     };
 
@@ -100,7 +102,7 @@ var BBCore = (function (bb,$)
     bb.prototype.credentialsSaved = function ()
     {
         if (null !== this.storage.getItem("b2-uid")) {
-            return null != this.storage.getItem("b2-uid");
+            return null !== this.storage.getItem("b2-uid");
         }
         return this.storage.getItem("access_token");
     };
@@ -190,10 +192,10 @@ var BBCore = (function (bb,$)
             metho = params.method;
         }
 
-        if (metho != "IsValidLogin" && !params.api_key) {
+        if (metho !== "IsValidLogin" && !params.api_key) {
             params.api_key = this.accessToken;
         }
-        if (metho != "ValidateSession" && !this.authenticated)
+        if (metho !== "ValidateSession" && !this.authenticated)
         {
             this.onError.call(this,{ status: 'failure', methodName: 'InvalidSession', info: { errormsg: 'Invalid login' } },null);
             return false;
@@ -243,7 +245,11 @@ var BBCore = (function (bb,$)
                     resp = jqXHR.responseJSON;
                 }
                 inst.lastresponse = resp.status;
-                "success" == resp.status ? success.call(inst,resp,jqXHR) : inst.onError.call(inst,resp,jqXHR);
+                if ("success" === resp.status) {
+                    success.call(inst,resp,jqXHR);
+                } else {
+                    inst.onError.call(inst,resp,jqXHR);
+                }
             }
         });
     };
@@ -253,15 +259,21 @@ var BBCore = (function (bb,$)
     {
         //ValidateSession
         this.sendRequest({ method: "GetEmails", api_key:key },function(resp){
-            if (!complete) complete({isValid:(resp.status == "success")});
+            if (!complete) {
+                complete({isValid:(resp.status === "success")});
+            }
         });
     };
 
     // stores the local filestore or cookie
     bb.prototype.storeKey = function(key)
     {
-        this.accessToken || (this.accessToken = key);
-        if (!this.accessToken) return;
+        if  (this.accessToken) {
+            this.accessToken = key;
+        }
+        if (!this.accessToken) {
+            return;
+        }
         // currently this will use the API Key, in the future this should be updated to use a key which can be expired
         this.storage.setItem("access_token",this.accessToken);
     };
@@ -273,8 +285,10 @@ var BBCore = (function (bb,$)
 
     bb.prototype.saveRecording = function(opts)
     {
-        pVals = opts;
-        if (!pVals.vid_id) return;
+        var pVals = opts;
+        if (!pVals.vid_id){
+            return;
+        }
         this.sendRequest({method:"VideoRecordedLive"},pVals,function(){});
     };
 
@@ -288,7 +302,9 @@ var BBCore = (function (bb,$)
         if (!this.currentVideoId)
             this.getNewVideoGuid(pcall);
         else
-        if (pcall) pcall.call(this,this.currentVideoId);
+        if (pcall) {
+            pcall.call(this,this.currentVideoId);
+        }
     };
 
     bb.prototype.hasVideoId = function()
@@ -299,7 +315,12 @@ var BBCore = (function (bb,$)
     bb.prototype.getNewVideoGuid = function(pcall)
     {
         var inst = this;
-        this.sendRequest({method:"GetVideoGuid"},function(data){ inst.currentVideoId = data.info.video_id; if (pcall) pcall.call(this,inst.currentVideoId); });
+        this.sendRequest({method:"GetVideoGuid"},function(data){
+            inst.currentVideoId = data.info.video_id;
+            if (pcall) {
+                pcall.call(this,inst.currentVideoId);
+            }
+        });
     };
 
 
@@ -322,21 +343,36 @@ var BBCore = (function (bb,$)
             },
             sendErrors = [];
 
-        for (var op in reqDetails)
-            if (!opts[op]) opts[op] = reqDetails[op];
+        for (var op in reqDetails) {
+            if (!opts[op]) {
+                opts[op] = reqDetails[op]
+            }
+        }
 
-        if (opts.message && !opts.mobile_message) opts.mobile_message = opts.message;
-        if (opts.email && !opts.email_address) opts.email_address = opts.email;
-        if (opts.email_address && !opts.email_addresses) opts.email_addresses = opts.email_address;
-        if (!opts.video_id && this.currentVideoId) opts.video_id = this.currentVideoId;
+        if (opts.message && !opts.mobile_message) {
+            opts.mobile_message = opts.message;
+        }
+        if (opts.email && !opts.email_address){
+            opts.email_address = opts.email;
+        }
+        if (opts.email_address && !opts.email_addresses){
+            opts.email_addresses = opts.email_address;
+        }
+        if (!opts.video_id && this.currentVideoId){
+            opts.video_id = this.currentVideoId;
+        }
 
         // check options
-        if (!opts.video_id)
+        if (!opts.video_id) {
             sendErrors.push('quickSendVideo Error: no video_id defined.');
-        if (!opts.subject)
+        }
+        if (!opts.subject) {
             sendErrors.push('quickSendVideo Error: no subject defined.');
-        if (!opts.email_addresses)
+        }
+
+        if (!opts.email_addresses) {
             sendErrors.push('quickSendVideo Error: no email_address defined.');
+        }
 
         if (sendErrors.length>0 && !opts.video_id)
         {
@@ -363,7 +399,7 @@ var BBCore = (function (bb,$)
     // returns the url for the embedded video recorder, typically used for iframes
     bb.prototype.getEmbeddedRecorderUrl = function(opts,comp)
     {
-        if (typeof opts == "function") comp = opts, opts = null;
+        if (typeof opts === "function") comp = opts, opts = null;
         var defOpts = { height: 240, width: 340, force_ssl: false };
         opts = opts || defOpts;
 
@@ -379,7 +415,7 @@ var BBCore = (function (bb,$)
 
     bb.prototype.getVideoRecorder = function(opts,comp)
     {
-        if (typeof opts == "function")
+        if (typeof opts === "function")
         {
             comp = opts;
             opts = null;
@@ -408,7 +444,7 @@ var BBCore = (function (bb,$)
     // TODO; COULD MERGE with getVideoRecorder if the default options included, stop, start, recorded parameters
     bb.prototype.startVideoRecorder = function(opts,recordComplete)
     {
-        if (typeof opts == "function") recordComplete = opts, opts = null;
+        if (typeof opts === "function") recordComplete = opts, opts = null;
         var defOpts = { type: 'embedded', target:null, height: 240, width: 340, force_ssl: false, recorderLoaded: null, recordComplete:recordComplete };
         //for (var op in defOpts) opts[op] = defOpts[op];
         opts = opts || defOpts;
@@ -493,7 +529,7 @@ var BBCore = (function (bb,$)
             page: '',
             pageSize: ''
         };
-        if (typeof options == "function")
+        if (typeof options === "function")
         {
             success = options;
             options = {};
@@ -585,7 +621,7 @@ var BBCore = (function (bb,$)
 
     bb.prototype.addContact = function(contact,success)
     {
-        if (typeof contact == "object")
+        if (typeof contact === "object")
             this.sendRequest({method:"AddContact",contact:contact},success);
     };
 
@@ -593,7 +629,7 @@ var BBCore = (function (bb,$)
     {
         opts = opts || {};
         opts.method = "BulkAddContacts";
-        if (typeof opts.contacts == "object")
+        if (typeof opts.contacts === "object")
             opts.contacts = JSON.stringify(opts.contacts);
         this.sendRequest(opts,success);
     };
