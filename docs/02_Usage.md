@@ -1,6 +1,13 @@
 ## Usage Examples!
 
-To begin, instantiate BBCore:
+To begin, include the `BBCore` and `jQuery` libraries in your page:
+
+```html
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="/app/js/bbcore-min.js"></script>
+```
+
+Then instantiate BBCore:
 
 ```javascript
 var bb = new BBCore({ accessToken: '<your api key>'});
