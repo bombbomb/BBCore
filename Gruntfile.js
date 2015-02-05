@@ -27,13 +27,23 @@ module.exports = function(grunt) {
                 src: ['src/*.js'],
                 dest: 'docs/'
             }
+        },
+        concat: {
+            options: {
+                separator: ''
+            },
+            dist: {
+                src: ['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/src/bbcore.md'],
+                dest: 'README.md'
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-jsdox');
+    grunt.loadNpmTasks('grunt-contrib-concat');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'jsdox', 'karma']);
+    grunt.registerTask('default', ['uglify', 'karma', 'jsdox', 'concat']);
 };
