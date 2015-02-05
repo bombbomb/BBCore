@@ -7,7 +7,16 @@ module.exports = function(config) {
             '*.js',
             { pattern: '../src/jquery.js', watched: false, included: true }
         ],
-        reporters: ['dots'],
+        preprocessors: {
+            '../src/*.js': ['coverage']
+        },
+        coverageReporter: {
+            type : 'lcovonly',
+            dir : 'coverage/',
+            subdir: 'report-lcov',
+            file: 'lcov.info'
+        },
+        reporters: ['dots', 'coverage'],
         browsers: ['PhantomJS']
     });
 };
