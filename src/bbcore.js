@@ -482,7 +482,6 @@ var BBCore = (function (bb, $) {
         this.sendRequest({method: 'liveStreamStopRecord', streamname: streamname});
     };
 
-
     bb.prototype.getVideoDeliveryUrl = function (opts) {
         opts = $.extend({video_id: '', autoplay: 1}, opts);
         var sPrefix = (this.getServerUrl().indexOf('dev') > 0 ? 'dev.' : (this.getServerUrl().indexOf('local') > 0 ? 'local.' : ''));
@@ -625,6 +624,11 @@ var BBCore = (function (bb, $) {
         this.sendRequest(opts, success);
     };
 
+    /**
+     *
+     * @arg {object} opts
+     * @arg {responseSuccess} success
+     */
     bb.prototype.updateContact = function (opts, success) {
         // implement this
         opts = opts || {};
@@ -632,12 +636,22 @@ var BBCore = (function (bb, $) {
         this.sendRequest(opts, success);
     };
 
+    /**
+     *
+     * @arg {object} opts
+     * @arg {responseSuccess} success
+     */
     bb.prototype.getDrips = function (opts, success) {
         opts = opts || {};
         opts.method = "GetDrips";
         this.sendRequest(opts, success);
     };
 
+    /**
+     *
+     * @arg {object} opts
+     * @arg {responseSuccess} success
+     */
     bb.prototype.getForms = function (opts, success) {
         // implement this
         opts = opts || {};
