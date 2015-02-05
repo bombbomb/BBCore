@@ -59,6 +59,26 @@ bb.videoQuickSend({
 
 * * *
 
+### BBCore.add(contact) 
+
+add
+
+**Parameters**
+
+**contact**: `contact`, add
+
+**Returns**: `contacts`
+
+
+### BBCore.add(video) 
+
+**Parameters**
+
+**video**: `video`
+
+**Returns**: `videos`
+
+
 ### BBCore.isAuthenticated() 
 
 **Returns**: `boolean | *`
@@ -178,24 +198,34 @@ Adds a batch of Contacts
 
 
 
-### BBCore.add(contact) 
-
-add
+### BBCore.updateContact(opts, success) 
 
 **Parameters**
 
-**contact**: `contact`, add
+**opts**: `object`
 
-**Returns**: `contacts`
+**success**: `responseSuccess`
 
 
-### BBCore.add(video) 
+
+### BBCore.getDrips(opts, success) 
 
 **Parameters**
 
-**video**: `video`
+**opts**: `object`
 
-**Returns**: `videos`
+**success**: `responseSuccess`
+
+
+
+### BBCore.getForms(opts, success) 
+
+**Parameters**
+
+**opts**: `object`
+
+**success**: `responseSuccess`
+
 
 
 
