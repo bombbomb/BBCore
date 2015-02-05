@@ -518,7 +518,9 @@ var BBCore = (function (bb,$)
 
     bb.prototype.getVideo = function(vidId,success)
     {
-        if (!vidId) return;
+        if (!vidId) {
+            return;
+        }
         this.sendRequest({method:"GetVideos",video_id:vidId},success);
     };
 
@@ -545,13 +547,17 @@ var BBCore = (function (bb,$)
 
     bb.prototype.getVideoStatus = function(vidId,success)
     {
-        if (!vidId) return;
+        if (!vidId) {
+            return;
+        }
         this.sendRequest({method:"getVideoStatus",id:vidId},success);
     };
 
     bb.prototype.getEncodingReport = function(vidId,success)
     {
-        if (!vidId) return;
+        if (!vidId) {
+            return;
+        }
         this.sendRequest({method:"getEncodingReport",id:vidId},success);
     };
 
@@ -601,7 +607,9 @@ var BBCore = (function (bb,$)
      */
     bb.prototype.getContact = function(contactId,success)
     {
-        if (!contactId) return;
+        if (!contactId) {
+            return;
+        }
         var defaults = { width: 340, force_ssl: false };
         var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
         this.sendRequest(parameters,success);
@@ -615,7 +623,9 @@ var BBCore = (function (bb,$)
 
     bb.prototype.getListContacts = function(listId,success)
     {
-        if (!listid) return;
+        if (!listId) {
+            return;
+        }
         this.sendRequest({method:"GetListContacts",list_id:listId},success);
     };
 
