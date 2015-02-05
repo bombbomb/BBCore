@@ -12,7 +12,7 @@ describe("BBCore Authentication", function() {
 
     var result = {
         authenticationSuccess: { status: "success", info: { access_token: '11111111-1111-1111-1111-111111111111', clientId: 'valid-user', userId: 'valid-user' }},
-        authenticationFailure: { status: "failure", info: 'error message' }
+        authenticationFailure: { status: "failure", methodName: 'BadLogin', info: { errormsg: 'invalid session' } }
     };
 
     beforeEach(function() {
@@ -79,7 +79,7 @@ describe("BBCore Video Recording", function() {
     var result = {
         withOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 640, height: 480, https: true }},
         withDefaultOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 340, height: 240, https: false }},
-        authenticationFailure: { status: "failure", info: 'error message' }
+        authenticationFailure: { status: "failure", methodName: 'BadLogin', info: { errormsg: 'invalid session' } }
     };
 
     beforeEach(function() {
@@ -89,7 +89,7 @@ describe("BBCore Video Recording", function() {
         bbCore.onError = errorCallbackSpy;
     });
 
-    it("error when unauthenticated", function() {
+    it("getVideoRecorder: error when unauthenticated", function() {
         expect(bbCore.isAuthenticated()).toBe(false);
 
         bbCore.getVideoRecorder();
@@ -97,7 +97,7 @@ describe("BBCore Video Recording", function() {
         expect(errorCallbackSpy).toHaveBeenCalled();
     });
 
-    it("with options", function() {
+    it("getVideoRecorder: with options", function() {
         var opts = { height: 480, width: 640, force_ssl: true, start: null, stop: null, recorded: null };
 
         bbCore.authenticated = true; // simulate being logged in
@@ -112,7 +112,7 @@ describe("BBCore Video Recording", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith(result.withOptionsSuccess);
     });
 
-    it("without options", function() {
+    it("getVideoRecorder: without options", function() {
         var defaultOptions = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : '' };
 
         bbCore.authenticated = true;    // simulate being logged in
@@ -132,7 +132,7 @@ describe("A BBCore Video", function() {
 
     var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUri });
 
-    it("fail authentication", function() {
+    it("getVideo: authentication fails", function() {
         var validVideoId = '11111111-1111-1111-1111-111111111111';
         var successCallback = jasmine.createSpy();
         var result = { status: "success", info: { video_id: validVideoId }};
@@ -143,13 +143,15 @@ describe("A BBCore Video", function() {
 
         bbCore.getVideo(validVideoId, successCallback);
 
-        expect(successCallback).toHaveBeenCalledWith(result);
+        expect(successCallback).not.toHaveBeenCalled();
     });
 
-    it("exists with a valid id", function() {
+    it("getVideo: exists with a valid id", function() {
         var validVideoId = '11111111-1111-1111-1111-111111111111';
         var successCallback = jasmine.createSpy();
         var result = { status: "success", info: { video_id: validVideoId }};
+
+        bbCore.authenticated = true;    // simulate being logged in
 
         spyOn($, 'ajax').and.callFake(function(e) {
             e.success(result);
@@ -191,3 +193,4 @@ describe("A BBCore Video", function() {
     });
 
 });
+
