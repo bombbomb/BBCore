@@ -615,12 +615,22 @@ var BBCore = (function (bb,$)
         this.sendRequest(parameters,success);
     };
 
+    /**
+     * Retrieves a Contact
+     * @arg {string}          contactId
+     * @arg {responseSuccess} success
+     */
     bb.prototype.findContact = function(searchString,success)
     {
         var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
         this.sendRequest(parameters,success);
     };
 
+    /**
+     * Retrieves Contacts from a Contact List
+     * @arg {string}          listId
+     * @arg {responseSuccess} success
+     */
     bb.prototype.getListContacts = function(listId,success)
     {
         if (!listId) {
@@ -629,12 +639,22 @@ var BBCore = (function (bb,$)
         this.sendRequest({method:"GetListContacts",list_id:listId},success);
     };
 
+    /**
+     * Adds a Contact to a Contact List
+     * @arg {contact}         contact
+     * @arg {responseSuccess} success
+     */
     bb.prototype.addContact = function(contact,success)
     {
         if (typeof contact === "object")
             this.sendRequest({method:"AddContact",contact:contact},success);
     };
 
+    /**
+     * Adds a batch of Contacts
+     * @arg {object}          opts
+     * @arg {responseSuccess} success
+     */
     bb.prototype.bulkAddContacts = function(opts,success)
     {
         opts = opts || {};
@@ -726,7 +746,7 @@ var BBCore = (function (bb,$)
      * @param {object} responseObject
      */
 
-})(function(opts){
+})(function(properties){
 
     this.userEmail = "";
     this.userId = "";
@@ -737,7 +757,11 @@ var BBCore = (function (bb,$)
     this.apiServer = null;
     this.onerror = null;
 
-    $.extend({},this,opts);
+    for (var prop in properties) {
+        if (properties.hasOwnProperty(prop)) {
+            this[prop] = properties[prop];
+        }
+    }
 
     // private properties
     this.authenticated = false;
@@ -775,19 +799,68 @@ var BBCore = (function (bb,$)
         this.company = "";
         this.position = "";
         this.comments = "";
-        $.extend({},this,properties);
+        this.listlist  = "";
+        this.id = "";
+        for (var prop in properties) {
+            if (properties.hasOwnProperty(prop)) {
+                this[prop] = properties[prop];
+            }
+        }
         this.eml = this.email;
     };
 
-    // d
-    this.contacts = function() {};
+    this.contacts = function() { };
     this.contacts.prototype = Array.prototype;
-    this.contacts.constructor = this.contact;
+    this.contacts.constructor = this.contacts;
+    /**
+     * add
+     * @param {contact} contact
+     * @returns {contacts}
+     */
+    this.contacts.prototype.add = function(contact) {
+        this.push(contact);
+        return this;
+    };
+    this.contacts.prototype.find = function(fieldName,value) {
+        for (var property in this)
+        {
+            if (this.hasOwnProperty(property) && property[fieldName]==value)
+            {
+                return property;
+            }
+        }
+        return null;
+    };
+    this.contacts.prototype.get = function(contactId) {
+        return this.findContact('id',contactId);
+    };
 
-    // d
-    this.recordings = function() {};
-    this.recordings.prototype = Array.prototype;
-    this.recordings.constructor = this.recording;
+    this.video = function(properties)
+    {
+        this.vid_id = "";
+        this.title = "";
+        this.filename = "";
+
+        for (var prop in properties) {
+            if (properties.hasOwnProperty(prop)) {
+                this[prop] = properties[prop];
+            }
+        }
+
+    };
+
+    this.videos = function() { };
+    this.videos.prototype = Array.prototype;
+    this.videos.constructor = this.videos;
+    /**
+     *
+     * @param {video} video
+     * @returns {videos}
+     */
+    this.videos.prototype.add = function(video) {
+        this.push(video);
+        return this;
+    };
 
     // run initial methods
     if (this.accessToken) this.validateAccessToken();
