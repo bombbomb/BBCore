@@ -15,7 +15,7 @@
   "description": "A Javascript API to use BombBomb services",
   "main": "Gruntfile.js",
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
+    "test": "grunt"
   },
   "repository": {
     "type": "git",
