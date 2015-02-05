@@ -17,13 +17,23 @@ module.exports = function(grunt) {
                 configFile: 'spec/karma.conf.js',
                 singleRun: true
             }
+        },
+        jsdox: {
+            generate: {
+                options: {
+                    contentsEnabled: false,
+                    contentsTitle: 'BBCore'
+                },
+                src: ['src/*.js'],
+                dest: 'docs/'
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-install-dependencies');
+    grunt.loadNpmTasks('grunt-jsdox');
 
     // Default task(s).
-    grunt.registerTask('default', ['install-dependencies', 'uglify', 'karma']);
+    grunt.registerTask('default', ['uglify', 'jsdox', 'karma']);
 };
