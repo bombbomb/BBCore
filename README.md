@@ -23,6 +23,22 @@ Words go here!
 **Returns**: `boolean | *`
 
 
+### BBCore.sendRequest(metho, params, success, success) 
+
+Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
+
+**Parameters**
+
+**metho**: `string`, The method name to call
+
+**params**: `array`, The parameters to send with the request
+
+**success**: `responseSuccess`, A callback when the request succeeds
+
+**success**: `responseSuccess`, A callback when the request fails
+
+
+
 ### BBCore.videoQuickSend() 
 
 

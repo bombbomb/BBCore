@@ -178,6 +178,14 @@ var BBCore = (function (bb,$)
         return this.getServerUrl() + bb.CONFIG.API_END_POINT;
     };
 
+
+    /**
+     * Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
+     * @arg {string}          metho The method name to call
+     * @arg {array}          params The parameters to send with the request
+     * @arg {responseSuccess} success A callback when the request succeeds
+     * @arg {responseSuccess} success A callback when the request fails
+     */
     bb.prototype.sendRequest = function(metho,params,success,error)
     {
         if (typeof params == "function") success = params;

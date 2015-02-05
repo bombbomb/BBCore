@@ -22,7 +22,7 @@ module.exports = function(grunt) {
             generate: {
                 options: {
                     contentsEnabled: false,
-                    contentsTitle: 'BBCore'
+                    contentsTitle: 'API'
                 },
                 src: ['src/*.js'],
                 dest: 'docs/'
