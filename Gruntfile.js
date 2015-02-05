@@ -36,6 +36,12 @@ module.exports = function(grunt) {
                 src: ['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/src/bbcore.md'],
                 dest: 'README.md'
             }
+        },
+        codeclimate: {
+            options: {
+                file: 'spec/coverage/report-lcov/lcov.info',
+                token: '5bf69d78cd8bfe54fb920abdf42be714bd6b405288d1ba6f0ea2d727b8d5166a'
+            }
         }
     });
 
@@ -43,7 +49,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-jsdox');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-codeclimate');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'karma', 'jsdox', 'concat']);
+    grunt.registerTask('default', ['uglify', 'karma', 'jsdox', 'concat', 'codeclimate']);
 };
