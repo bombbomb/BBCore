@@ -10,15 +10,16 @@
 // TODO; append script tag to load jQuery as required, replace with require?
 function jQLoader()
 {
-    var jqTag = document.createElement('script');
-    jQTag.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js');
+    var jQTag = document.createElement('script');
+    jQTag.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
     document.getElementsByTagName('body').appendChild(jQTag);
 }
+typeof jQuery == "undefined" && jQLoader();
 
-//typeof jQuery == "undefined" && jQLoader();
-
-
-(function (bb,$)
+/**
+ @namespace BBCore - all BBCore functionality
+ */
+var BBCore = (function (bb,$)
 {
 
     // define some constants
@@ -90,7 +91,6 @@ function jQLoader()
 
                 inst.storeKey(this.accessToken);
 
-                // if the authentication was successful, set the
                 success.call(this,respObj);
             }
             else
@@ -145,6 +145,10 @@ function jQLoader()
     };
 
 
+    /**
+     *
+     * @returns {boolean|*}
+     */
     bb.prototype.isAuthenticated = function()
     {
 
@@ -192,10 +196,6 @@ function jQLoader()
              xhrFields: {
              withCredentials: true
              },
-             */
-            /*
-             Nu victorians of the post-industrial aesthetic era
-             Nu post-industrial anti-steam punk
              */
             crossDomain: true,
             data: params,
@@ -245,24 +245,17 @@ function jQLoader()
         return this.accessToken;
     };
 
-    bb.prototype.log = function(messg,deets,pcall)
-    {
-        this.sendRequest({method:"bbLog",message:messg,details:deets},pcall);
-    };
-
     bb.prototype.saveRecording = function(opts)
     {
         pVals = opts;
         if (!pVals.vid_id) return;
-
-        this.sendRequest({method:"VideoRecordedLive"},pVals,function(){ return; });
-
+        this.sendRequest({method:"VideoRecordedLive"},pVals,function(){});
     };
 
     bb.prototype.setVideoId = function(vid_id)
     {
         this.currentVideoId = vid_id;
-    }
+    };
 
     bb.prototype.getVideoId = function(pcall)
     {
@@ -270,7 +263,7 @@ function jQLoader()
             this.getNewVideoGuid(pcall);
         else
         if (pcall) pcall.call(this,this.currentVideoId);
-    }
+    };
 
     bb.prototype.hasVideoId = function()
     {
@@ -281,10 +274,10 @@ function jQLoader()
     {
         var inst = this;
         this.sendRequest({method:"GetVideoGuid"},function(data){ inst.currentVideoId = data.info.video_id; if (pcall) pcall.call(this,inst.currentVideoId); });
-    }
+    };
 
 
-    /*
+    /**
      @@quickSendVideo
      opts -
 
@@ -474,6 +467,11 @@ function jQLoader()
             page: '',
             pageSize: ''
         };
+        if (typeof options == "function")
+        {
+            success = options;
+            options = {};
+        }
         var parameters = $.extend({}, defaults, options);
         parameters.method = "GetVideos";
         if (parameters.page.length || parameters.page > 0)
@@ -495,51 +493,68 @@ function jQLoader()
         this.sendRequest({method:"getEncodingReport",id:vidId},success);
     };
 
+    /**
+     * Deletes a Video
+     * @arg {string}            videoId
+     * @arg {responseSuccess}   success
+     */
     bb.prototype.deleteVideo = function(videoId,success)
     {
         this.sendRequest({method:"DeleteVideo", video_id: videoId},success);
     };
 
+    /**
+     * Retrieves Contact Lists
+     * @arg {responseSuccess}   success
+     */
     bb.prototype.getLists = function(success)
     {
         this.sendRequest({method:"GetLists"},success);
     };
 
+    /**
+     * Creates a Contact List and returns the Guid
+     * @arg {string}            listName
+     * @arg {responseSuccess}   success
+     */
     bb.prototype.createList = function(listName,success)
     {
         this.sendRequest({method:"createList",name:listName},success);
     };
 
+    /**
+     * Retrieves a list of Email
+     * @arg {string}            listName
+     * @arg {responseSuccess}   success
+     */
     bb.prototype.getEmails = function(success)
     {
         this.sendRequest({method:"GetEmails"},success);
     };
 
+    /**
+     * Retrieves a Contact
+     * @arg {string}          contactId
+     * @arg {responseSuccess} success
+     */
     bb.prototype.getContact = function(contactId,success)
     {
         if (!contactId) return;
-        var defOpts = { method: 'GetContact', contact_id: contactId, width: 340, force_ssl: false };
-        if (!this.isAuthenticated() && !opts.api_key) return;
-        //for (var op in defOpts) opts[op] = defOpts[op];
-        opts.method = "getContact";
-
-        // if the contact list is loaded
-        if (true == false)
-        {
-        }
-        else
-        {
-            this.sendRequest({method:"GetContact",contact_id:contactId},success);
-        }
+        var defaults = { width: 340, force_ssl: false };
+        var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
+        this.sendRequest(parameters,success);
     };
 
-    bb.prototype.getListContacts = function(listid,success)
+    bb.prototype.findContact = function(searchString,success)
     {
-        // implement this
-        if (!listid) return;
-        if (typeof listid != "object") opts = listid;
+        var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
+        this.sendRequest(parameters,success);
+    };
 
-        this.sendRequest({method:"GetListContacts",list_id:listid},success);
+    bb.prototype.getListContacts = function(listId,success)
+    {
+        if (!listid) return;
+        this.sendRequest({method:"GetListContacts",list_id:listId},success);
     };
 
     bb.prototype.addContact = function(contact,success)
@@ -617,23 +632,29 @@ function jQLoader()
 
     bb.prototype.sendCustomVideoEmail = function(opts,success)
     {
-        opts = opts || { html_content: null, subject: '', email: '', email_id: '', from_name: '' };
-        opts.activitySince = opts.activitySince || '';
-        opts.method = "SendCustomVideoEmail";
-        this.sendRequest(opts,success);
+        var defaults = { html_content: null, subject: '', email: '', email_id: '', from_name: '' };
+        var parameters = $.extend({},defaults,opts);
+        if (!parameters.email.length && !parameters.email_id.length)
+        {
+
+        }
+        this.sendRequest($.extend(parameters,{method: 'SendCustomVideoEmail'}),success);
     };
 
     bb.prototype.ver = function()
     {
         return bb.CONFIG.VERSION;
-    }
+    };
 
+    return bb;
 
-    window.BBCore = bb;
+    /**
+     * Global Success
+     * @callback responseSuccess
+     * @param {object} responseObject
+     */
 
 })(function(opts){
-
-    // this basically performs the initialization of the class
 
     this.userEmail = "";
     this.userId = "";
@@ -644,8 +665,7 @@ function jQLoader()
     this.apiServer = null;
     this.onerror = null;
 
-    for (var opn in opts)
-        this[opn] = opts[opn];
+    $.extend({},this,opts);
 
     // private properties
     this.authenticated = false;
@@ -663,12 +683,11 @@ function jQLoader()
         this.title = "";
         this.filename = "";
 
-        // combine options
-        for (var opt in opts) this[opt] = opts[opt];
+        $.extend({},this,opts);
     };
 
     //this.contact.prototype = array;
-    this.contact = function(props)
+    this.contact = function(properties)
     {
         this.email = "";
         this.firstname = "";
@@ -684,18 +703,18 @@ function jQLoader()
         this.company = "";
         this.position = "";
         this.comments = "";
-        for (var name in props) this[name] = props[name];
+        $.extend({},this,properties);
         this.eml = this.email;
     };
 
     // d
     this.contacts = function() {};
-    this.contacts.prototype = new Array();
+    this.contacts.prototype = Array.prototype;
     this.contacts.constructor = this.contact;
 
     // d
     this.recordings = function() {};
-    this.recordings.prototype = new Array();
+    this.recordings.prototype = Array.prototype;
     this.recordings.constructor = this.recording;
 
     // run initial methods
