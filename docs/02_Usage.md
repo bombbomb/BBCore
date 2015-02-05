@@ -2,8 +2,10 @@
 
 To begin, instantiate BBCore:
 
-    var bb = new BBCore({ accessToken: '<your api key>'});
-    
+```javascript
+var bb = new BBCore({ accessToken: '<your api key>'});
+```
+
 Then create a video recorder, and save a recording, being by calling `startVideoRecorder` specifying a css selctor `target` into which you would like the recorder to appear.
 
 ```javascript
