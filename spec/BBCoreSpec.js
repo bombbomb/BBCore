@@ -5,24 +5,45 @@ var apiServerUri = 'http://dev.app.bombbomb.com/app/api/api.php';
 
 describe("BBCore Authentication", function() {
 
+    var successCallback = null;
+    var errorCallback = null;
+
     var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri });
-    var result = { authenticationSuccess:
-                    { status: "success", info: { access_token: '11111111-1111-1111-1111-111111111111', clientId: 'valid-user', userId: 'valid-user' }}
+
+    var result = {
+        authenticationSuccess: { status: "success", info: { access_token: '11111111-1111-1111-1111-111111111111', clientId: 'valid-user', userId: 'valid-user' }},
+        authenticationFailure: { status: "failure", info: 'error message' }
     };
 
+    beforeEach(function() {
+        successCallback = jasmine.createSpy();
+        errorCallback = jasmine.createSpy();
+
+        bbCore.onError = errorCallback;
+    });
+
     it("fail authentication", function () {
-        bbCore.login('baduser','badpassword');
+        spyOn($, 'ajax').and.callFake(function(e) {
+            e.success(result.authenticationFailure);
+        });
+
+        bbCore.login('baduser','badpassword', successCallback);
+
         expect(bbCore.isAuthenticated()).toBe(false);
+        expect(successCallback.calls.count()).toEqual(0);
+        expect(errorCallback).toHaveBeenCalled();
     });
 
     it("success authentication", function () {
-        var successCallback = jasmine.createSpy();
-
         spyOn($, 'ajax').and.callFake(function(e) {
             e.success(result.authenticationSuccess);
         });
-        bbCore.login('baduser','badpassword',successCallback);
+
+        bbCore.login('gooduser','goodpassword',successCallback);
+
         expect(bbCore.isAuthenticated()).toBe(true);
+        expect(successCallback).toHaveBeenCalledWith(result.authenticationSuccess);
+        expect(errorCallback.calls.count()).toEqual(0);
     });
 
 });
