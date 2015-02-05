@@ -368,9 +368,13 @@ var BBCore = (function (bb, $) {
 
     // returns the url for the embedded video recorder, typically used for iframes
     bb.prototype.getEmbeddedRecorderUrl = function (opts, comp) {
-        if (typeof opts === "function") comp = opts, opts = null;
+        if (typeof opts === "function") {
+            comp = opts;
+        }
         var defOpts = {height: 240, width: 340, force_ssl: false};
-        opts = opts || defOpts;
+        if (typeof opts.height === 'undefined') {
+            opts = defOpts;
+        }
 
         var reqParams = $.extend({}, opts, {
             module: 'videos',
@@ -381,7 +385,6 @@ var BBCore = (function (bb, $) {
         });
         var inst = this;
         this.getVideoId(function (vidId) {
-            //var fda = inst.getRequestUrl()+'?method=GetEmbeddedRecorder&api_key='+inst.getKey()+'&width='+opts.width+'&height='+opts.height+'&force_ssl='+opts.force_ssl+(vidId?'&vguid='+vidId:'');
             var fda = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + $.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
             comp.call(this, {url: fda, video_id: vidId});
         });
@@ -499,11 +502,6 @@ var BBCore = (function (bb, $) {
         });
     };
 
-
-    bb.prototype.uploadVideo = function (opts, success) {
-        // implement this
-    };
-
     bb.prototype.getVideo = function (vidId, success) {
         if (!vidId) {
             return;
@@ -589,17 +587,6 @@ var BBCore = (function (bb, $) {
         }
         var defaults = {width: 340, force_ssl: false};
         var parameters = $.extend({}, defaults, {contact_id: contactId, method: 'GetContact'});
-        this.sendRequest(parameters, success);
-    };
-
-    /**
-     * Retrieves a Contact
-     * @arg {string}          contactId
-     * @arg {responseSuccess} success
-     */
-    bb.prototype.findContact = function(searchString,success)
-    {
-        var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
         this.sendRequest(parameters, success);
     };
 

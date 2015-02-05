@@ -142,6 +142,62 @@ Retrieves a Contact
 
 
 
+### BBCore.getListContacts(listId, success) 
+
+Retrieves Contacts from a Contact List
+
+**Parameters**
+
+**listId**: `string`, Retrieves Contacts from a Contact List
+
+**success**: `responseSuccess`, Retrieves Contacts from a Contact List
+
+
+
+### BBCore.addContact(contact, success) 
+
+Adds a Contact to a Contact List
+
+**Parameters**
+
+**contact**: `contact`, Adds a Contact to a Contact List
+
+**success**: `responseSuccess`, Adds a Contact to a Contact List
+
+
+
+### BBCore.bulkAddContacts(opts, success) 
+
+Adds a batch of Contacts
+
+**Parameters**
+
+**opts**: `object`, Adds a batch of Contacts
+
+**success**: `responseSuccess`, Adds a batch of Contacts
+
+
+
+### BBCore.add(contact) 
+
+add
+
+**Parameters**
+
+**contact**: `contact`, add
+
+**Returns**: `contacts`
+
+
+### BBCore.add(video) 
+
+**Parameters**
+
+**video**: `video`
+
+**Returns**: `videos`
+
+
 
 * * *
 
