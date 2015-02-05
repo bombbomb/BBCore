@@ -40,7 +40,7 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 ### Send a video in an email through BombBomb
 To send that video in your default template, use `videoQuickSend()`
 
-```
+```javascript
 bb.videoQuickSend({
     subject: 'Your Subject Line',
     video_id: vidInfo.videoId, // saved from the earlier call
@@ -50,7 +50,8 @@ bb.videoQuickSend({
 }, function (data) {
     alert("You've sent a video! " + data.info);
 });
-```# BBCore
+```
+# BBCore
 
 
 
