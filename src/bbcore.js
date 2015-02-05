@@ -138,7 +138,7 @@ var BBCore = (function (bb, $) {
 
     // TODO; sends the persistant key to the application
     bb.prototype.invalidateSession = function () {
-        that = this;
+        var that = this;
         this.sendRequest({method: "invalidateKey"}, function () {
             // TODO; that.clearKey();
             that.accessToken = "";
@@ -824,7 +824,11 @@ var BBCore = (function (bb, $) {
     };
 
     // run initial methods
-    if (this.accessToken) this.validateAccessToken();
-    if (this.email && this.password) this.login(this.email, this.password);
+    if (this.accessToken) {
+        this.validateAccessToken();
+    }
+    if (this.email && this.password) {
+        this.login(this.email, this.password);
+    }
 
 }, jQuery);
