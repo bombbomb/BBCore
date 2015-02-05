@@ -4,10 +4,9 @@
  Copyright 2013 BombBomb, Inc.
  */
 
-function jQLoader()
-{
+function jQLoader() {
     var jQTag = document.createElement('script');
-    jQTag.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
+    jQTag.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
     document.getElementsByTagName('body').appendChild(jQTag);
 }
 if (typeof jQuery === "undefined") {
@@ -17,23 +16,20 @@ if (typeof jQuery === "undefined") {
 /**
  @namespace BBCore
  */
-var BBCore = (function (bb,$)
-{
+var BBCore = (function (bb, $) {
 
     // define some constants
     bb.CONFIG =
     {
-        VERSION:            "1.0",
-        API_END_POINT: 		"/app/api/api.php",
-        SERVER_API_URL:		"https://app.bombbomb.com"
+        VERSION: "1.0",
+        API_END_POINT: "/app/api/api.php",
+        SERVER_API_URL: "https://app.bombbomb.com"
     };
 
 
     // private methods ??
-    bb.prototype.__updateSession = function(respObj,done)
-    {
-        if (respObj.status === "success")
-        {
+    bb.prototype.__updateSession = function (respObj, done) {
+        if (respObj.status === "success") {
             this.userId = respObj.info.user_id;
             this.clientId = respObj.info.client_id;
             this.accessToken = respObj.info.api_key;
@@ -46,52 +42,47 @@ var BBCore = (function (bb,$)
 
             console.log('bbcore: __updateSession session updated.');
 
-            if (done){
-                done.call(this,respObj);
+            if (done) {
+                done.call(this, respObj);
             }
         }
-        else
-        {
+        else {
             alert(respObj.status + ' occurred while trying to login.');
         }
     };
 
 
-
-
     // public methods
-    bb.prototype.onError = function(func_or_deet, xhr)
-    {
+    bb.prototype.onError = function (func_or_deet, xhr) {
         if (typeof func_or_deet === "function") {
             this.onerror = func_or_deet;
         } else {
             if (this.onerror) {
-                this.onerror.call(this,func_or_deet, xhr);
+                this.onerror.call(this, func_or_deet, xhr);
             }
         }
     };
 
-    bb.prototype.login = function(uid,pwd,success)
-    {
-        if (typeof uid === "function")
-        {
+    bb.prototype.login = function (uid, pwd, success) {
+        if (typeof uid === "function") {
             success = uid;
             uid = this.storage.getItem('b2-uid');
             pwd = this.storage.getItem('b2-pwd');
         }
 
-        if (!uid){
+        if (!uid) {
             return;
         }
 
         this.userEmail = uid;
 
         var inst = this;
-        this.sendRequest({ method: "ValidateSession", email: uid, pw: pwd }, function(respObj) { inst.__updateSession(respObj,success); });
+        this.sendRequest({method: "ValidateSession", email: uid, pw: pwd}, function (respObj) {
+            inst.__updateSession(respObj, success);
+        });
     };
 
-    bb.prototype.logout = function()
-    {
+    bb.prototype.logout = function () {
         this.storage.removeItem('b2-uid');
         this.storage.removeItem('b2-pwd');
         this.storage.removeItem('access_token');
@@ -99,41 +90,37 @@ var BBCore = (function (bb,$)
         this.authenticated = false;
     };
 
-    bb.prototype.credentialsSaved = function ()
-    {
+    bb.prototype.credentialsSaved = function () {
         if (null !== this.storage.getItem("b2-uid")) {
             return null !== this.storage.getItem("b2-uid");
         }
         return this.storage.getItem("access_token");
     };
 
-    bb.prototype.saveCredentials = function (uid, pwd)
-    {
-        this.storage.setItem("b2-uid",uid);
-        this.storage.setItem("b2-pwd",pwd);
+    bb.prototype.saveCredentials = function (uid, pwd) {
+        this.storage.setItem("b2-uid", uid);
+        this.storage.setItem("b2-pwd", pwd);
     };
 
-    bb.prototype.resumeStoredSession = function (succ,err)
-    {
+    bb.prototype.resumeStoredSession = function (succ, err) {
         this.accessToken = window.storage.getItem("access_token");
         if (this.accessToken) {
             this.validateAccessToken(succ);
         }
-        else if (window.storage.getItem("b2-uid"))
-        {
+        else if (window.storage.getItem("b2-uid")) {
             this.login(succ);
         }
-        else
-        {
+        else {
             console.log('bbcore: unable to resume session.');
             err();
         }
     };
 
-    bb.prototype.validateAccessToken = function(done)
-    {
+    bb.prototype.validateAccessToken = function (done) {
         var inst = this;
-        this.sendRequest({ method: "ValidateSession", api_key: this.accessToken, async: false }, function(respObj) { inst.__updateSession(respObj,done); });
+        this.sendRequest({method: "ValidateSession", api_key: this.accessToken, async: false}, function (respObj) {
+            inst.__updateSession(respObj, done);
+        });
     };
 
 
@@ -141,8 +128,7 @@ var BBCore = (function (bb,$)
      *
      * @returns {boolean|*}
      */
-    bb.prototype.isAuthenticated = function()
-    {
+    bb.prototype.isAuthenticated = function () {
 
         if (!this.authenticated) {
             console.log('You must authenticate a BombBomb session before making additional calls.');
@@ -151,10 +137,9 @@ var BBCore = (function (bb,$)
     };
 
     // TODO; sends the persistant key to the application
-    bb.prototype.invalidateSession = function()
-    {
+    bb.prototype.invalidateSession = function () {
         that = this;
-        this.sendRequest({ method: "invalidateKey" }, function(){
+        this.sendRequest({method: "invalidateKey"}, function () {
             // TODO; that.clearKey();
             that.accessToken = "";
             that.authenticated = false;
@@ -162,13 +147,11 @@ var BBCore = (function (bb,$)
         });
     };
 
-    bb.prototype.getServerUrl = function()
-    {
+    bb.prototype.getServerUrl = function () {
         return this.apiServer || bb.CONFIG.SERVER_API_URL;
     };
 
-    bb.prototype.getRequestUrl = function()
-    {
+    bb.prototype.getRequestUrl = function () {
         return this.getServerUrl() + bb.CONFIG.API_END_POINT;
     };
 
@@ -180,8 +163,7 @@ var BBCore = (function (bb,$)
      * @arg {responseSuccess} success A callback when the request succeeds
      * @arg {responseSuccess} success A callback when the request fails
      */
-    bb.prototype.sendRequest = function(metho,params,success,error)
-    {
+    bb.prototype.sendRequest = function (metho, params, success, error) {
         if (typeof params === "function") {
             success = params;
         }
@@ -195,9 +177,12 @@ var BBCore = (function (bb,$)
         if (metho !== "IsValidLogin" && !params.api_key) {
             params.api_key = this.accessToken;
         }
-        if (metho !== "ValidateSession" && !this.authenticated)
-        {
-            this.onError.call(this,{ status: 'failure', methodName: 'InvalidSession', info: { errormsg: 'Invalid login' } },null);
+        if (metho !== "ValidateSession" && !this.authenticated) {
+            this.onError.call(this, {
+                status: 'failure',
+                methodName: 'InvalidSession',
+                info: {errormsg: 'Invalid login'}
+            }, null);
             return false;
         }
 
@@ -210,7 +195,7 @@ var BBCore = (function (bb,$)
 
         return $.ajax({
             url: params.url ? params.url : this.getRequestUrl(), //bb.CONFIG.SERVER_API_URL + bb.CONFIG.API_END_POINT,
-            async:  asyncSetting,
+            async: asyncSetting,
             type: "post",
             dataType: "json",
             /*
@@ -220,12 +205,11 @@ var BBCore = (function (bb,$)
              */
             crossDomain: true,
             data: params,
-            success: function(result) {
+            success: function (result) {
                 // set state of bb instance
                 // ?? could evaluate the two last statuses and
                 inst.lastresponse = result.status;
-                if (result.status === "success")
-                {
+                if (result.status === "success") {
                     // if the result returned a
                     if (metho === "GetVideoGuid" && result.info && result.info.video_id) {
                         this.currentVideoId = result.info.video_id;
@@ -234,91 +218,82 @@ var BBCore = (function (bb,$)
                         success.call(inst, result);
                     }
                 }
-                else
-                {
-                    inst.onError.call(inst,result);
+                else {
+                    inst.onError.call(inst, result);
                 }
             },
             error: function (jqXHR) {
-                var resp = { status: 'unknown', jqXHR: jqXHR };
+                var resp = {status: 'unknown', jqXHR: jqXHR};
                 if (typeof jqXHR.responseJSON !== 'undefined') {
                     resp = jqXHR.responseJSON;
                 }
                 inst.lastresponse = resp.status;
                 if ("success" === resp.status) {
-                    success.call(inst,resp,jqXHR);
+                    success.call(inst, resp, jqXHR);
                 } else {
-                    inst.onError.call(inst,resp,jqXHR);
+                    inst.onError.call(inst, resp, jqXHR);
                 }
             }
         });
     };
 
     // tests a key with the existing
-    bb.prototype.verifyKey = function(key,complete)
-    {
+    bb.prototype.verifyKey = function (key, complete) {
         //ValidateSession
-        this.sendRequest({ method: "GetEmails", api_key:key },function(resp){
+        this.sendRequest({method: "GetEmails", api_key: key}, function (resp) {
             if (!complete) {
-                complete({isValid:(resp.status === "success")});
+                complete({isValid: (resp.status === "success")});
             }
         });
     };
 
     // stores the local filestore or cookie
-    bb.prototype.storeKey = function(key)
-    {
-        if  (this.accessToken) {
+    bb.prototype.storeKey = function (key) {
+        if (this.accessToken) {
             this.accessToken = key;
         }
         if (!this.accessToken) {
             return;
         }
         // currently this will use the API Key, in the future this should be updated to use a key which can be expired
-        this.storage.setItem("access_token",this.accessToken);
+        this.storage.setItem("access_token", this.accessToken);
     };
 
-    bb.prototype.getKey = function()
-    {
+    bb.prototype.getKey = function () {
         return this.accessToken;
     };
 
-    bb.prototype.saveRecording = function(opts)
-    {
+    bb.prototype.saveRecording = function (opts) {
         var pVals = opts;
-        if (!pVals.vid_id){
+        if (!pVals.vid_id) {
             return;
         }
-        this.sendRequest({method:"VideoRecordedLive"},pVals,function(){});
+        this.sendRequest({method: "VideoRecordedLive"}, pVals, function () {
+        });
     };
 
-    bb.prototype.setVideoId = function(vid_id)
-    {
+    bb.prototype.setVideoId = function (vid_id) {
         this.currentVideoId = vid_id;
     };
 
-    bb.prototype.getVideoId = function(pcall)
-    {
+    bb.prototype.getVideoId = function (pcall) {
         if (!this.currentVideoId)
             this.getNewVideoGuid(pcall);
-        else
-        if (pcall) {
-            pcall.call(this,this.currentVideoId);
+        else if (pcall) {
+            pcall.call(this, this.currentVideoId);
         }
     };
 
-    bb.prototype.hasVideoId = function()
-    {
+    bb.prototype.hasVideoId = function () {
         return (this.currentVideoId);
     };
 
-    bb.prototype.getNewVideoGuid = function(pcall)
-    {
+    bb.prototype.getNewVideoGuid = function (pcall) {
         var inst = this;
-        this.sendRequest({method:"GetVideoGuid"},function(data){
+        this.sendRequest({method: "GetVideoGuid"}, function (data) {
             inst.currentVideoId = data.info.video_id;
             if (pcall) {
-                pcall.call(this,inst.currentVideoId);
+                pcall.call(this, inst.currentVideoId);
             }
         });
     };
@@ -330,8 +305,7 @@ var BBCore = (function (bb,$)
 
 
      */
-    bb.prototype.videoQuickSend = function(opts,pcall)
-    {
+    bb.prototype.videoQuickSend = function (opts, pcall) {
         // TODO; this should be calling the api
         var reqDetails = {
                 method: 'VideoQuickSend',
@@ -352,13 +326,13 @@ var BBCore = (function (bb,$)
         if (opts.message && !opts.mobile_message) {
             opts.mobile_message = opts.message;
         }
-        if (opts.email && !opts.email_address){
+        if (opts.email && !opts.email_address) {
             opts.email_address = opts.email;
         }
-        if (opts.email_address && !opts.email_addresses){
+        if (opts.email_address && !opts.email_addresses) {
             opts.email_addresses = opts.email_address;
         }
-        if (!opts.video_id && this.currentVideoId){
+        if (!opts.video_id && this.currentVideoId) {
             opts.video_id = this.currentVideoId;
         }
 
@@ -374,58 +348,56 @@ var BBCore = (function (bb,$)
             sendErrors.push('quickSendVideo Error: no email_address defined.');
         }
 
-        if (sendErrors.length>0 && !opts.video_id)
-        {
-            this.getVideoId(function(guid){
-                if (guid)
-                {
+        if (sendErrors.length > 0 && !opts.video_id) {
+            this.getVideoId(function (guid) {
+                if (guid) {
                     opts.video_id = guid;
-                    this.sendRequest(opts,pcall);
+                    this.sendRequest(opts, pcall);
                 }
-                else
-                {
+                else {
                     sendErrors.push('quickSendVideo: Terminal Error: Unable to set video_id');
-                    this.onError({ info: { errmsg: sendErrors } });
+                    this.onError({info: {errmsg: sendErrors}});
                 }
             });
         }
-        else
-        {
-            this.sendRequest(opts,pcall);
+        else {
+            this.sendRequest(opts, pcall);
         }
 
     };
 
     // returns the url for the embedded video recorder, typically used for iframes
-    bb.prototype.getEmbeddedRecorderUrl = function(opts,comp)
-    {
+    bb.prototype.getEmbeddedRecorderUrl = function (opts, comp) {
         if (typeof opts === "function") comp = opts, opts = null;
-        var defOpts = { height: 240, width: 340, force_ssl: false };
+        var defOpts = {height: 240, width: 340, force_ssl: false};
         opts = opts || defOpts;
 
-        var reqParams = $.extend({},opts,{module:'videos',page:'EmbeddedRecorder',popup:1,nohtml:1,api_key:this.getKey()});
+        var reqParams = $.extend({}, opts, {
+            module: 'videos',
+            page: 'EmbeddedRecorder',
+            popup: 1,
+            nohtml: 1,
+            api_key: this.getKey()
+        });
         var inst = this;
-        this.getVideoId(function(vidId){
+        this.getVideoId(function (vidId) {
             //var fda = inst.getRequestUrl()+'?method=GetEmbeddedRecorder&api_key='+inst.getKey()+'&width='+opts.width+'&height='+opts.height+'&force_ssl='+opts.force_ssl+(vidId?'&vguid='+vidId:'');
-            var fda = inst.getServerUrl()+'/app/?module=login&actn=login&api_key='+inst.getKey()+'&redir='+btoa(inst.getServerUrl()+'/app/?'+ $.param(reqParams)+(vidId?'&vguid='+vidId:''));
-            comp.call(this,{url:fda,video_id: vidId});
+            var fda = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + $.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
+            comp.call(this, {url: fda, video_id: vidId});
         });
 
     };
 
-    bb.prototype.getVideoRecorder = function(opts,comp)
-    {
-        if (typeof opts === "function")
-        {
+    bb.prototype.getVideoRecorder = function (opts, comp) {
+        if (typeof opts === "function") {
             comp = opts;
             opts = null;
         }
-        var defOpts = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null };
+        var defOpts = {height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null};
         opts = opts || {};
-        $.extend(opts,defOpts);
-        if (!this.isAuthenticated())
-        {
-            this.onError({message:"Must authenticate session before invoking methods."});
+        $.extend(opts, defOpts);
+        if (!this.isAuthenticated()) {
+            this.onError({message: "Must authenticate session before invoking methods."});
             return;
         }
         opts.method = "GetVideoRecorder";
@@ -433,19 +405,26 @@ var BBCore = (function (bb,$)
         // TODO; might be good to set the video id before passing to success execution
         // TODO; may need to inject the recorder event calls binding back to the API
 
-        this.sendRequest(opts,function(response){
+        this.sendRequest(opts, function (response) {
             console.log('GetVideoRecorder returned, calling callback');
             console.log(comp);
-            if (comp) comp.call(this,response);
+            if (comp) comp.call(this, response);
         });
 
     };
 
     // TODO; COULD MERGE with getVideoRecorder if the default options included, stop, start, recorded parameters
-    bb.prototype.startVideoRecorder = function(opts,recordComplete)
-    {
+    bb.prototype.startVideoRecorder = function (opts, recordComplete) {
         if (typeof opts === "function") recordComplete = opts, opts = null;
-        var defOpts = { type: 'embedded', target:null, height: 240, width: 340, force_ssl: false, recorderLoaded: null, recordComplete:recordComplete };
+        var defOpts = {
+            type: 'embedded',
+            target: null,
+            height: 240,
+            width: 340,
+            force_ssl: false,
+            recorderLoaded: null,
+            recordComplete: recordComplete
+        };
         //for (var op in defOpts) opts[op] = defOpts[op];
         opts = opts || defOpts;
 
@@ -457,24 +436,32 @@ var BBCore = (function (bb,$)
 
         var inst = this;
         // get recorder and inject into target
-        this.getVideoRecorder(rec_opts,function(data){
+        this.getVideoRecorder(rec_opts, function (data) {
             if (!inst.currentVideoId && data.info.vid_id) inst.currentVideoId = data.info.vid_id;
-            console.log('startVideoRecorder :'+inst.currentVideoId);
+            console.log('startVideoRecorder :' + inst.currentVideoId);
             inst.__vidRecHndl.html(data.info.content);
-            if (opts.recorderLoaded) opts.recorderLoaded.call(inst,data.info);
+            if (opts.recorderLoaded) opts.recorderLoaded.call(inst, data.info);
         });
 
 
         // add the callbacks for the recorder to this instance calls.
-        window.bbStreamStartRecord = function(strname,flname){ console.log('bbStreamStartRecord triggered'); inst.liveStreamStartRecord.call(inst,strname,flname); };
-        window.bbStreamStopRecord = function(strname){ console.log('bbStreamStopRecord triggered'); inst.liveStreamStopRecord.call(inst,strname); };
+        window.bbStreamStartRecord = function (strname, flname) {
+            console.log('bbStreamStartRecord triggered');
+            inst.liveStreamStartRecord.call(inst, strname, flname);
+        };
+        window.bbStreamStopRecord = function (strname) {
+            console.log('bbStreamStopRecord triggered');
+            inst.liveStreamStopRecord.call(inst, strname);
+        };
 
-        window.reportVideoRecorded = function(flname,log){ console.log('reportVideoRecorded triggered'); recordComplete({videoId:inst.currentVideoId,filename:flname,log:log}); };
+        window.reportVideoRecorded = function (flname, log) {
+            console.log('reportVideoRecorded triggered');
+            recordComplete({videoId: inst.currentVideoId, filename: flname, log: log});
+        };
 
     };
 
-    bb.prototype.destroyVideoRecorder = function()
-    {
+    bb.prototype.destroyVideoRecorder = function () {
         this.__vidRecHndl && this.__vidRecHndl.remove();
         window.bbStreamStartRecord = null;
         window.bbStreamStopRecord = null;
@@ -482,83 +469,78 @@ var BBCore = (function (bb,$)
         // anything else??
     };
 
-    bb.prototype.liveStreamStartRecord = function(streamname,filename)
-    {
+    bb.prototype.liveStreamStartRecord = function (streamname, filename) {
         this.__vidRecording = true;
-        this.sendRequest({method:'liveStreamStartRecord',streamname:streamname,filename:filename});
+        this.sendRequest({method: 'liveStreamStartRecord', streamname: streamname, filename: filename});
     };
 
-    bb.prototype.liveStreamStopRecord = function(streamname)
-    {
+    bb.prototype.liveStreamStopRecord = function (streamname) {
         this.__vidRecording = false;
-        this.sendRequest({method:'liveStreamStopRecord',streamname:streamname});
+        this.sendRequest({method: 'liveStreamStopRecord', streamname: streamname});
     };
 
 
-    bb.prototype.getVideoDeliveryUrl = function(opts)
-    {
-        opts = $.extend({ video_id: '', autoplay: 1 },opts);
-        var sPrefix = (this.getServerUrl().indexOf('dev')>0?'dev.':(this.getServerUrl().indexOf('local')>0?'local.':''));
-        return 'http://'+sPrefix+'bbemaildelivery.com/bbext/?p=video_land&id='+opts.video_id+'&autoplay='+opts.autoplay;
+    bb.prototype.getVideoDeliveryUrl = function (opts) {
+        opts = $.extend({video_id: '', autoplay: 1}, opts);
+        var sPrefix = (this.getServerUrl().indexOf('dev') > 0 ? 'dev.' : (this.getServerUrl().indexOf('local') > 0 ? 'local.' : ''));
+        return 'http://' + sPrefix + 'bbemaildelivery.com/bbext/?p=video_land&id=' + opts.video_id + '&autoplay=' + opts.autoplay;
     };
 
-    bb.prototype.saveRecordedVideo = function(title,video_id,vfilename,success)
-    {
+    bb.prototype.saveRecordedVideo = function (title, video_id, vfilename, success) {
         var vidId = video_id || this.currentVideoId;
         var inst = this;
-        this.sendRequest({method:'VideoRecordedLive',title:title, filename:vfilename, vid_id:vidId},function(data) { success.call(inst,data);  });
+        this.sendRequest({
+            method: 'VideoRecordedLive',
+            title: title,
+            filename: vfilename,
+            vid_id: vidId
+        }, function (data) {
+            success.call(inst, data);
+        });
     };
 
 
-
-    bb.prototype.uploadVideo = function(opts,success)
-    {
+    bb.prototype.uploadVideo = function (opts, success) {
         // implement this
     };
 
-    bb.prototype.getVideo = function(vidId,success)
-    {
+    bb.prototype.getVideo = function (vidId, success) {
         if (!vidId) {
             return;
         }
-        this.sendRequest({method:"GetVideos",video_id:vidId},success);
+        this.sendRequest({method: "GetVideos", video_id: vidId}, success);
     };
 
-    bb.prototype.getVideos = function(options,success)
-    {
+    bb.prototype.getVideos = function (options, success) {
         var defaults = {
             updatedSince: '',
             page: '',
             pageSize: ''
         };
-        if (typeof options === "function")
-        {
+        if (typeof options === "function") {
             success = options;
             options = {};
         }
         var parameters = $.extend({}, defaults, options);
         parameters.method = "GetVideos";
-        if (parameters.page.length || parameters.page > 0)
-        {
+        if (parameters.page.length || parameters.page > 0) {
             parameters.method = "GetVideosPaged";
         }
-        this.sendRequest(parameters,success);
+        this.sendRequest(parameters, success);
     };
 
-    bb.prototype.getVideoStatus = function(vidId,success)
-    {
+    bb.prototype.getVideoStatus = function (vidId, success) {
         if (!vidId) {
             return;
         }
-        this.sendRequest({method:"getVideoStatus",id:vidId},success);
+        this.sendRequest({method: "getVideoStatus", id: vidId}, success);
     };
 
-    bb.prototype.getEncodingReport = function(vidId,success)
-    {
+    bb.prototype.getEncodingReport = function (vidId, success) {
         if (!vidId) {
             return;
         }
-        this.sendRequest({method:"getEncodingReport",id:vidId},success);
+        this.sendRequest({method: "getEncodingReport", id: vidId}, success);
     };
 
     /**
@@ -566,18 +548,16 @@ var BBCore = (function (bb,$)
      * @arg {string}            videoId
      * @arg {responseSuccess}   success
      */
-    bb.prototype.deleteVideo = function(videoId,success)
-    {
-        this.sendRequest({method:"DeleteVideo", video_id: videoId},success);
+    bb.prototype.deleteVideo = function (videoId, success) {
+        this.sendRequest({method: "DeleteVideo", video_id: videoId}, success);
     };
 
     /**
      * Retrieves Contact Lists
      * @arg {responseSuccess}   success
      */
-    bb.prototype.getLists = function(success)
-    {
-        this.sendRequest({method:"GetLists"},success);
+    bb.prototype.getLists = function (success) {
+        this.sendRequest({method: "GetLists"}, success);
     };
 
     /**
@@ -585,9 +565,8 @@ var BBCore = (function (bb,$)
      * @arg {string}            listName
      * @arg {responseSuccess}   success
      */
-    bb.prototype.createList = function(listName,success)
-    {
-        this.sendRequest({method:"createList",name:listName},success);
+    bb.prototype.createList = function (listName, success) {
+        this.sendRequest({method: "createList", name: listName}, success);
     };
 
     /**
@@ -595,9 +574,8 @@ var BBCore = (function (bb,$)
      * @arg {string}            listName
      * @arg {responseSuccess}   success
      */
-    bb.prototype.getEmails = function(success)
-    {
-        this.sendRequest({method:"GetEmails"},success);
+    bb.prototype.getEmails = function (success) {
+        this.sendRequest({method: "GetEmails"}, success);
     };
 
     /**
@@ -605,14 +583,13 @@ var BBCore = (function (bb,$)
      * @arg {string}          contactId
      * @arg {responseSuccess} success
      */
-    bb.prototype.getContact = function(contactId,success)
-    {
+    bb.prototype.getContact = function (contactId, success) {
         if (!contactId) {
             return;
         }
-        var defaults = { width: 340, force_ssl: false };
-        var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
-        this.sendRequest(parameters,success);
+        var defaults = {width: 340, force_ssl: false};
+        var parameters = $.extend({}, defaults, {contact_id: contactId, method: 'GetContact'});
+        this.sendRequest(parameters, success);
     };
 
     /**
@@ -623,7 +600,7 @@ var BBCore = (function (bb,$)
     bb.prototype.findContact = function(searchString,success)
     {
         var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
-        this.sendRequest(parameters,success);
+        this.sendRequest(parameters, success);
     };
 
     /**
@@ -631,12 +608,11 @@ var BBCore = (function (bb,$)
      * @arg {string}          listId
      * @arg {responseSuccess} success
      */
-    bb.prototype.getListContacts = function(listId,success)
-    {
+    bb.prototype.getListContacts = function (listId, success) {
         if (!listId) {
             return;
         }
-        this.sendRequest({method:"GetListContacts",list_id:listId},success);
+        this.sendRequest({method: "GetListContacts", list_id: listId}, success);
     };
 
     /**
@@ -644,10 +620,9 @@ var BBCore = (function (bb,$)
      * @arg {contact}         contact
      * @arg {responseSuccess} success
      */
-    bb.prototype.addContact = function(contact,success)
-    {
+    bb.prototype.addContact = function(contact, success) {
         if (typeof contact === "object")
-            this.sendRequest({method:"AddContact",contact:contact},success);
+            this.sendRequest({method: "AddContact", contact: contact}, success);
     };
 
     /**
@@ -655,86 +630,74 @@ var BBCore = (function (bb,$)
      * @arg {object}          opts
      * @arg {responseSuccess} success
      */
-    bb.prototype.bulkAddContacts = function(opts,success)
-    {
+    bb.prototype.bulkAddContacts = function(opts, success) {
         opts = opts || {};
         opts.method = "BulkAddContacts";
         if (typeof opts.contacts === "object")
             opts.contacts = JSON.stringify(opts.contacts);
-        this.sendRequest(opts,success);
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.updateContact = function(opts,success)
-    {
+    bb.prototype.updateContact = function (opts, success) {
         // implement this
         opts = opts || {};
         opts.method = "UpdateContact";
-        this.sendRequest(opts,success);
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.getDrips = function(opts,success)
-    {
+    bb.prototype.getDrips = function (opts, success) {
         opts = opts || {};
         opts.method = "GetDrips";
-        this.sendRequest(opts,success);
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.getForms = function(opts,success)
-    {
+    bb.prototype.getForms = function (opts, success) {
         // implement this
         opts = opts || {};
         opts.method = "GetForms";
         // need to extend the getForms to the api end-point
-        this.sendRequest(opts,success);
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.getImportAddressesByType = function(opts,success)
-    {
-        opts = $.extend({ method: 'getImportAddressesByType' },opts);
-        if (!opts.type) this.onError({ info: { errmsg: ['A Type must be provided.'] } });
-        this.sendRequest(opts,success);
+    bb.prototype.getImportAddressesByType = function (opts, success) {
+        opts = $.extend({method: 'getImportAddressesByType'}, opts);
+        if (!opts.type) this.onError({info: {errmsg: ['A Type must be provided.']}});
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.addContactImportAddress = function(opts,success)
-    {
-        opts = $.extend({ method: 'addContactImportAddress' },opts);
-        if (!opts.importAddrCode || !opts.importAddrName) this.onError({ info: { errmsg: ['An Import Address Code and Import Address Name must be provided.'] } });
-        this.sendRequest(opts,success);
+    bb.prototype.addContactImportAddress = function (opts, success) {
+        opts = $.extend({method: 'addContactImportAddress'}, opts);
+        if (!opts.importAddrCode || !opts.importAddrName) this.onError({info: {errmsg: ['An Import Address Code and Import Address Name must be provided.']}});
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.deleteContactImportAddress = function(opts,success)
-    {
-        opts = $.extend({ importAddrCode: 1, method: 'deleteContactImportAddress' },opts);
-        if (!opts.importAddrCode) this.onError({ info: { errmsg: ['Invalid Import Address Code'] } });
-        this.sendRequest(opts,success);
+    bb.prototype.deleteContactImportAddress = function (opts, success) {
+        opts = $.extend({importAddrCode: 1, method: 'deleteContactImportAddress'}, opts);
+        if (!opts.importAddrCode) this.onError({info: {errmsg: ['Invalid Import Address Code']}});
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.getClientRecentInteractions = function(opts,success)
-    {
+    bb.prototype.getClientRecentInteractions = function (opts, success) {
         opts = opts || {};
         opts.activitySince = opts.activitySince || '';
         opts.method = "GetClientRecentInteractions";
-        this.sendRequest(opts,success);
+        this.sendRequest(opts, success);
     };
 
-    bb.prototype.getClientIntegrations = function(success)
-    {
-        this.sendRequest({ method: "getClientIntegrations" },success);
+    bb.prototype.getClientIntegrations = function (success) {
+        this.sendRequest({method: "getClientIntegrations"}, success);
     };
 
-    bb.prototype.sendCustomVideoEmail = function(opts,success)
-    {
-        var defaults = { html_content: null, subject: '', email: '', email_id: '', from_name: '' };
-        var parameters = $.extend({},defaults,opts);
-        if (!parameters.email.length && !parameters.email_id.length)
-        {
+    bb.prototype.sendCustomVideoEmail = function (opts, success) {
+        var defaults = {html_content: null, subject: '', email: '', email_id: '', from_name: ''};
+        var parameters = $.extend({}, defaults, opts);
+        if (!parameters.email.length && !parameters.email_id.length) {
 
         }
-        this.sendRequest($.extend(parameters,{method: 'SendCustomVideoEmail'}),success);
+        this.sendRequest($.extend(parameters, {method: 'SendCustomVideoEmail'}), success);
     };
 
-    bb.prototype.ver = function()
-    {
+    bb.prototype.ver = function () {
         return bb.CONFIG.VERSION;
     };
 
@@ -767,24 +730,22 @@ var BBCore = (function (bb,$)
     this.authenticated = false;
     this.hasContext = false;
     this.storage = localStorage || window.storage;
-    this.CONTENT = { QUICKSEND: '' };
+    this.CONTENT = {QUICKSEND: ''};
     this.lastresponse = "";
     this.__vidRecording = false;
     this.__vidRecHndl = null;
 
     // main object types
-    this.recording = function(opts)
-    {
+    this.recording = function (opts) {
         this.vid_id = "";
         this.title = "";
         this.filename = "";
 
-        $.extend({},this,opts);
+        $.extend({}, this, opts);
     };
 
     //this.contact.prototype = array;
-    this.contact = function(properties)
-    {
+    this.contact = function (properties) {
         this.email = "";
         this.firstname = "";
         this.lastname = "";
@@ -864,6 +825,6 @@ var BBCore = (function (bb,$)
 
     // run initial methods
     if (this.accessToken) this.validateAccessToken();
-    if (this.email && this.password) this.login(this.email,this.password);
+    if (this.email && this.password) this.login(this.email, this.password);
 
-},jQuery);
+}, jQuery);
