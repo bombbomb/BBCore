@@ -1,20 +1,18 @@
 /*
-
  bbcore.js v1.0
-
  BombBomb's App Core API JS Implementation
  Copyright 2013 BombBomb, Inc.
-
  */
 
-// TODO; append script tag to load jQuery as required, replace with require?
 function jQLoader()
 {
     var jQTag = document.createElement('script');
     jQTag.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
     document.getElementsByTagName('body').appendChild(jQTag);
 }
-typeof jQuery == "undefined" && jQLoader();
+if (typeof jQuery === "undefined") {
+    jQLoader();
+}
 
 /**
  @namespace BBCore
@@ -34,7 +32,7 @@ var BBCore = (function (bb,$)
     // private methods ??
     bb.prototype.__updateSession = function(respObj,done)
     {
-        if (respObj.status == "success")
+        if (respObj.status === "success")
         {
             this.userId = respObj.info.user_id;
             this.clientId = respObj.info.client_id;
@@ -48,12 +46,12 @@ var BBCore = (function (bb,$)
 
             console.log('bbcore: __updateSession session updated.');
 
-            // if the authentication was successful, set the
-            if (done) done.call(this,respObj);
+            if (done){
+                done.call(this,respObj);
+            }
         }
         else
         {
-            //
             alert(respObj.status + ' occurred while trying to login.');
         }
     };
@@ -62,21 +60,27 @@ var BBCore = (function (bb,$)
 
 
     // public methods
-    bb.prototype.onError = function(func_or_deet,xhr)
+    bb.prototype.onError = function(func_or_deet, xhr)
     {
-        typeof func_or_deet == "function" ? this.onerror = func_or_deet : (this.onerror && this.onerror.call(this,func_or_deet));
+        if (typeof func_or_deet === "function") {
+            this.onerror = func_or_deet
+        } else {
+            (this.onerror && this.onerror.call(this,func_or_deet, xhr));
+        }
     };
 
     bb.prototype.login = function(uid,pwd,success)
     {
-        if (typeof uid == "function")
+        if (typeof uid === "function")
         {
             success = uid;
             uid = this.storage.getItem('b2-uid');
             pwd = this.storage.getItem('b2-pwd');
         }
 
-        if (!uid) return;
+        if (!uid){
+            return;
+        }
 
         this.userEmail = uid;
 
@@ -95,7 +99,10 @@ var BBCore = (function (bb,$)
 
     bb.prototype.credentialsSaved = function ()
     {
-        return null != this.storage.getItem("b2-uid") || null != this.storage.getItem("access_token");
+        if (null !== this.storage.getItem("b2-uid")) {
+            return null != this.storage.getItem("b2-uid");
+        }
+        return this.storage.getItem("access_token");
     };
 
     bb.prototype.saveCredentials = function (uid, pwd)
@@ -107,17 +114,18 @@ var BBCore = (function (bb,$)
     bb.prototype.resumeStoredSession = function (succ,err)
     {
         this.accessToken = window.storage.getItem("access_token");
-        if (this.accessToken)
+        if (this.accessToken) {
             this.validateAccessToken(succ);
+        }
         else if (window.storage.getItem("b2-uid"))
         {
             this.login(succ);
         }
         else
         {
-            err() && console.log('bbcore: unable to resume session.');
+            console.log('bbcore: unable to resume session.');
+            err();
         }
-        //return null != this.storage.getItem("b2-uid") || null != this.storage.getItem("access_token");
     };
 
     bb.prototype.validateAccessToken = function(done)
@@ -134,7 +142,9 @@ var BBCore = (function (bb,$)
     bb.prototype.isAuthenticated = function()
     {
 
-        if (!this.authenticated) console.log('You must authenticate a BombBomb session before making additional calls.');
+        if (!this.authenticated) {
+            console.log('You must authenticate a BombBomb session before making additional calls.');
+        }
         return this.authenticated;
     };
 
@@ -164,17 +174,25 @@ var BBCore = (function (bb,$)
     /**
      * Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
      * @arg {string}          metho The method name to call
-     * @arg {array}           params The parameters to send with the request
+     * @arg {array}          params The parameters to send with the request
      * @arg {responseSuccess} success A callback when the request succeeds
      * @arg {responseSuccess} success A callback when the request fails
      */
     bb.prototype.sendRequest = function(metho,params,success,error)
     {
-        if (typeof params == "function") success = params;
-        if (typeof metho == "object") params = metho;
-        if (typeof metho == "object" && params.method) metho = params.method;
+        if (typeof params === "function") {
+            success = params;
+        }
+        if (typeof metho === "object") {
+            params = metho;
+        }
+        if (typeof metho === "object" && params.method) {
+            metho = params.method;
+        }
 
-        if (metho != "IsValidLogin" && !params.api_key) params.api_key = this.accessToken;
+        if (metho != "IsValidLogin" && !params.api_key) {
+            params.api_key = this.accessToken;
+        }
         if (metho != "ValidateSession" && !this.authenticated)
         {
             this.onError.call(this,{ status: 'failure', methodName: 'InvalidSession', info: { errormsg: 'Invalid login' } },null);
@@ -182,9 +200,15 @@ var BBCore = (function (bb,$)
         }
 
         var inst = this;
+
+        var asyncSetting = true;
+        if (typeof params.async !== 'undefined') {
+            asyncSetting = params.async;
+        }
+
         return $.ajax({
             url: params.url ? params.url : this.getRequestUrl(), //bb.CONFIG.SERVER_API_URL + bb.CONFIG.API_END_POINT,
-            async: typeof params.async != 'undefined' ? params.async : true,
+            async:  asyncSetting,
             type: "post",
             dataType: "json",
             /*
@@ -198,11 +222,15 @@ var BBCore = (function (bb,$)
                 // set state of bb instance
                 // ?? could evaluate the two last statuses and
                 inst.lastresponse = result.status;
-                if (result.status == "success")
+                if (result.status === "success")
                 {
                     // if the result returned a
-                    if (metho == "GetVideoGuid" && result.info && result.info.video_id) this.currentVideoId = result.info.video_id;
-                    if (success) success.call(inst,result);
+                    if (metho === "GetVideoGuid" && result.info && result.info.video_id) {
+                        this.currentVideoId = result.info.video_id;
+                    }
+                    if (success) {
+                        success.call(inst, result);
+                    }
                 }
                 else
                 {
@@ -210,9 +238,12 @@ var BBCore = (function (bb,$)
                 }
             },
             error: function (jqXHR) {
-                resp = jqXHR.responseJSON || { status: 'unknown', jqXHR: jqXHR };
+                var resp = { status: 'unknown', jqXHR: jqXHR };
+                if (typeof jqXHR.responseJSON !== 'undefined') {
+                    resp = jqXHR.responseJSON;
+                }
                 inst.lastresponse = resp.status;
-                resp.status  == "success"? success.call(inst,resp,jqXHR) : inst.onError.call(inst,resp,jqXHR);
+                "success" == resp.status ? success.call(inst,resp,jqXHR) : inst.onError.call(inst,resp,jqXHR);
             }
         });
     };
@@ -540,44 +571,24 @@ var BBCore = (function (bb,$)
         this.sendRequest(parameters,success);
     };
 
-    /**
-     * Retrieves a Contact
-     * @arg {string}          contactId
-     * @arg {responseSuccess} success
-     */
     bb.prototype.findContact = function(searchString,success)
     {
         var parameters = $.extend({}, defaults, { contact_id: contactId, method: 'GetContact' });
         this.sendRequest(parameters,success);
     };
 
-    /**
-     * Retrieves Contacts from a Contact List
-     * @arg {string}          listId
-     * @arg {responseSuccess} success
-     */
     bb.prototype.getListContacts = function(listId,success)
     {
-        if (!listId) return;
+        if (!listid) return;
         this.sendRequest({method:"GetListContacts",list_id:listId},success);
     };
 
-    /**
-     * Adds a Contact to a Contact List
-     * @arg {contact}         contact
-     * @arg {responseSuccess} success
-     */
     bb.prototype.addContact = function(contact,success)
     {
         if (typeof contact == "object")
             this.sendRequest({method:"AddContact",contact:contact},success);
     };
 
-    /**
-     * Adds a batch of Contacts
-     * @arg {object}          opts
-     * @arg {responseSuccess} success
-     */
     bb.prototype.bulkAddContacts = function(opts,success)
     {
         opts = opts || {};
@@ -701,6 +712,7 @@ var BBCore = (function (bb,$)
         $.extend({},this,opts);
     };
 
+    //this.contact.prototype = array;
     this.contact = function(properties)
     {
         this.email = "";
@@ -717,35 +729,19 @@ var BBCore = (function (bb,$)
         this.company = "";
         this.position = "";
         this.comments = "";
-        this.listlist  = "";
-        this.id = "";
         $.extend({},this,properties);
         this.eml = this.email;
     };
 
+    // d
     this.contacts = function() {};
     this.contacts.prototype = Array.prototype;
-    this.contacts.constructor = this.contacts;
-    this.contacts.prototype.addContact = function(contact) {
-        this.push(contact);
-    };
-    this.contacts.prototype.findContact = function(fieldName,value) {
-        for (var fds in this)
-        {
-            if (this.hasOwnProperty(fds) && fds[fieldName]==value)
-            {
-                return fds;
-            }
-        }
-        return null;
-    };
-    this.contacts.prototype.getContact = function(contactId) {
-        return this.findContact('id',contactId);
-    };
+    this.contacts.constructor = this.contact;
 
-    this.videos = function() {};
-    this.videos.prototype = Array.prototype;
-    this.videos.constructor = this.videos;
+    // d
+    this.recordings = function() {};
+    this.recordings.prototype = Array.prototype;
+    this.recordings.constructor = this.recording;
 
     // run initial methods
     if (this.accessToken) this.validateAccessToken();
