@@ -75,31 +75,13 @@ var BBCore = (function (bb,$)
             uid = this.storage.getItem('b2-uid');
             pwd = this.storage.getItem('b2-pwd');
         }
+
         if (!uid) return;
+
         this.userEmail = uid;
 
         var inst = this;
-        updateInst = function(respObj)
-        {
-            if (respObj.status == "success")
-            {
-                inst.userId = respObj.info.user_id;
-                inst.clientId = respObj.info.client_id;
-                inst.accessToken = respObj.info.api_key;
-                inst.hasContext = true;
-                inst.authenticated = true;
-
-                inst.storeKey(this.accessToken);
-
-                success.call(this,respObj);
-            }
-            else
-            {
-                //
-                alert(respObj.status + 'occurred while trying to login.');
-            }
-        };
-        this.sendRequest({ method: "ValidateSession", email: uid, pw: pwd }, function(respObj) { inst.__updateSession(respObj,success); } );
+        this.sendRequest({ method: "ValidateSession", email: uid, pw: pwd }, function(respObj) { inst.__updateSession(respObj,success); });
     };
 
     bb.prototype.logout = function()
