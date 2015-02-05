@@ -17,7 +17,7 @@ function jQLoader()
 typeof jQuery == "undefined" && jQLoader();
 
 /**
- @namespace BBCore - all BBCore functionality
+ @namespace BBCore
  */
 var BBCore = (function (bb,$)
 {

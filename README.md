@@ -9,7 +9,8 @@ Use of BBCore requires only a recent version of jQuery and bbcore.js.
 Running the tests requires [grunt-cli](https://github.com/gruntjs/grunt-cli). Then run `grunt` to test and miniaturize.
 ## Usage Examples!
 
-Words go here!# BBCore - all BBCore functionality
+Words go here!
+# BBCore
 
 
 
@@ -17,16 +18,16 @@ Words go here!# BBCore - all BBCore functionality
 
 * * *
 
-### BBCore - all BBCore functionality.isAuthenticated() 
+### BBCore.isAuthenticated() 
 
 **Returns**: `boolean | *`
 
 
-### BBCore - all BBCore functionality.videoQuickSend() 
+### BBCore.videoQuickSend() 
 
 
 
-### BBCore - all BBCore functionality.deleteVideo(videoId, success) 
+### BBCore.deleteVideo(videoId, success) 
 
 Deletes a Video
 
@@ -38,7 +39,7 @@ Deletes a Video
 
 
 
-### BBCore - all BBCore functionality.getLists(success) 
+### BBCore.getLists(success) 
 
 Retrieves Contact Lists
 
@@ -48,7 +49,7 @@ Retrieves Contact Lists
 
 
 
-### BBCore - all BBCore functionality.createList(listName, success) 
+### BBCore.createList(listName, success) 
 
 Creates a Contact List and returns the Guid
 
@@ -60,7 +61,7 @@ Creates a Contact List and returns the Guid
 
 
 
-### BBCore - all BBCore functionality.getEmails(listName, success) 
+### BBCore.getEmails(listName, success) 
 
 Retrieves a list of Email
 
@@ -72,7 +73,7 @@ Retrieves a list of Email
 
 
 
-### BBCore - all BBCore functionality.getContact(contactId, success) 
+### BBCore.getContact(contactId, success) 
 
 Retrieves a Contact
 
