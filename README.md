@@ -100,22 +100,6 @@ Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api
 
 
 
-### BBCore.videoQuickSend() 
-
-
-
-### BBCore.deleteVideo(videoId, success) 
-
-Deletes a Video
-
-**Parameters**
-
-**videoId**: `string`, Deletes a Video
-
-**success**: `responseSuccess`, Deletes a Video
-
-
-
 ### BBCore.getLists(success) 
 
 Retrieves Contact Lists
@@ -135,18 +119,6 @@ Creates a Contact List and returns the Guid
 **listName**: `string`, Creates a Contact List and returns the Guid
 
 **success**: `responseSuccess`, Creates a Contact List and returns the Guid
-
-
-
-### BBCore.getEmails(listName, success) 
-
-Retrieves a list of Email
-
-**Parameters**
-
-**listName**: `string`, Retrieves a list of Email
-
-**success**: `responseSuccess`, Retrieves a list of Email
 
 
 
@@ -208,6 +180,18 @@ Adds a batch of Contacts
 
 
 
+### BBCore.getEmails(listName, success) 
+
+Retrieves a list of Email
+
+**Parameters**
+
+**listName**: `string`, Retrieves a list of Email
+
+**success**: `responseSuccess`, Retrieves a list of Email
+
+
+
 ### BBCore.getDrips(opts, success) 
 
 **Parameters**
@@ -225,6 +209,22 @@ Adds a batch of Contacts
 **opts**: `object`
 
 **success**: `responseSuccess`
+
+
+
+### BBCore.deleteVideo(videoId, success) 
+
+Deletes a Video
+
+**Parameters**
+
+**videoId**: `string`, Deletes a Video
+
+**success**: `responseSuccess`, Deletes a Video
+
+
+
+### BBCore.videoQuickSend() 
 
 
 

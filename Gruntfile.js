@@ -24,7 +24,7 @@ module.exports = function(grunt) {
                     contentsEnabled: false,
                     contentsTitle: 'API'
                 },
-                src: ['src/*.js'],
+                src: ['build/BBCore.combined.js'],
                 dest: 'docs/'
             }
         },
@@ -33,19 +33,19 @@ module.exports = function(grunt) {
                 separator: ''
             },
             docs: {
-                src: ['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/src/bbcore.md'],
+                src: ['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/build/BBCore.combined.md'],
                 dest: 'README.md'
             },
             moduleMasher: {
                 src: [
                     'src/bbcore.js',
-                    'src/bbcore.auth.js',
-                    'src/bbcore.api.js',
-                    'src/bbcore.contacts.js',
-                    'src/bbcore.email.js',
-                    'src/bbcore.extras.js',
-                    'src/bbcore.videoRecorder.js',
-                    'src/bbcore.video.js'
+                    'src/modules/bbcore.auth.js',
+                    'src/modules/bbcore.api.js',
+                    'src/modules/bbcore.contacts.js',
+                    'src/modules/bbcore.email.js',
+                    'src/modules/bbcore.extras.js',
+                    'src/modules/bbcore.videoRecorder.js',
+                    'src/modules/bbcore.video.js'
                 ],
                 dest: 'build/<%= pkg.name %>.combined.js'
             }
@@ -69,6 +69,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Default task(s).
-    grunt.registerTask('default', ['concat', 'jshint', 'uglify', 'karma', 'jsdox']);
-    grunt.registerTask('full', ['concat', 'jshint', 'uglify', 'karma', 'jsdox', 'codeclimate']);
+    grunt.registerTask('default', ['concat', 'jshint', 'uglify', 'karma', 'jsdox', 'concat']);
+    grunt.registerTask('full', ['concat', 'jshint', 'uglify', 'karma', 'jsdox', 'concat', 'codeclimate']);
 };
