@@ -8,7 +8,7 @@ module.exports = function(grunt) {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             build: {
-                src: 'src/<%= pkg.name %>.js',
+                src: 'build/<%= pkg.name %>.combined.js',
                 dest: 'build/<%= pkg.name %>.min.js'
             }
         },
@@ -32,9 +32,22 @@ module.exports = function(grunt) {
             options: {
                 separator: ''
             },
-            dist: {
+            docs: {
                 src: ['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/src/bbcore.md'],
                 dest: 'README.md'
+            },
+            moduleMasher: {
+                src: [
+                    'src/bbcore.js',
+                    'src/bbcore.auth.js',
+                    'src/bbcore.api.js',
+                    'src/bbcore.contacts.js',
+                    'src/bbcore.email.js',
+                    'src/bbcore.extras.js',
+                    'src/bbcore.videoRecorder.js',
+                    'src/bbcore.video.js'
+                ],
+                dest: 'build/<%= pkg.name %>.combined.js'
             }
         },
         codeclimate: {
@@ -42,6 +55,9 @@ module.exports = function(grunt) {
                 file: 'spec/coverage/report-lcov/lcov.info',
                 token: '5bf69d78cd8bfe54fb920abdf42be714bd6b405288d1ba6f0ea2d727b8d5166a'
             }
+        },
+        jshint: {
+            all: ['src/bbcore.js']
         }
     });
 
@@ -50,8 +66,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-jsdox');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-codeclimate');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'karma', 'jsdox', 'concat']);
-    grunt.registerTask('full', ['uglify', 'karma', 'jsdox', 'concat', 'codeclimate']);
+    grunt.registerTask('default', ['concat', 'jshint', 'uglify', 'karma', 'jsdox']);
+    grunt.registerTask('full', ['concat', 'jshint', 'uglify', 'karma', 'jsdox', 'codeclimate']);
 };
