@@ -1,4 +1,15 @@
 language: node_js
 node_js:
-  - "0.10"
+- '0.10'
 before_install: npm install -g grunt-cli
+deploy:
+  provider: s3
+  access_key_id:
+    secure: HbVROoper2avv4xh/xVsnJF8MO/4vWWRSjDyLqtEra+o8xtlUdxjuBQkfSqQtOKBsaXvNfxhUCAJVKPk2tLHwyyZA12bnBeQvqlK7PysYkgNFDBik/s5i2EpDL79E7cfcrUP4w4KEIUEaa1l+KIbV/miJBdsA+L1dY759rwnEVs=
+  secret_access_key:
+    secure: Ew77WWHPy5h0kcgg9nM0mGWMIh5uiej0qlRtlgfm2Mfr5cdGonhTytJitDRqRJbDLArxCBpw3fe6Sazr72WnhVCqbJOrfYpvlIXk+RSK1leOKEsY7/jIdAYAaRwCh9mhQ79kvgJBkgDRA3UyzYgvCVFxhqRaHdXEF60SU+r8oeY=
+  bucket: static.bombbomb.com
+  skip_cleanup: true
+  acl: public_read
+  local_dir: build
+  upload-dir: js
