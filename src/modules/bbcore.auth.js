@@ -26,10 +26,7 @@ BBCore.prototype.logout = function () {
 };
 
 BBCore.prototype.credentialsSaved = function () {
-    if (null !== this.storage.getItem("b2-uid")) {
-        return null !== this.storage.getItem("b2-uid");
-    }
-    return this.storage.getItem("access_token");
+    return null !== this.storage.getItem("b2-uid") || null !== this.storage.getItem("access_token");
 };
 
 BBCore.prototype.saveCredentials = function (uid, pwd) {
@@ -43,11 +40,11 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
  * @param err
  */
 BBCore.prototype.resumeStoredSession = function (success, err) {
-    this.accessToken = window.storage.getItem("access_token");
+    this.accessToken = this.storage.getItem("access_token");
     if (this.accessToken) {
         this.validateAccessToken(success);
     }
-    else if (window.storage.getItem("b2-uid")) {
+    else if (this.storage.getItem("b2-uid")) {
         this.login(success);
     }
     else {

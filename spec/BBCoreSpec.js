@@ -107,7 +107,7 @@ describe("BBCore Authentication", function() {
     var errorCallbackSpy = null;
 
     var result = {
-        authenticationSuccess: { status: "success", info: { access_token: '11111111-1111-1111-1111-111111111111', clientId: 'valid-user', userId: 'valid-user' }},
+        authenticationSuccess: { status: "success", info: { api_key: 'api-key', clientId: 'valid-user', userId: 'valid-user' }},
         authenticationFailure: { status: "failure", methodName: 'BadLogin', info: { errormsg: 'invalid session' } }
     };
 
@@ -124,6 +124,7 @@ describe("BBCore Authentication", function() {
         bbCore.login('badUser', 'badPassword', successCallbackSpy);
 
         expect(bbCore.isAuthenticated()).toBe(false);
+        expect(bbCore.credentialsSaved()).toBe(false);
         expect(successCallbackSpy).not.toHaveBeenCalled();
         expect(errorCallbackSpy).toHaveBeenCalledWith(result.authenticationFailure);
     });
@@ -134,6 +135,7 @@ describe("BBCore Authentication", function() {
         bbCore.login(null);
 
         expect(bbCore.isAuthenticated()).toBe(false);
+        expect(bbCore.credentialsSaved()).toBe(false);
         expect(bbCore.sendRequest).not.toHaveBeenCalled();
     });
 
@@ -143,6 +145,7 @@ describe("BBCore Authentication", function() {
         bbCore.login('goodUser', 'goodPassword', successCallbackSpy);
 
         expect(bbCore.isAuthenticated()).toBe(true);
+        expect(bbCore.credentialsSaved()).toBe(true);
         expect(successCallbackSpy).toHaveBeenCalledWith(result.authenticationSuccess);
         expect(errorCallbackSpy).not.toHaveBeenCalled();
     });
@@ -155,13 +158,66 @@ describe("BBCore Authentication", function() {
         bbCore.login(successCallbackSpy);
 
         expect(bbCore.isAuthenticated()).toBe(true);
+        expect(bbCore.credentialsSaved()).toBe(true);
         expect(successCallbackSpy).toHaveBeenCalledWith(result.authenticationSuccess);
+        expect(errorCallbackSpy).not.toHaveBeenCalled();
+    });
+
+    it("unable to resume stored session", function() {
+        bbCore.logout();
+
+        bbCore.resumeStoredSession(successCallbackSpy, errorCallbackSpy);
+
+        expect(successCallbackSpy).not.toHaveBeenCalled();
+        expect(errorCallbackSpy).toHaveBeenCalled();
+    });
+
+    it("resume stored session from access token", function() {
+        spyOn(bbCore, 'validateAccessToken');
+
+        bbCore.storage.setItem("access_token", this.accessToken);   // simulate access token was set.
+
+        bbCore.resumeStoredSession(successCallbackSpy, errorCallbackSpy);
+
+        expect(bbCore.validateAccessToken).toHaveBeenCalledWith(successCallbackSpy);
+        expect(errorCallbackSpy).not.toHaveBeenCalled();
+    });
+
+    it("resume stored session from username", function() {
+        spyOn(bbCore, 'login');
+
+        bbCore.logout();
+        bbCore.saveCredentials('username', 'password');
+
+        bbCore.resumeStoredSession(successCallbackSpy, errorCallbackSpy);
+
+        expect(bbCore.login).toHaveBeenCalledWith(successCallbackSpy);
         expect(errorCallbackSpy).not.toHaveBeenCalled();
     });
 
     it("logout", function() {
         bbCore.logout();
 
+        expect(bbCore.isAuthenticated()).toBe(false);
+        expect(bbCore.credentialsSaved()).toBe(false);
+    });
+
+    it("validate access token", function() {
+        spyOn(bbCore, '__updateSession');
+        setupMockApiRequest(result.authenticationSuccess);
+
+        bbCore.validateAccessToken(successCallbackSpy);
+
+        expect(bbCore.__updateSession).toHaveBeenCalledWith(result.authenticationSuccess, successCallbackSpy);
+    });
+
+    it("invalidate session", function() {
+        spyOn(bbCore, 'sendRequest').and.callThrough();
+        setupMockApiRequest({});
+
+        bbCore.invalidateSession();
+
+        expect(bbCore.sendRequest).toHaveBeenCalled();
         expect(bbCore.isAuthenticated()).toBe(false);
     });
 });
