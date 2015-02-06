@@ -3,12 +3,14 @@ module.exports = function(config) {
         frameworks: ['jasmine'],
         files: [
             '../src/libs/jquery.js',
-            '../build/BBCore.combined.js',
+            '../src/*.js',
+            '../src/modules/*.js',
             '*.js',
             { pattern: '../src/libs/jquery.js', watched: false, included: true }
         ],
         preprocessors: {
-            '../build/BBCore.combined.js': ['coverage']
+            '../src/*.js': ['coverage'],
+            '../src/modules/*.js': ['coverage']
         },
         coverageReporter: {
             type : 'lcovonly',
