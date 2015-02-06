@@ -1,19 +1,35 @@
-
+/**
+ *
+ * @returns {BBCore.apiServer|*|BBCore.CONFIG.SERVER_API_URL}
+ */
 BBCore.prototype.getServerUrl = function () {
     return this.apiServer || BBCore.CONFIG.SERVER_API_URL;
 };
 
+/**
+ * Returns the fully qualified URL for BB API
+ * @returns {string}
+ */
 BBCore.prototype.getRequestUrl = function () {
     return this.getServerUrl() + BBCore.CONFIG.API_END_POINT;
 };
 
+/**
+ * @typedef {object} requestParameters
+ * @prop {string} [method]
+ * @prop {string} [api_key]
+ * @prop {string} [async]
+ * @prop {string} [url]
+ * @prop {string} [url]
+ */
+
 
 /**
  * Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
- * @arg {string}          method The method name to call
- * @arg {array}           params The parameters to send with the request
- * @arg {responseSuccess} success A callback when the request succeeds
- * @arg {responseSuccess} error A callback when the request fails
+ * @arg {string}                        method The method name to call
+ * @arg {requestParameters} [params]    The parameters to send with the request
+ * @arg {responseSuccess}   [success]   A callback when the request succeeds
+ * @arg {responseSuccess}   [error]     A callback when the request fails
  */
 BBCore.prototype.sendRequest = function (method, params, success, error) {
     if (typeof params === "function") {
@@ -87,7 +103,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
             }
 
             if (error) {
-                error(inst, resp);
+                error.call(inst, resp);
             }
         }
     });

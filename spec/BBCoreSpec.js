@@ -23,6 +23,7 @@ function setupMockApiRequest(result, error) {
 describe("BBCore API", function() {
     var successCallbackSpy = null;
     var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri });
+    bbCore.logout();
 
     var result = {
         responseSuccess: {"status":"success","methodName":"GetVideos","info":[{"id":testGuid,"name":"Video Title","description":"Video Description","status":"1","thumbUrl":"thumbnailUrl","shortUrl":"shortUrl","height":"480","width":"640","created":"2\/06\/15 10:33:05 am","vidUrl":"videoDeliveryUrl"}]},
@@ -40,7 +41,7 @@ describe("BBCore API", function() {
         bbCore.sendRequest('GetVideos', { video_id: testGuid });
 
         expect(bbCore.onError).toHaveBeenCalledWith(result.responseFailure, null);
-    })
+    });
 
     it("send request", function() {
         simulateAuthenticatedApi(bbCore);
@@ -71,7 +72,7 @@ describe("BBCore API", function() {
     });
 
     it("ajax error", function() {
-        var errorParamCallbackSpy = jasmine.createSpy();
+        var errorParamCallbackSpy = jasmine.createSpy('errorParamCallbackSpy');
         var xhrResult = { responseJSON: { status: "failure" } };
 
         simulateAuthenticatedApi(bbCore);
@@ -85,7 +86,7 @@ describe("BBCore API", function() {
     });
 
     it("ajax error when last response was success", function() {
-        var errorParamCallbackSpy = jasmine.createSpy();
+        var errorParamCallbackSpy = jasmine.createSpy('errorParamCallbackSpy');
         var xhrResult = { responseJSON: { status: "success" } };
 
         simulateAuthenticatedApi(bbCore);
@@ -102,6 +103,7 @@ describe("BBCore API", function() {
 describe("BBCore Authentication", function() {
 
     var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri, storage: window.storage });
+    bbCore.logout();
 
     var successCallbackSpy = null;
     var errorCallbackSpy = null;
@@ -346,3 +348,17 @@ describe("A BBCore Video", function() {
 
 });
 
+describe("Contact Tests", function() {
+
+    var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUri });
+
+    it("BBCore.contact: create and add contact", function() {
+
+        var testContact = bbCore.contact({ email: 'test@test-buddy-guy-sir.com', firstname: 'Test', lastname: 'Buddy', comments: 'this is my test buddy' });
+        var myNewContact =  new bbCore.contacts().add(testContact);
+
+        expect(myNewContact.length).toEqual(1);
+
+    });
+
+});

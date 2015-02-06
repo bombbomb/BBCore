@@ -1,16 +1,19 @@
 /**
- * Retrieves a list of Email
- * @arg {string}            listName
+ * Retrieves a list of Emails from the current authenticated session
  * @arg {responseSuccess}   success
  */
 BBCore.prototype.getEmails = function (success) {
-    this.sendRequest({method: "GetEmails"}, success);
+    this.sendRequest({ method: "GetEmails" }, success);
 };
 
 /**
+ * @typedef {object} customVideoEmailOptions
+ */
+
+/**
  *
- * @param opts
- * @param success
+ * @arg {customVideoEmailOptions} opts
+ * @arg {responseSuccess} success
  */
 BBCore.prototype.sendCustomVideoEmail = function (opts, success) {
     var defaults = {html_content: null, subject: '', email: '', email_id: '', from_name: ''};

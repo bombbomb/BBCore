@@ -95,7 +95,7 @@ BBCore.prototype.getImportAddressesByType = function (opts, success) {
 
 /**
  * Retrieves an Import Address by a Type
- * @param opts
+ * @param {object} opts
  * @param {responseSuccess} success
  */
 BBCore.prototype.addContactImportAddress = function (opts, success) {
@@ -115,8 +115,13 @@ BBCore.prototype.deleteContactImportAddress = function (opts, success) {
 };
 
 /**
- *
- * @param {object} opts
+ * @typedef {object} getClientInteractionOptions
+ * @prop {string} [activitySince] DateTime
+ */
+
+/**
+ * Retrieves a list of re
+ * @param {getClientInteractionOptions} opts
  * @param {responseSuccess} success
  */
 BBCore.prototype.getClientRecentInteractions = function (opts, success) {

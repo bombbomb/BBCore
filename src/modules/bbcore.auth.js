@@ -1,3 +1,9 @@
+/**
+ *
+ * @arg {string} uid
+ * @arg {string} pwd
+ * @arg {responseSuccess} success
+ */
 BBCore.prototype.login = function (uid, pwd, success) {
     if (typeof uid === "function") {
         success = uid;
@@ -25,19 +31,28 @@ BBCore.prototype.logout = function () {
     this.authenticated = false;
 };
 
+/**
+ * Returns bool for whether or not a prior authentication is stored locally
+ * @returns {boolean}
+ */
 BBCore.prototype.credentialsSaved = function () {
     return null !== this.storage.getItem("b2-uid") || null !== this.storage.getItem("access_token");
 };
 
+/**
+ * Save credentials to local storage (not recommended)
+ * @arg {string} uid - User ID/Email Address
+ * @param {string} pwd - Password
+ */
 BBCore.prototype.saveCredentials = function (uid, pwd) {
     this.storage.setItem("b2-uid", uid);
     this.storage.setItem("b2-pwd", pwd);
 };
 
 /**
- *
- * @param {responseSuccess} success
- * @param err
+ * Authenticates from previously stored credentials
+ * @arg {responseSuccess} success
+ * @arg {responseSuccess} err
  */
 BBCore.prototype.resumeStoredSession = function (success, err) {
     this.accessToken = this.storage.getItem("access_token");
@@ -61,11 +76,10 @@ BBCore.prototype.validateAccessToken = function (done) {
 
 
 /**
- *
+ * Returns bool for authentication state
  * @returns {boolean|*}
  */
 BBCore.prototype.isAuthenticated = function () {
-
     if (!this.authenticated) {
         console.log('You must authenticate a BombBomb session before making additional calls.');
     }
@@ -104,12 +118,12 @@ BBCore.prototype.__updateSession = function (respObj, done) {
 
 
 /**
- *
+ * Validates the given key
  * @arg {string} key
  * @arg {responseSuccess} complete
  */
 BBCore.prototype.verifyKey = function (key, complete) {
-    //ValidateSession
+    // TODO; should ValidateSession replace this or vise-versa
     this.sendRequest({method: "GetEmails", api_key: key}, function (resp) {
         if (!complete) {
             complete({isValid: (resp.status === "success")});

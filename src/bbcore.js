@@ -48,6 +48,29 @@ function BBCore(properties) {
     this.__vidRecording = false;
     this.__vidRecHndl = null;
 
+    /**
+     * @typedef {object} contactProperties
+     * @prop {string} email     Email Address
+     * @prop {string} firstname First Name
+     * @prop {string} lastname  Last Name
+     * @prop {string} phone_number  Phone Number
+     * @prop {string} address_line_1  Address 1
+     * @prop {string} address_line_2  Address 2
+     * @prop {string} city      City
+     * @prop {string} state     State
+     * @prop {string} country   Country
+     * @prop {string} postal_code  Postal Code
+     * @prop {string} company   Company
+     * @prop {string} position  Position
+     * @prop {string} comments  Comments
+     * @prop {string} listlist  Array of List Ids the Contact is subscribed to
+     * @prop {string} id        Contact Id
+     */
+
+    /**
+     * namespace BBCore.contact
+     * @param {contactProperties} properties
+     */
     this.contact = function (properties) {
         this.email = "";
         this.firstname = "";
@@ -78,7 +101,8 @@ function BBCore(properties) {
     this.contacts.prototype = Array.prototype;
     this.contacts.constructor = this.contacts;
     /**
-     * add
+     * Adds a Contact to Contacts Collection
+     * @namespace contacts
      * @param {contact} contact
      * @returns {contacts}
      */
@@ -86,10 +110,17 @@ function BBCore(properties) {
         this.push(contact);
         return this;
     };
+    /**
+     * fds
+     * @namespace contacts
+     * @param fieldName
+     * @param value
+     * @returns {*|contact}
+     */
     this.contacts.prototype.find = function (fieldName, value) {
-        for (var property in this) {
-            if (this.hasOwnProperty(property) && property[fieldName] === value) {
-                return property;
+        for (var contact in this) {
+            if (this.hasOwnProperty(contact) && contact[fieldName] === value) {
+                return contact;
             }
         }
         return null;
@@ -98,6 +129,10 @@ function BBCore(properties) {
         return this.findContact('id', contactId);
     };
 
+    /**
+     * namespace
+     * @param properties
+     */
     this.video = function (properties) {
         this.vid_id = "";
         this.title = "";
