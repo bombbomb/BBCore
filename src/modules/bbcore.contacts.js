@@ -80,7 +80,11 @@ BBCore.prototype.updateContact = function (opts, success) {
     this.sendRequest(opts, success);
 };
 
-
+/**
+ * Retrieves an Import Address by a Type
+ * @param opts
+ * @param {responseSuccess} success
+ */
 BBCore.prototype.getImportAddressesByType = function (opts, success) {
     opts = $.extend({method: 'getImportAddressesByType'}, opts);
     if (!opts.type) {
@@ -89,6 +93,11 @@ BBCore.prototype.getImportAddressesByType = function (opts, success) {
     this.sendRequest(opts, success);
 };
 
+/**
+ * Retrieves an Import Address by a Type
+ * @param opts
+ * @param {responseSuccess} success
+ */
 BBCore.prototype.addContactImportAddress = function (opts, success) {
     opts = $.extend({method: 'addContactImportAddress'}, opts);
     if (!opts.importAddrCode || !opts.importAddrName) {
@@ -105,7 +114,11 @@ BBCore.prototype.deleteContactImportAddress = function (opts, success) {
     this.sendRequest(opts, success);
 };
 
-
+/**
+ *
+ * @param {object} opts
+ * @param {responseSuccess} success
+ */
 BBCore.prototype.getClientRecentInteractions = function (opts, success) {
     opts = opts || {};
     opts.activitySince = opts.activitySince || '';

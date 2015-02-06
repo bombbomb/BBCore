@@ -1,3 +1,4 @@
+
 BBCore.prototype.getServerUrl = function () {
     return this.apiServer || BBCore.CONFIG.SERVER_API_URL;
 };
@@ -9,30 +10,30 @@ BBCore.prototype.getRequestUrl = function () {
 
 /**
  * Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
- * @arg {string}          metho The method name to call
- * @arg {array}          params The parameters to send with the request
+ * @arg {string}          method The method name to call
+ * @arg {array}           params The parameters to send with the request
  * @arg {responseSuccess} success A callback when the request succeeds
  * @arg {responseSuccess} error A callback when the request fails
  */
-BBCore.prototype.sendRequest = function (metho, params, success, error) {
+BBCore.prototype.sendRequest = function (method, params, success, error) {
     if (typeof params === "function") {
         success = params;
     }
-    if (typeof metho === "object") {
-        params = metho;
+    if (typeof method === "object") {
+        params = method;
     }
-    if (typeof metho === "object" && params.method) {
-        metho = params.method;
+    if (typeof method === "object" && params.method) {
+        method = params.method;
     }
 
-    if (metho !== "IsValidLogin" && !params.api_key) {
+    if (method !== "IsValidLogin" && !params.api_key) {
         params.api_key = this.accessToken;
     }
-    if (metho !== "ValidateSession" && !this.authenticated) {
+    if (method !== "ValidateSession" && !this.authenticated) {
         this.onError.call(this, {
             status: 'failure',
             methodName: 'InvalidSession',
-            info: {errormsg: 'Invalid login'}
+            info: { errormsg: 'Invalid login' }
         }, null);
         return false;
     }
@@ -62,7 +63,7 @@ BBCore.prototype.sendRequest = function (metho, params, success, error) {
             inst.lastresponse = result.status;
             if (result.status === "success") {
                 // if the result returned a
-                if (metho === "GetVideoGuid" && result.info && result.info.video_id) {
+                if (method === "GetVideoGuid" && result.info && result.info.video_id) {
                     this.currentVideoId = result.info.video_id;
                 }
                 if (success) {

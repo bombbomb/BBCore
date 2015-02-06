@@ -1,7 +1,28 @@
 /**
- @namespace BBCore
+ @namespace
+ @property {string} userEmail
+ @property {string} userId
+ @property {string} clientId
+ @property {string} accessToken
+ @property {string} currentVideoId
+ @property {string} email
+ @property {string} onerror
  */
 function BBCore(properties) {
+
+    /**
+     * @typedef responseObject
+     * @type {object}
+     * @prop {string} status
+     * @prop {object} info
+     */
+
+    /**
+     * This callback is displayed as a global member.
+     * @callback responseSuccess
+     * @param {object} responseObject
+     * @param {object} [jqXHR]
+     */
 
     this.userEmail = "";
     this.userId = "";
@@ -27,16 +48,6 @@ function BBCore(properties) {
     this.__vidRecording = false;
     this.__vidRecHndl = null;
 
-    // main object types
-    this.recording = function (opts) {
-        this.vid_id = "";
-        this.title = "";
-        this.filename = "";
-
-        $.extend({}, this, opts);
-    };
-
-    //this.contact.prototype = array;
     this.contact = function (properties) {
         this.email = "";
         this.firstname = "";
@@ -105,7 +116,7 @@ function BBCore(properties) {
     this.videos.prototype = Array.prototype;
     this.videos.constructor = this.videos;
     /**
-     *
+     * Adds a Video to the collection
      * @param {video} video
      * @returns {videos}
      */

@@ -72,11 +72,23 @@ add
 
 ### BBCore.add(video) 
 
+Adds a Video to the collection
+
 **Parameters**
 
-**video**: `video`
+**video**: `video`, Adds a Video to the collection
 
 **Returns**: `videos`
+
+
+### BBCore.resumeStoredSession(success, err) 
+
+**Parameters**
+
+**success**: `responseSuccess`
+
+**err**: 
+
 
 
 ### BBCore.isAuthenticated() 
@@ -84,13 +96,31 @@ add
 **Returns**: `boolean | *`
 
 
-### BBCore.sendRequest(metho, params, success, error) 
+### BBCore.verifyKey(key, complete) 
+
+**Parameters**
+
+**key**: `string`
+
+**complete**: `responseSuccess`
+
+
+
+### BBCore.storeKey(key) 
+
+**Parameters**
+
+**key**: 
+
+
+
+### BBCore.sendRequest(method, params, success, error) 
 
 Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
 
 **Parameters**
 
-**metho**: `string`, The method name to call
+**method**: `string`, The method name to call
 
 **params**: `array`, The parameters to send with the request
 
@@ -180,6 +210,40 @@ Adds a batch of Contacts
 
 
 
+### BBCore.getImportAddressesByType(opts, success) 
+
+Retrieves an Import Address by a Type
+
+**Parameters**
+
+**opts**: , Retrieves an Import Address by a Type
+
+**success**: `responseSuccess`, Retrieves an Import Address by a Type
+
+
+
+### BBCore.addContactImportAddress(opts, success) 
+
+Retrieves an Import Address by a Type
+
+**Parameters**
+
+**opts**: , Retrieves an Import Address by a Type
+
+**success**: `responseSuccess`, Retrieves an Import Address by a Type
+
+
+
+### BBCore.getClientRecentInteractions(opts, success) 
+
+**Parameters**
+
+**opts**: `object`
+
+**success**: `responseSuccess`
+
+
+
 ### BBCore.getEmails(listName, success) 
 
 Retrieves a list of Email
@@ -189,6 +253,16 @@ Retrieves a list of Email
 **listName**: `string`, Retrieves a list of Email
 
 **success**: `responseSuccess`, Retrieves a list of Email
+
+
+
+### BBCore.sendCustomVideoEmail(opts, success) 
+
+**Parameters**
+
+**opts**: 
+
+**success**: 
 
 
 

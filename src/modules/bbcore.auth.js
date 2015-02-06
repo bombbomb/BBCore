@@ -37,13 +37,18 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
     this.storage.setItem("b2-pwd", pwd);
 };
 
-BBCore.prototype.resumeStoredSession = function (succ, err) {
+/**
+ *
+ * @param {responseSuccess} success
+ * @param err
+ */
+BBCore.prototype.resumeStoredSession = function (success, err) {
     this.accessToken = window.storage.getItem("access_token");
     if (this.accessToken) {
-        this.validateAccessToken(succ);
+        this.validateAccessToken(success);
     }
     else if (window.storage.getItem("b2-uid")) {
-        this.login(succ);
+        this.login(success);
     }
     else {
         err();
@@ -70,11 +75,10 @@ BBCore.prototype.isAuthenticated = function () {
     return this.authenticated;
 };
 
-// TODO; sends the persistant key to the application
 BBCore.prototype.invalidateSession = function () {
     var that = this;
     this.sendRequest({method: "invalidateKey"}, function () {
-        // TODO; that.clearKey();
+        that.clearKey();
         that.accessToken = "";
         that.authenticated = false;
         that.hasContext = false;
@@ -102,7 +106,11 @@ BBCore.prototype.__updateSession = function (respObj, done) {
 };
 
 
-// tests a key with the existing
+/**
+ *
+ * @arg {string} key
+ * @arg {responseSuccess} complete
+ */
 BBCore.prototype.verifyKey = function (key, complete) {
     //ValidateSession
     this.sendRequest({method: "GetEmails", api_key: key}, function (resp) {
@@ -112,7 +120,9 @@ BBCore.prototype.verifyKey = function (key, complete) {
     });
 };
 
-// stores the local filestore or cookie
+/**
+ * @arg key
+ */
 BBCore.prototype.storeKey = function (key) {
     if (this.accessToken) {
         this.accessToken = key;
@@ -126,4 +136,7 @@ BBCore.prototype.storeKey = function (key) {
 
 BBCore.prototype.getKey = function () {
     return this.accessToken;
+};
+BBCore.prototype.clearKey = function () {
+    this.storage.removeItem('access_token');
 };
