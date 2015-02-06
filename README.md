@@ -84,7 +84,7 @@ add
 **Returns**: `boolean | *`
 
 
-### BBCore.sendRequest(metho, params, success, success) 
+### BBCore.sendRequest(metho, params, success, error) 
 
 Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
 
@@ -96,7 +96,7 @@ Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api
 
 **success**: `responseSuccess`, A callback when the request succeeds
 
-**success**: `responseSuccess`, A callback when the request fails
+**error**: `responseSuccess`, A callback when the request fails
 
 
 

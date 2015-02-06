@@ -4,14 +4,6 @@
  Copyright 2013 BombBomb, Inc.
  */
 
-function jQLoader() {
-    var jQTag = document.createElement('script');
-    jQTag.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
-    document.getElementsByTagName('body').appendChild(jQTag);
-}
-if (typeof jQuery === "undefined") {
-    jQLoader();
-}
 
 /**
  @namespace BBCore
@@ -92,7 +84,7 @@ function BBCore(properties) {
     };
     this.contacts.prototype.find = function (fieldName, value) {
         for (var property in this) {
-            if (this.hasOwnProperty(property) && property[fieldName] == value) {
+            if (this.hasOwnProperty(property) && property[fieldName] === value) {
                 return property;
             }
         }
@@ -232,7 +224,6 @@ BBCore.prototype.resumeStoredSession = function (succ, err) {
         this.login(succ);
     }
     else {
-        console.log('bbcore: unable to resume session.');
         err();
     }
 };
@@ -282,7 +273,7 @@ BBCore.prototype.getRequestUrl = function () {
  * @arg {string}          metho The method name to call
  * @arg {array}          params The parameters to send with the request
  * @arg {responseSuccess} success A callback when the request succeeds
- * @arg {responseSuccess} success A callback when the request fails
+ * @arg {responseSuccess} error A callback when the request fails
  */
 BBCore.prototype.sendRequest = function (metho, params, success, error) {
     if (typeof params === "function") {
@@ -354,6 +345,10 @@ BBCore.prototype.sendRequest = function (metho, params, success, error) {
             } else {
                 inst.onError.call(inst, resp, jqXHR);
             }
+
+            if (error) {
+                error(inst, resp);
+            }
         }
     });
 };
@@ -398,9 +393,9 @@ BBCore.prototype.setVideoId = function (vid_id) {
 };
 
 BBCore.prototype.getVideoId = function (pcall) {
-    if (!this.currentVideoId)
+    if (!this.currentVideoId) {
         this.getNewVideoGuid(pcall);
-    else if (pcall) {
+    } else if (pcall) {
         pcall.call(this, this.currentVideoId);
     }
 };
@@ -440,7 +435,7 @@ BBCore.prototype.videoQuickSend = function (opts, pcall) {
 
     for (var op in reqDetails) {
         if (!opts[op]) {
-            opts[op] = reqDetails[op]
+            opts[op] = reqDetails[op];
         }
     }
 
@@ -532,14 +527,19 @@ BBCore.prototype.getVideoRecorder = function (opts, comp) {
     this.sendRequest(opts, function (response) {
         console.log('GetVideoRecorder returned, calling callback');
         console.log(comp);
-        if (comp) comp.call(this, response);
+        if (comp){
+            comp.call(this, response);
+        }
     });
 
 };
 
 // TODO; COULD MERGE with getVideoRecorder if the default options included, stop, start, recorded parameters
 BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
-    if (typeof opts === "function") recordComplete = opts, opts = null;
+    if (typeof opts === "function") {
+        recordComplete = opts;
+        opts = null;
+    }
     var defOpts = {
         type: 'embedded',
         target: null,
@@ -552,7 +552,9 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     //for (var op in defOpts) opts[op] = defOpts[op];
     opts = opts || defOpts;
 
-    if (opts.recordComplete && !recordComplete) recordComplete = opts.recordComplete;
+    if (opts.recordComplete && !recordComplete) {
+        recordComplete = opts.recordComplete;
+    }
     this.__vidRecHndl = opts.target ? $(opts.target) : $('body').append('<div id="b2recorder"></div>');
 
     var rec_opts = opts;
@@ -561,7 +563,9 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     var inst = this;
     // get recorder and inject into target
     this.getVideoRecorder(rec_opts, function (data) {
-        if (!inst.currentVideoId && data.info.vid_id) inst.currentVideoId = data.info.vid_id;
+        if (!inst.currentVideoId && data.info.vid_id){
+            inst.currentVideoId = data.info.vid_id;
+        }
         console.log('startVideoRecorder :' + inst.currentVideoId);
         inst.__vidRecHndl.html(data.info.content);
         if (opts.recorderLoaded) opts.recorderLoaded.call(inst, data.info);
@@ -586,11 +590,12 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
 };
 
 BBCore.prototype.destroyVideoRecorder = function () {
-    this.__vidRecHndl && this.__vidRecHndl.remove();
+    if (typeof this.__vidRecHndl !== 'undefined') {
+        this.__vidRecHndl.remove();
+    }
     window.bbStreamStartRecord = null;
     window.bbStreamStopRecord = null;
     window.reportVideoRecorded = null;
-    // anything else??
 };
 
 BBCore.prototype.liveStreamStartRecord = function (streamname, filename) {
@@ -728,8 +733,9 @@ BBCore.prototype.getListContacts = function (listId, success) {
  * @arg {responseSuccess} success
  */
 BBCore.prototype.addContact = function (contact, success) {
-    if (typeof contact === "object")
+    if (typeof contact === "object") {
         this.sendRequest({method: "AddContact", contact: contact}, success);
+    }
 };
 
 /**
@@ -738,10 +744,14 @@ BBCore.prototype.addContact = function (contact, success) {
  * @arg {responseSuccess} success
  */
 BBCore.prototype.bulkAddContacts = function (opts, success) {
-    opts = opts || {};
+    if (typeof opts === 'undefined') {
+        opts = {};
+    }
     opts.method = "BulkAddContacts";
-    if (typeof opts.contacts === "object")
+    if (typeof opts.contacts === "object") {
         opts.contacts = JSON.stringify(opts.contacts);
+    }
+
     this.sendRequest(opts, success);
 };
 
@@ -751,7 +761,6 @@ BBCore.prototype.bulkAddContacts = function (opts, success) {
  * @arg {responseSuccess} success
  */
 BBCore.prototype.updateContact = function (opts, success) {
-    // implement this
     opts = opts || {};
     opts.method = "UpdateContact";
     this.sendRequest(opts, success);
@@ -783,7 +792,9 @@ BBCore.prototype.getForms = function (opts, success) {
 
 BBCore.prototype.getImportAddressesByType = function (opts, success) {
     opts = $.extend({method: 'getImportAddressesByType'}, opts);
-    if (!opts.type) this.onError({info: {errmsg: ['A Type must be provided.']}});
+    if (!opts.type){
+        this.onError({info: {errmsg: ['A Type must be provided.']}});
+    }
     this.sendRequest(opts, success);
 };
 
@@ -795,7 +806,9 @@ BBCore.prototype.addContactImportAddress = function (opts, success) {
 
 BBCore.prototype.deleteContactImportAddress = function (opts, success) {
     opts = $.extend({importAddrCode: 1, method: 'deleteContactImportAddress'}, opts);
-    if (!opts.importAddrCode) this.onError({info: {errmsg: ['Invalid Import Address Code']}});
+    if (!opts.importAddrCode){
+        this.onError({info: {errmsg: ['Invalid Import Address Code']}});
+    }
     this.sendRequest(opts, success);
 };
 
@@ -813,9 +826,6 @@ BBCore.prototype.getClientIntegrations = function (success) {
 BBCore.prototype.sendCustomVideoEmail = function (opts, success) {
     var defaults = {html_content: null, subject: '', email: '', email_id: '', from_name: ''};
     var parameters = $.extend({}, defaults, opts);
-    if (!parameters.email.length && !parameters.email_id.length) {
-
-    }
     this.sendRequest($.extend(parameters, {method: 'SendCustomVideoEmail'}), success);
 };
 
