@@ -72,11 +72,7 @@ describe("BBCore Authentication", function() {
     it("logout", function() {
         bbCore.logout();
 
-        expect(!bbCore.storage.getItem('b2-uid')).toBe(true);
-        expect(!bbCore.storage.removeItem('b2-pwd')).toBe(true);
-        expect(!bbCore.storage.removeItem('access_token')).toBe(true);
-        expect(bbCore.hasContext).toBe(false);
-        expect(bbCore.authenticated).toBe(false);
+        expect(bbCore.isAuthenticated()).toBe(false);
     });
 });
 
@@ -84,7 +80,7 @@ describe("BBCore Video Recording", function() {
     var successCallbackSpy = null;
     var errorCallbackSpy = null;
 
-    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri, storage: window.storage });
+    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri, storage: window.storage || [] });
 
     var result = {
         withOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 640, height: 480, https: true }},
