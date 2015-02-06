@@ -159,9 +159,6 @@ BBCore.prototype.__updateSession = function (respObj, done) {
             done.call(this, respObj);
         }
     }
-    else {
-        alert(respObj.status + ' occurred while trying to login.');
-    }
 };
 
 
@@ -434,8 +431,10 @@ BBCore.prototype.videoQuickSend = function (opts, pcall) {
         sendErrors = [];
 
     for (var op in reqDetails) {
-        if (!opts[op]) {
-            opts[op] = reqDetails[op];
+        if (reqDetails.hasOwnProperty(op)) {
+            if (!opts[op]) {
+                opts[op] = reqDetails[op];
+            }
         }
     }
 
@@ -558,7 +557,10 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     this.__vidRecHndl = opts.target ? $(opts.target) : $('body').append('<div id="b2recorder"></div>');
 
     var rec_opts = opts;
-    delete rec_opts.type, delete rec_opts.target, delete rec_opts.recordComplete, delete rec_opts.recorderLoaded;
+    delete rec_opts.type;
+    delete rec_opts.target;
+    delete rec_opts.recordComplete;
+    delete rec_opts.recorderLoaded;
 
     var inst = this;
     // get recorder and inject into target
@@ -568,7 +570,9 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         }
         console.log('startVideoRecorder :' + inst.currentVideoId);
         inst.__vidRecHndl.html(data.info.content);
-        if (opts.recorderLoaded) opts.recorderLoaded.call(inst, data.info);
+        if (opts.recorderLoaded){
+            opts.recorderLoaded.call(inst, data.info);
+        }
     });
 
 
@@ -800,7 +804,9 @@ BBCore.prototype.getImportAddressesByType = function (opts, success) {
 
 BBCore.prototype.addContactImportAddress = function (opts, success) {
     opts = $.extend({method: 'addContactImportAddress'}, opts);
-    if (!opts.importAddrCode || !opts.importAddrName) this.onError({info: {errmsg: ['An Import Address Code and Import Address Name must be provided.']}});
+    if (!opts.importAddrCode || !opts.importAddrName){
+        this.onError({info: {errmsg: ['An Import Address Code and Import Address Name must be provided.']}});
+    }
     this.sendRequest(opts, success);
 };
 
