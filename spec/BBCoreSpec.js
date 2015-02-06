@@ -2,6 +2,102 @@
 // BBCore Video Tests
 //
 var apiServerUri = 'http://dev.app.bombbomb.com/app/api/api.php';
+var testGuid = '11111111-1111-1111-1111-111111111111';
+
+function simulateAuthenticatedApi(bbCore) {
+    // This is only simulate a successful api call to login.  DO NOT do this in your implementation
+    bbCore.authenticated = true;
+}
+
+function setupMockApiRequest(result, error) {
+    spyOn($, 'ajax').and.callFake(function (e) {
+        if (error) {
+            e.error(result);
+        }
+        else {
+            e.success(result);
+        }
+    });
+}
+
+describe("BBCore API", function() {
+    var successCallbackSpy = null;
+    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri });
+
+    var result = {
+        responseSuccess: {"status":"success","methodName":"GetVideos","info":[{"id":testGuid,"name":"Video Title","description":"Video Description","status":"1","thumbUrl":"thumbnailUrl","shortUrl":"shortUrl","height":"480","width":"640","created":"2\/06\/15 10:33:05 am","vidUrl":"videoDeliveryUrl"}]},
+        responseFailure: { status: 'failure', methodName: 'InvalidSession', info: { errormsg: 'Invalid login' } }
+    };
+
+    beforeEach(function() {
+        successCallbackSpy = jasmine.createSpy();
+        bbCore.onError = jasmine.createSpy();
+    });
+
+    it("send unauthenticated request errors", function() {
+        setupMockApiRequest(result.responseSuccess);
+
+        bbCore.sendRequest('GetVideos', { video_id: testGuid });
+
+        expect(bbCore.onError).toHaveBeenCalledWith(result.responseFailure, null);
+    })
+
+    it("send request", function() {
+        simulateAuthenticatedApi(bbCore);
+        setupMockApiRequest(result.responseSuccess);
+
+        bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
+    });
+
+    it("send request with params and callback", function() {
+        simulateAuthenticatedApi(bbCore);
+        setupMockApiRequest(result.responseSuccess);
+
+        bbCore.sendRequest({ method:  'GetVideos', video_id: testGuid }, successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
+    });
+
+    it("send request synchronous", function() {
+        simulateAuthenticatedApi(bbCore);
+        setupMockApiRequest(result.responseSuccess);
+
+        bbCore.sendRequest({ method:  'GetVideos', video_id: testGuid, async: false }, successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
+        expect($.ajax.calls.argsFor(0)[0].async).toBe(false);
+    });
+
+    it("ajax error", function() {
+        var errorParamCallbackSpy = jasmine.createSpy();
+        var xhrResult = { responseJSON: { status: "failure" } };
+
+        simulateAuthenticatedApi(bbCore);
+        setupMockApiRequest(xhrResult, true);
+
+        bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy, errorParamCallbackSpy);
+
+        expect(bbCore.onError).toHaveBeenCalledWith(xhrResult.responseJSON, xhrResult);
+        expect(errorParamCallbackSpy).toHaveBeenCalledWith(bbCore, xhrResult.responseJSON);
+        expect(successCallbackSpy).not.toHaveBeenCalled();
+    });
+
+    it("ajax error when last response was success", function() {
+        var errorParamCallbackSpy = jasmine.createSpy();
+        var xhrResult = { responseJSON: { status: "success" } };
+
+        simulateAuthenticatedApi(bbCore);
+        setupMockApiRequest(xhrResult, true);
+
+        bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy, errorParamCallbackSpy);
+
+        expect(bbCore.onError).not.toHaveBeenCalled();
+        expect(errorParamCallbackSpy).toHaveBeenCalledWith(bbCore, xhrResult.responseJSON);
+        expect(successCallbackSpy).toHaveBeenCalledWith(xhrResult.responseJSON, xhrResult);
+    });
+});
 
 describe("BBCore Authentication", function() {
 
@@ -14,12 +110,6 @@ describe("BBCore Authentication", function() {
         authenticationSuccess: { status: "success", info: { access_token: '11111111-1111-1111-1111-111111111111', clientId: 'valid-user', userId: 'valid-user' }},
         authenticationFailure: { status: "failure", methodName: 'BadLogin', info: { errormsg: 'invalid session' } }
     };
-
-    function setupMockApiRequest(result) {
-        spyOn($, 'ajax').and.callFake(function (e) {
-            e.success(result);
-        });
-    }
 
     beforeEach(function() {
         successCallbackSpy = jasmine.createSpy();
