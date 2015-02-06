@@ -58,7 +58,7 @@ BBCore.prototype.addContact = function (contact, success) {
  * @arg {responseSuccess} success
  */
 BBCore.prototype.bulkAddContacts = function (opts, success) {
-    if (typeof opts === 'undefined') {
+    if (!opts) {
         opts = {};
     }
     opts.method = "BulkAddContacts";
@@ -75,7 +75,10 @@ BBCore.prototype.bulkAddContacts = function (opts, success) {
  * @arg {responseSuccess} success
  */
 BBCore.prototype.updateContact = function (opts, success) {
-    opts = opts || {};
+    if (!opts) {
+        return;
+    }
+
     opts.method = "UpdateContact";
     this.sendRequest(opts, success);
 };
