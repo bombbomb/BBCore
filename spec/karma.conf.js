@@ -5,7 +5,7 @@ module.exports = function(config) {
             '../src/libs/jquery.js',
             '../src/*.js',
             '*.js',
-            { pattern: '../src/jquery.js', watched: false, included: true }
+            { pattern: '../src/libs/jquery.js', watched: false, included: true }
         ],
         preprocessors: {
             '../src/*.js': ['coverage']

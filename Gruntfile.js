@@ -52,5 +52,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-codeclimate');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'karma', 'jsdox', 'concat', 'codeclimate']);
+    grunt.registerTask('default', ['uglify', 'karma', 'jsdox', 'concat']);
+    grunt.registerTask('full', ['uglify', 'karma', 'jsdox', 'concat', 'codeclimate']);
 };

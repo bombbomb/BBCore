@@ -19,7 +19,7 @@
   "description": "A Javascript API to use BombBomb services",
   "main": "Gruntfile.js",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt full"
   },
   "repository": {
     "type": "git",
