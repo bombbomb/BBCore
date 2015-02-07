@@ -20,7 +20,7 @@ function setupMockApiRequest(result, error) {
     });
 }
 
-describe("BBCore API", function() {
+describe("BBCore.api", function() {
     var successCallbackSpy = null;
     var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri });
     bbCore.logout();
@@ -100,7 +100,7 @@ describe("BBCore API", function() {
     });
 });
 
-describe("BBCore Authentication", function() {
+describe("BBCore.auth", function() {
 
     var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri, storage: window.storage });
     bbCore.logout();
@@ -224,7 +224,7 @@ describe("BBCore Authentication", function() {
     });
 });
 
-describe("BBCore Video Recording", function() {
+describe("BBCore.videoRecorder", function() {
     var successCallbackSpy = null;
     var errorCallbackSpy = null;
 
@@ -282,7 +282,7 @@ describe("BBCore Video Recording", function() {
     });
 });
 
-describe("A BBCore Video", function() {
+describe("BBCore.video", function() {
 
     var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUri });
 
@@ -348,17 +348,125 @@ describe("A BBCore Video", function() {
 
 });
 
-describe("Contact Tests", function() {
+describe("BBCore.contacts", function() {
+    var successCallbackSpy = null;
+    var bbCore = new BBCore({ access_id: 'token', apiServer: apiServerUri });
 
-    var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUri });
+    beforeEach(function() {
+        simulateAuthenticatedApi(bbCore);
 
-    it("BBCore.contact: create and add contact", function() {
+        successCallbackSpy = jasmine.createSpy();
 
-        var testContact = bbCore.contact({ email: 'test@test-buddy-guy-sir.com', firstname: 'Test', lastname: 'Buddy', comments: 'this is my test buddy' });
-        var myNewContact =  new bbCore.contacts().add(testContact);
-
-        expect(myNewContact.length).toEqual(1);
-
+        spyOn(bbCore, 'sendRequest');
     });
 
+    it("get lists", function() {
+        bbCore.getLists(successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "GetLists"}, successCallbackSpy);
+    });
+
+    it("create list", function() {
+        var listName = 'Test List';
+
+        bbCore.createList(listName, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "createList", name: listName}, successCallbackSpy);
+    });
+
+    it("get contact", function() {
+        var contactId = testGuid;
+
+        bbCore.getContact(contactId, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({width: 340, force_ssl: false, contact_id: contactId, method: 'GetContact'}, successCallbackSpy);
+    });
+
+    it("get contact without contact id returns", function() {
+        bbCore.getContact(null);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("get list contacts", function() {
+        var listId = testGuid;
+
+        bbCore.getListContacts(listId, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "GetListContacts", list_id: listId}, successCallbackSpy);
+    });
+
+    it("get list contacts without list id returns", function() {
+        bbCore.getListContacts(null);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("add contact", function() {
+        var contact = { eml: 'test@test.com' };
+
+        bbCore.addContact(contact, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "AddContact", contact: contact}, successCallbackSpy);
+    });
+
+    it("add contact only works with objects", function() {
+        bbCore.addContact(function() {});
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("bulk add contacts without options", function() {
+        bbCore.bulkAddContacts(null, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "BulkAddContacts"}, successCallbackSpy);
+    });
+
+    it("bulk add contacts without contacts", function() {
+        bbCore.bulkAddContacts({}, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "BulkAddContacts"}, successCallbackSpy);
+    });
+
+    it("bulk add contacts with contacts", function() {
+        var contacts = [{eml: 'test@test.com'}];
+
+        bbCore.bulkAddContacts({ contacts: contacts}, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({contacts : '[{"eml":"test@test.com"}]', method: "BulkAddContacts"}, successCallbackSpy);
+    });
+
+    it("update contact", function() {
+        var contact = {firstname: 'Timmy'};
+
+        bbCore.updateContact(contact, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({firstname: 'Timmy', method: 'UpdateContact'}, successCallbackSpy);
+    });
+
+    it("update contact with new contact details returns", function() {
+        bbCore.updateContact(null, successCallbackSpy);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("get import addresses by type", function() {
+        var workflowType = 1;
+        var options = {type: workflowType};
+
+        bbCore.getImportAddressesByType(options, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: "getImportAddressesByType", type: options.type}, successCallbackSpy);
+    });
+
+    it("get import addresses without type errors", function() {
+        spyOn(bbCore, 'onError');
+
+        bbCore.getImportAddressesByType({}, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith({method: 'getImportAddressesByType'}, successCallbackSpy);
+        expect(bbCore.onError).toHaveBeenCalledWith(jasmine.any(Object));
+    });
+
+    iti("add contact import address")
 });
