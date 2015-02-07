@@ -80,7 +80,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
             if (result.status === "success") {
                 // if the result returned a
                 if (method === "GetVideoGuid" && result.info && result.info.video_id) {
-                    this.currentVideoId = result.info.video_id;
+                    inst.currentVideoId = result.info.video_id;
                 }
                 if (success) {
                     success.call(inst, result);

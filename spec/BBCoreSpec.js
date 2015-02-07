@@ -1,7 +1,8 @@
 //
 // BBCore Video Tests
 //
-var apiServerUri = 'http://dev.app.bombbomb.com/app/api/api.php';
+var apiServerUrl = 'http://dev.app.bombbomb.com/app/api/api.php';
+var requestUrl = apiServerUrl + BBCore.CONFIG.API_END_POINT;
 var testGuid = '11111111-1111-1111-1111-111111111111';
 
 function simulateAuthenticatedApi(bbCore) {
@@ -22,8 +23,7 @@ function setupMockApiRequest(result, error) {
 
 describe("BBCore.api", function() {
     var successCallbackSpy = null;
-    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri });
-    bbCore.logout();
+    var bbCore = null;
 
     var result = {
         responseSuccess: {"status":"success","methodName":"GetVideos","info":[{"id":testGuid,"name":"Video Title","description":"Video Description","status":"1","thumbUrl":"thumbnailUrl","shortUrl":"shortUrl","height":"480","width":"640","created":"2\/06\/15 10:33:05 am","vidUrl":"videoDeliveryUrl"}]},
@@ -31,20 +31,39 @@ describe("BBCore.api", function() {
     };
 
     beforeEach(function() {
+        bbCore = new BBCore({ apiServer: apiServerUrl });
+        bbCore.authenticated = true;
+
         successCallbackSpy = jasmine.createSpy();
         bbCore.onError = jasmine.createSpy();
     });
 
-    it("send unauthenticated request errors", function() {
+    it("getServerUrl", function() {
+        expect(bbCore.getServerUrl()).toBe(apiServerUrl);
+    });
+
+    it("getServerUrl - with default api server url", function() {
+        bbCore.apiServer = null;
+
+        expect(bbCore.getServerUrl()).toBe(BBCore.CONFIG.SERVER_API_URL);
+    });
+
+    it("getRequestUrl", function() {
+        expect(bbCore.getRequestUrl()).toBe(requestUrl);
+    });
+
+    it("sendRequest - unauthenticated request errors an does not make async request", function() {
+        bbCore.authenticated = false;
+
         setupMockApiRequest(result.responseSuccess);
 
         bbCore.sendRequest('GetVideos', { video_id: testGuid });
 
         expect(bbCore.onError).toHaveBeenCalledWith(result.responseFailure, null);
+        expect($.ajax).not.toHaveBeenCalled();
     });
 
-    it("send request", function() {
-        simulateAuthenticatedApi(bbCore);
+    it("sendRequest", function() {
         setupMockApiRequest(result.responseSuccess);
 
         bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy);
@@ -52,8 +71,7 @@ describe("BBCore.api", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
     });
 
-    it("send request with params and callback", function() {
-        simulateAuthenticatedApi(bbCore);
+    it("sendRequest - replace method with params", function() {
         setupMockApiRequest(result.responseSuccess);
 
         bbCore.sendRequest({ method:  'GetVideos', video_id: testGuid }, successCallbackSpy);
@@ -61,8 +79,17 @@ describe("BBCore.api", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
     });
 
-    it("send request synchronous", function() {
-        simulateAuthenticatedApi(bbCore);
+    it("sendRequest - with a method of GetVideoGuid updates the current video id", function() {
+        var response = { status: 'success', info: { video_id: testGuid }};
+
+        setupMockApiRequest(response);
+
+        bbCore.sendRequest({ method: "GetVideoGuid" });
+
+        expect(bbCore.currentVideoId).toBe(testGuid);
+    });
+
+    it("sendRequest - force synchronous request", function() {
         setupMockApiRequest(result.responseSuccess);
 
         bbCore.sendRequest({ method:  'GetVideos', video_id: testGuid, async: false }, successCallbackSpy);
@@ -71,11 +98,10 @@ describe("BBCore.api", function() {
         expect($.ajax.calls.argsFor(0)[0].async).toBe(false);
     });
 
-    it("ajax error", function() {
+    it("sendRequest - with ajax request error", function() {
         var errorParamCallbackSpy = jasmine.createSpy('errorParamCallbackSpy');
         var xhrResult = { responseJSON: { status: "failure" } };
 
-        simulateAuthenticatedApi(bbCore);
         setupMockApiRequest(xhrResult, true);
 
         bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy, errorParamCallbackSpy);
@@ -85,11 +111,10 @@ describe("BBCore.api", function() {
         expect(successCallbackSpy).not.toHaveBeenCalled();
     });
 
-    it("ajax error when last response was success", function() {
+    it("sendRequest - with ajax request error when last response was success", function() {
         var errorParamCallbackSpy = jasmine.createSpy('errorParamCallbackSpy');
         var xhrResult = { responseJSON: { status: "success" } };
 
-        simulateAuthenticatedApi(bbCore);
         setupMockApiRequest(xhrResult, true);
 
         bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy, errorParamCallbackSpy);
@@ -102,7 +127,7 @@ describe("BBCore.api", function() {
 
 describe("BBCore.auth", function() {
 
-    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri, storage: window.storage });
+    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUrl, storage: window.storage });
     bbCore.logout();
 
     var successCallbackSpy = null;
@@ -228,7 +253,7 @@ describe("BBCore.videoRecorder", function() {
     var successCallbackSpy = null;
     var errorCallbackSpy = null;
 
-    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUri, storage: window.storage || [] });
+    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUrl, storage: window.storage || [] });
 
     var result = {
         withOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 640, height: 480, https: true }},
@@ -284,7 +309,7 @@ describe("BBCore.videoRecorder", function() {
 
 describe("BBCore.video", function() {
 
-    var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUri });
+    var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUrl });
 
     it("getVideo: authentication fails", function() {
         var validVideoId = '11111111-1111-1111-1111-111111111111';
@@ -350,7 +375,7 @@ describe("BBCore.video", function() {
 
 describe("BBCore.contacts", function() {
     var successCallbackSpy = null;
-    var bbCore = new BBCore({ access_id: 'token', apiServer: apiServerUri });
+    var bbCore = new BBCore({ access_id: 'token', apiServer: apiServerUrl });
 
     beforeEach(function() {
         simulateAuthenticatedApi(bbCore);
