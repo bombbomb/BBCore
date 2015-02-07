@@ -390,9 +390,9 @@ fds
 
 **Parameters**
 
-**opts**: , fds
+**opts**: `object`, fds
 
-**pcall**: , fds
+**pcall**: `responseSuccess`, fds
 
 
 

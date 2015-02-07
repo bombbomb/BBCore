@@ -135,9 +135,11 @@ BBCore.prototype.verifyKey = function (key, complete) {
  * @arg key
  */
 BBCore.prototype.storeKey = function (key) {
+    // TODO: Are the conditionals there to check for an authenticated user?
     if (this.accessToken) {
         this.accessToken = key;
     }
+
     if (!this.accessToken) {
         return;
     }
@@ -149,5 +151,6 @@ BBCore.prototype.getKey = function () {
     return this.accessToken;
 };
 BBCore.prototype.clearKey = function () {
+    // TODO: should the accessToken property be reset as well?
     this.storage.removeItem('access_token');
 };

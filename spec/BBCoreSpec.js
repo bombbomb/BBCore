@@ -32,7 +32,7 @@ describe("BBCore.api", function() {
 
     beforeEach(function() {
         bbCore = new BBCore({ apiServer: apiServerUrl });
-        bbCore.authenticated = true;
+        simulateAuthenticatedApi(bbCore);
 
         successCallbackSpy = jasmine.createSpy();
         bbCore.onError = jasmine.createSpy();
@@ -53,9 +53,9 @@ describe("BBCore.api", function() {
     });
 
     it("sendRequest - unauthenticated request errors an does not make async request", function() {
-        bbCore.authenticated = false;
+        bbCore.logout();
 
-        setupMockApiRequest(result.responseSuccess);
+        spyOn($, 'ajax');
 
         bbCore.sendRequest('GetVideos', { video_id: testGuid });
 
@@ -87,6 +87,17 @@ describe("BBCore.api", function() {
         bbCore.sendRequest({ method: "GetVideoGuid" });
 
         expect(bbCore.currentVideoId).toBe(testGuid);
+    });
+
+    it("sendRequest - successful ajax request with a failed result", function() {
+        setupMockApiRequest(result.responseFailure);
+
+        // simulate successful ajax request to an api method that doesn't exist
+        // to represent a failed result
+        bbCore.sendRequest({ method: 'InvalidMethod' }, successCallbackSpy);
+
+        expect(successCallbackSpy).not.toHaveBeenCalled();
+        expect(bbCore.onError).toHaveBeenCalledWith(result.responseFailure);
     });
 
     it("sendRequest - force synchronous request", function() {
@@ -127,11 +138,12 @@ describe("BBCore.api", function() {
 
 describe("BBCore.auth", function() {
 
-    var bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUrl, storage: window.storage });
-    bbCore.logout();
-
+    var bbCore = null;
     var successCallbackSpy = null;
     var errorCallbackSpy = null;
+
+    var username = "test@test.com";
+    var password = "password";
 
     var result = {
         authenticationSuccess: { status: "success", info: { api_key: 'api-key', clientId: 'valid-user', userId: 'valid-user' }},
@@ -142,43 +154,34 @@ describe("BBCore.auth", function() {
         successCallbackSpy = jasmine.createSpy();
         errorCallbackSpy = jasmine.createSpy();
 
+        bbCore = new BBCore({ access_id: 'invalid-token', apiServer: apiServerUrl, storage: window.storage });
         bbCore.onError = errorCallbackSpy;
     });
 
-    it("fail authentication", function () {
-        setupMockApiRequest(result.authenticationFailure);
-
-        bbCore.login('badUser', 'badPassword', successCallbackSpy);
-
-        expect(bbCore.isAuthenticated()).toBe(false);
-        expect(bbCore.credentialsSaved()).toBe(false);
-        expect(successCallbackSpy).not.toHaveBeenCalled();
-        expect(errorCallbackSpy).toHaveBeenCalledWith(result.authenticationFailure);
+    afterEach(function() {
+        bbCore.logout();
     });
 
-    it("fail authentication without user id", function() {
+    it("login", function () {
+        setupMockApiRequest(result.authenticationSuccess);
+
+        bbCore.login(username, password);
+
+        expect(bbCore.userEmail).toBe(username);
+        expect(bbCore.isAuthenticated()).toBe(true);
+    });
+
+    it("login - without user id does not send async request", function() {
         spyOn(bbCore, 'sendRequest');
 
         bbCore.login(null);
 
         expect(bbCore.isAuthenticated()).toBe(false);
-        expect(bbCore.credentialsSaved()).toBe(false);
         expect(bbCore.sendRequest).not.toHaveBeenCalled();
     });
 
-    it("success authentication", function () {
-        setupMockApiRequest(result.authenticationSuccess);
-
-        bbCore.login('goodUser', 'goodPassword', successCallbackSpy);
-
-        expect(bbCore.isAuthenticated()).toBe(true);
-        expect(bbCore.credentialsSaved()).toBe(true);
-        expect(successCallbackSpy).toHaveBeenCalledWith(result.authenticationSuccess);
-        expect(errorCallbackSpy).not.toHaveBeenCalled();
-    });
-
-    it("success authentication with stored credentials", function() {
-        bbCore.saveCredentials('goodUser', 'goodPassword');
+    it("login - with stored credentials", function() {
+        bbCore.saveCredentials(username, password);
 
         setupMockApiRequest(result.authenticationSuccess);
 
@@ -186,38 +189,42 @@ describe("BBCore.auth", function() {
 
         expect(bbCore.isAuthenticated()).toBe(true);
         expect(bbCore.credentialsSaved()).toBe(true);
-        expect(successCallbackSpy).toHaveBeenCalledWith(result.authenticationSuccess);
-        expect(errorCallbackSpy).not.toHaveBeenCalled();
+        expect(bbCore.userEmail).toBe(username);
     });
 
-    it("unable to resume stored session", function() {
-        bbCore.logout();
+    it("resumeStoredSession - unable to resume stored session when unauthorized", function() {
+        spyOn(bbCore, 'validateAccessToken');
+        spyOn(bbCore, 'login');
 
-        bbCore.resumeStoredSession(successCallbackSpy, errorCallbackSpy);
+        bbCore.resumeStoredSession(null, errorCallbackSpy);
 
-        expect(successCallbackSpy).not.toHaveBeenCalled();
+        expect(bbCore.validateAccessToken).not.toHaveBeenCalled();
+        expect(bbCore.login).not.toHaveBeenCalled();
         expect(errorCallbackSpy).toHaveBeenCalled();
     });
 
-    it("resume stored session from access token", function() {
+    it("resumeStoredSession - resume from access token", function() {
         spyOn(bbCore, 'validateAccessToken');
-
-        bbCore.storage.setItem("access_token", this.accessToken);   // simulate access token was set.
-
-        bbCore.resumeStoredSession(successCallbackSpy, errorCallbackSpy);
-
-        expect(bbCore.validateAccessToken).toHaveBeenCalledWith(successCallbackSpy);
-        expect(errorCallbackSpy).not.toHaveBeenCalled();
-    });
-
-    it("resume stored session from username", function() {
         spyOn(bbCore, 'login');
 
-        bbCore.logout();
-        bbCore.saveCredentials('username', 'password');
+        bbCore.storage.setItem("access_token", 'test token');   // simulate access token was set.
 
-        bbCore.resumeStoredSession(successCallbackSpy, errorCallbackSpy);
+        bbCore.resumeStoredSession(successCallbackSpy);
 
+        expect(bbCore.validateAccessToken).toHaveBeenCalledWith(successCallbackSpy);
+        expect(bbCore.login).not.toHaveBeenCalled();
+    });
+
+    it("resumeStoredSession - resume from username", function() {
+        spyOn(bbCore, 'validateAccessToken');
+        spyOn(bbCore, 'login');
+
+        bbCore.saveCredentials(username, password);
+
+        bbCore.resumeStoredSession(successCallbackSpy);
+
+        expect(bbCore.validateAccessToken).not.toHaveBeenCalled();
+        expect(bbCore.credentialsSaved()).toBe(true);
         expect(bbCore.login).toHaveBeenCalledWith(successCallbackSpy);
         expect(errorCallbackSpy).not.toHaveBeenCalled();
     });
@@ -226,26 +233,40 @@ describe("BBCore.auth", function() {
         bbCore.logout();
 
         expect(bbCore.isAuthenticated()).toBe(false);
-        expect(bbCore.credentialsSaved()).toBe(false);
     });
 
-    it("validate access token", function() {
-        spyOn(bbCore, '__updateSession');
+    it("validateAccessToken", function() {
         setupMockApiRequest(result.authenticationSuccess);
 
-        bbCore.validateAccessToken(successCallbackSpy);
+        bbCore.validateAccessToken();
 
-        expect(bbCore.__updateSession).toHaveBeenCalledWith(result.authenticationSuccess, successCallbackSpy);
+        expect(bbCore.isAuthenticated()).toBe(true);
     });
 
-    it("invalidate session", function() {
-        spyOn(bbCore, 'sendRequest').and.callThrough();
+    it("invalidateSession", function() {
         setupMockApiRequest({});
 
         bbCore.invalidateSession();
 
-        expect(bbCore.sendRequest).toHaveBeenCalled();
         expect(bbCore.isAuthenticated()).toBe(false);
+    });
+
+    it("verifyKey", function() {
+        setupMockApiRequest({ status: "success" });
+        simulateAuthenticatedApi(bbCore);
+
+        bbCore.verifyKey("successfulApiKey", function(isValid) {
+            expect(isValid).toBe(true);
+        });
+    });
+
+    it("verifyKey - with an invalid api key", function() {
+        setupMockApiRequest({ status: "failure" });
+        simulateAuthenticatedApi(bbCore);
+
+        bbCore.verifyKey("invalidApiKey", function(isValid) {
+            expect(isValid).toBe(false);
+        });
     });
 });
 
@@ -278,8 +299,7 @@ describe("BBCore.videoRecorder", function() {
 
     it("getVideoRecorder: with options", function() {
         var opts = { height: 480, width: 640, force_ssl: true, start: null, stop: null, recorded: null };
-
-        bbCore.authenticated = true; // simulate being logged in
+        simulateAuthenticatedApi(bbCore);
 
         spyOn($, 'ajax').and.callFake(function(e) {
             e.success(result.withOptionsSuccess);
@@ -293,8 +313,7 @@ describe("BBCore.videoRecorder", function() {
 
     it("getVideoRecorder: without options", function() {
         var defaultOptions = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : '' };
-
-        bbCore.authenticated = true;    // simulate being logged in
+        simulateAuthenticatedApi(bbCore);
 
         spyOn($, 'ajax').and.callFake(function(e) {
             e.success(result.withDefaultOptionsSuccess);
@@ -330,7 +349,7 @@ describe("BBCore.video", function() {
         var successCallback = jasmine.createSpy();
         var result = { status: "success", info: { video_id: validVideoId }};
 
-        bbCore.authenticated = true;    // simulate being logged in
+        simulateAuthenticatedApi(bbCore);
 
         spyOn($, 'ajax').and.callFake(function(e) {
             e.success(result);
