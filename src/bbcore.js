@@ -11,9 +11,10 @@
 function BBCore(properties) {
 
     /**
-     * @typedef responseObject
+     * @typedef {object} responseSuccess
      * @type {object}
      * @prop {string} status
+     * @prop {string} method
      * @prop {object} info
      */
 

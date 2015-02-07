@@ -81,10 +81,9 @@ BBCore.prototype.getNewVideoGuid = function (pcall) {
 
 
 /**
- @@quickSendVideo
- opts -
-
-
+ *
+ * @param {object} opts
+ * @param {responseSuccess} pcall
  */
 BBCore.prototype.videoQuickSend = function (opts, pcall) {
     // TODO; this should be calling the api
@@ -94,7 +93,6 @@ BBCore.prototype.videoQuickSend = function (opts, pcall) {
             mobile_message: '',
             email_address: null,
             videoId: null
-
         },
         sendErrors = [];
 

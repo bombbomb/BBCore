@@ -103,7 +103,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
             }
 
             if (error) {
-                error.call(inst, resp);
+                error(inst, resp);
             }
         }
     });

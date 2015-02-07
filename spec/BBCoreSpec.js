@@ -468,5 +468,4 @@ describe("BBCore.contacts", function() {
         expect(bbCore.onError).toHaveBeenCalledWith(jasmine.any(Object));
     });
 
-    iti("add contact import address")
 });

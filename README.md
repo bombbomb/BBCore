@@ -3,10 +3,6 @@
 [![Build Status](https://travis-ci.org/bombbomb/BBCore.svg?branch=master)](https://travis-ci.org/bombbomb/BBCore) [![Code Climate](https://codeclimate.com/github/bombbomb/BBCore/badges/gpa.svg)](https://codeclimate.com/github/bombbomb/BBCore) [![Test Coverage](https://codeclimate.com/github/bombbomb/BBCore/badges/coverage.svg)](https://codeclimate.com/github/bombbomb/BBCore)
 
 A Javascript API enabling the use of BombBomb's video recording, sending and more!
-
-Use of BBCore requires only a recent version of jQuery and bbcore.js.
-
-Running the tests requires [grunt-cli](https://github.com/gruntjs/grunt-cli). Then run `grunt` to test and miniaturize.
 ## Usage Examples!
 
 To begin, include the `BBCore` and `jQuery` libraries in your html:
@@ -59,18 +55,45 @@ bb.videoQuickSend({
 
 * * *
 
-### BBCore.add(contact) 
+### BBCore.contact(properties) 
 
-add
+namespace BBCore.contact
 
 **Parameters**
 
-**contact**: `contact`, add
-
-**Returns**: `contacts`
+**properties**: `contactProperties`, namespace BBCore.contact
 
 
-### BBCore.add(video) 
+
+
+# contacts
+
+Adds a Contact to Contacts Collection
+
+
+
+* * *
+
+
+# contacts
+
+fds
+
+
+
+* * *
+
+### contacts.video(properties) 
+
+namespace
+
+**Parameters**
+
+**properties**: , namespace
+
+
+
+### contacts.add(video) 
 
 Adds a Video to the collection
 
@@ -81,40 +104,95 @@ Adds a Video to the collection
 **Returns**: `videos`
 
 
-### BBCore.resumeStoredSession(success, err) 
+### contacts.login(uid, pwd, success) 
+
+fds
 
 **Parameters**
 
-**success**: `responseSuccess`
+**uid**: `string`, fds
 
-**err**: 
+**pwd**: `string`, fds
+
+**success**: `responseSuccess`, fds
 
 
 
-### BBCore.isAuthenticated() 
+### contacts.credentialsSaved() 
+
+Returns bool for whether or not a prior authentication is stored locally
+
+**Returns**: `boolean`
+
+
+### contacts.saveCredentials(uid, pwd) 
+
+Save credentials to local storage (not recommended)
+
+**Parameters**
+
+**uid**: `string`, User ID/Email Address
+
+**pwd**: `string`, Password
+
+
+
+### contacts.resumeStoredSession(success, err) 
+
+Authenticates from previously stored credentials
+
+**Parameters**
+
+**success**: `responseSuccess`, Authenticates from previously stored credentials
+
+**err**: `responseSuccess`, Authenticates from previously stored credentials
+
+
+
+### contacts.isAuthenticated() 
+
+Returns bool for authentication state
 
 **Returns**: `boolean | *`
 
 
-### BBCore.verifyKey(key, complete) 
+### contacts.verifyKey(key, complete) 
+
+Validates the given key
 
 **Parameters**
 
-**key**: `string`
+**key**: `string`, Validates the given key
 
-**complete**: `responseSuccess`
+**complete**: `responseSuccess`, Validates the given key
 
 
 
-### BBCore.storeKey(key) 
+### contacts.storeKey(key) 
+
+fds
 
 **Parameters**
 
-**key**: 
+**key**: , fds
 
 
 
-### BBCore.sendRequest(method, params, success, error) 
+### contacts.getServerUrl() 
+
+fds
+
+**Returns**: `BBCore.apiServer | * | BBCore.CONFIG.SERVER_API_URL`
+
+
+### contacts.getRequestUrl() 
+
+Returns the fully qualified URL for BB API
+
+**Returns**: `string`
+
+
+### contacts.sendRequest(method, params, success, error) 
 
 Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
 
@@ -122,7 +200,7 @@ Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api
 
 **method**: `string`, The method name to call
 
-**params**: `array`, The parameters to send with the request
+**params**: `requestParameters`, The parameters to send with the request
 
 **success**: `responseSuccess`, A callback when the request succeeds
 
@@ -130,7 +208,7 @@ Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api
 
 
 
-### BBCore.getLists(success) 
+### contacts.getLists(success) 
 
 Retrieves Contact Lists
 
@@ -140,7 +218,7 @@ Retrieves Contact Lists
 
 
 
-### BBCore.createList(listName, success) 
+### contacts.createList(listName, success) 
 
 Creates a Contact List and returns the Guid
 
@@ -152,7 +230,7 @@ Creates a Contact List and returns the Guid
 
 
 
-### BBCore.getContact(contactId, success) 
+### contacts.getContact(contactId, success) 
 
 Retrieves a Contact
 
@@ -164,7 +242,7 @@ Retrieves a Contact
 
 
 
-### BBCore.getListContacts(listId, success) 
+### contacts.getListContacts(listId, success) 
 
 Retrieves Contacts from a Contact List
 
@@ -176,7 +254,7 @@ Retrieves Contacts from a Contact List
 
 
 
-### BBCore.addContact(contact, success) 
+### contacts.addContact(contact, success) 
 
 Adds a Contact to a Contact List
 
@@ -188,7 +266,7 @@ Adds a Contact to a Contact List
 
 
 
-### BBCore.bulkAddContacts(opts, success) 
+### contacts.bulkAddContacts(opts, success) 
 
 Adds a batch of Contacts
 
@@ -200,17 +278,19 @@ Adds a batch of Contacts
 
 
 
-### BBCore.updateContact(opts, success) 
+### contacts.updateContact(opts, success) 
+
+fds
 
 **Parameters**
 
-**opts**: `object`
+**opts**: `object`, fds
 
-**success**: `responseSuccess`
+**success**: `responseSuccess`, fds
 
 
 
-### BBCore.getImportAddressesByType(opts, success) 
+### contacts.getImportAddressesByType(opts, success) 
 
 Retrieves an Import Address by a Type
 
@@ -222,71 +302,77 @@ Retrieves an Import Address by a Type
 
 
 
-### BBCore.addContactImportAddress(opts, success) 
+### contacts.addContactImportAddress(opts, success) 
 
 Retrieves an Import Address by a Type
 
 **Parameters**
 
-**opts**: , Retrieves an Import Address by a Type
+**opts**: `object`, Retrieves an Import Address by a Type
 
 **success**: `responseSuccess`, Retrieves an Import Address by a Type
 
 
 
-### BBCore.getClientRecentInteractions(opts, success) 
+### contacts.getClientRecentInteractions(opts, success) 
+
+Retrieves a list of re
 
 **Parameters**
 
-**opts**: `object`
+**opts**: `getClientInteractionOptions`, Retrieves a list of re
 
-**success**: `responseSuccess`
-
-
-
-### BBCore.getEmails(listName, success) 
-
-Retrieves a list of Email
-
-**Parameters**
-
-**listName**: `string`, Retrieves a list of Email
-
-**success**: `responseSuccess`, Retrieves a list of Email
+**success**: `responseSuccess`, Retrieves a list of re
 
 
 
-### BBCore.sendCustomVideoEmail(opts, success) 
+### contacts.getEmails(success) 
+
+Retrieves a list of Emails from the current authenticated session
 
 **Parameters**
 
-**opts**: 
-
-**success**: 
+**success**: `responseSuccess`, Retrieves a list of Emails from the current authenticated session
 
 
 
-### BBCore.getDrips(opts, success) 
+### contacts.sendCustomVideoEmail(opts, success) 
 
-**Parameters**
-
-**opts**: `object`
-
-**success**: `responseSuccess`
-
-
-
-### BBCore.getForms(opts, success) 
+fds
 
 **Parameters**
 
-**opts**: `object`
+**opts**: `customVideoEmailOptions`, fds
 
-**success**: `responseSuccess`
+**success**: `responseSuccess`, fds
 
 
 
-### BBCore.deleteVideo(videoId, success) 
+### contacts.getDrips(opts, success) 
+
+fds
+
+**Parameters**
+
+**opts**: `object`, fds
+
+**success**: `responseSuccess`, fds
+
+
+
+### contacts.getForms(opts, success) 
+
+fds
+
+**Parameters**
+
+**opts**: `object`, fds
+
+**success**: `responseSuccess`, fds
+
+
+
+### contacts.deleteVideo(videoId, success) 
 
 Deletes a Video
 
@@ -298,7 +384,15 @@ Deletes a Video
 
 
 
-### BBCore.videoQuickSend() 
+### contacts.videoQuickSend(opts, pcall) 
+
+fds
+
+**Parameters**
+
+**opts**: , fds
+
+**pcall**: , fds
 
 
 
