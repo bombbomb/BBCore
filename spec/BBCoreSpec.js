@@ -262,6 +262,8 @@ describe("BBCore.auth", function() {
 
     it("verifyKey", function() {
         setupMockApiRequest({ status: "success" });
+        spyOn(bbCore, 'sendRequest').and.callThrough();
+
         simulateAuthenticatedApi(bbCore);
 
         bbCore.verifyKey("successfulApiKey", function(isValid) {
@@ -643,10 +645,57 @@ describe("BBCore.videoRecorder", function() {
     };
 
     beforeEach(function() {
-        setupTest(true, false);
+        setupAuthenticatedTest(true, false);
+    });
+
+    it("getEmbeddedRecorderUrl", function() {
+        var apiKey = "api key";
+        var requestParams = $.param({ width: 640, height: 480, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
+        var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
+
+        spyOn(bbCore, 'getKey').and.callFake(function() {
+            return apiKey;
+        });
+
+        bbCore.setVideoId(testGuid);
+        bbCore.getEmbeddedRecorderUrl({ width: 640, height: 480 }, successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
+    });
+
+    it("getEmbeddedRecorderUrl: with undefined height uses default options", function() {
+        var apiKey = "api key";
+        var requestParams = $.param({ height: 240, width: 340, force_ssl: false, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
+        var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
+
+        spyOn(bbCore, 'getKey').and.callFake(function() {
+            return apiKey;
+        });
+
+        bbCore.setVideoId(testGuid);
+        bbCore.getEmbeddedRecorderUrl({ width: 640, force_ssl: true }, successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
+    });
+
+    it("getEmbeddedRecorderUrl: with undefined options uses default options", function() {
+        var apiKey = "api key";
+        var requestParams = $.param({ height: 240, width: 340, force_ssl: false, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
+        var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
+
+        spyOn(bbCore, 'getKey').and.callFake(function() {
+            return apiKey;
+        });
+
+        bbCore.setVideoId(testGuid);
+        bbCore.getEmbeddedRecorderUrl(successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
 
     it("getVideoRecorder: error when unauthenticated", function() {
+        bbCore.logout();
+
         expect(bbCore.isAuthenticated()).toBe(false);
 
         bbCore.getVideoRecorder();
@@ -656,11 +705,8 @@ describe("BBCore.videoRecorder", function() {
 
     it("getVideoRecorder: with options", function() {
         var opts = { height: 480, width: 640, force_ssl: true, start: null, stop: null, recorded: null };
-        simulateAuthenticatedApi(bbCore);
 
-        spyOn($, 'ajax').and.callFake(function(e) {
-            e.success(result.withOptionsSuccess);
-        });
+        setupMockApiRequest(result.withOptionsSuccess);
 
         bbCore.getVideoRecorder(opts, successCallbackSpy);
 
@@ -670,15 +716,122 @@ describe("BBCore.videoRecorder", function() {
 
     it("getVideoRecorder: without options", function() {
         var defaultOptions = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : '' };
-        simulateAuthenticatedApi(bbCore);
 
-        spyOn($, 'ajax').and.callFake(function(e) {
-            e.success(result.withDefaultOptionsSuccess);
-        });
+        setupMockApiRequest(result.withDefaultOptionsSuccess);
 
         bbCore.getVideoRecorder(successCallbackSpy);
 
         expect($.ajax.calls.argsFor(0)[0].data).toEqual(defaultOptions);
         expect(successCallbackSpy).toHaveBeenCalledWith(result.withDefaultOptionsSuccess);
+    });
+
+    it("startVideoRecorder", function() {
+        var options = { width: 640, height: 480 };
+
+        spyOn(bbCore, 'getVideoRecorder');
+
+        bbCore.startVideoRecorder(options, successCallbackSpy);
+
+        expect(bbCore.getVideoRecorder).toHaveBeenCalledWith(jasmine.objectContaining(options), jasmine.any(Function));
+        expect(window.bbStreamStartRecord !== undefined).toBe(true);
+        expect(window.bbStreamStopRecord !== undefined).toBe(true);
+        expect(window.reportVideoRecorded !== undefined).toBe(true);
+    });
+
+    it("startVideoRecorder: with default options", function() {
+        spyOn(bbCore, 'getVideoRecorder');
+
+        bbCore.startVideoRecorder(successCallbackSpy);
+
+        expect(bbCore.getVideoRecorder).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Function));
+        expect(window.bbStreamStartRecord !== undefined).toBe(true);
+        expect(window.bbStreamStopRecord !== undefined).toBe(true);
+        expect(window.reportVideoRecorded !== undefined).toBe(true);
+    });
+
+    it("startVideoRecorder: specify recordComplete callback in options", function() {
+        var options = { recordComplete: successCallbackSpy };
+        var videoFilename = "video file name";
+        var log = "log";
+
+        spyOn(bbCore, 'getVideoRecorder');
+
+        bbCore.setVideoId(testGuid);
+        bbCore.startVideoRecorder(options);
+        window.reportVideoRecorded(videoFilename, log);
+
+        expect(bbCore.getVideoRecorder).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Function));
+        expect(successCallbackSpy).toHaveBeenCalledWith({videoId: testGuid, filename: videoFilename, log: log});
+        expect(window.bbStreamStartRecord !== undefined).toBe(true);
+        expect(window.bbStreamStopRecord !== undefined).toBe(true);
+        expect(window.reportVideoRecorded !== undefined).toBe(true);
+    });
+
+    it("liveStreamStartRecord", function() {
+        var streamName = "video stream name";
+        var filename = "video file name";
+
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.liveStreamStartRecord(streamName, filename);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({streamname: streamName, filename: filename}));
+    });
+
+    it("liveStreamStopRecord", function() {
+        var streamName = "video stream name";
+
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.liveStreamStopRecord(streamName);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({streamname: streamName}));
+    });
+
+    it("saveRecordedVideo", function() {
+        var videoTitle = "video title";
+        var videoId = testGuid;
+        var videoFilename = "video file name";
+        var result = { status: "success", info: {} };
+
+        spyOn(bbCore, 'sendRequest').and.callThrough();
+        setupMockApiRequest(result);
+
+        bbCore.saveRecordedVideo(videoTitle, videoId, videoFilename, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ title: videoTitle, filename: videoFilename, vid_id: videoId}), jasmine.any(Function));
+        expect(successCallbackSpy).toHaveBeenCalledWith(result);
+    });
+
+    it("saveRecordedVideo: with undefined video id uses current video id", function() {
+        var videoTitle = "video title";
+        var videoId = null;
+        var videoFilename = "video file name";
+        var result = { status: "success", info: {} };
+
+        spyOn(bbCore, 'sendRequest').and.callThrough();
+        setupMockApiRequest(result);
+
+        bbCore.setVideoId(testGuid);
+        bbCore.saveRecordedVideo(videoTitle, videoId, videoFilename, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ title: videoTitle, filename: videoFilename, vid_id: testGuid}), jasmine.any(Function));
+        expect(successCallbackSpy).toHaveBeenCalledWith(result);
+    });
+
+    it("saveRecording", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.saveRecording({ vid_id: testGuid });
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), jasmine.objectContaining({ vid_id: testGuid }), jasmine.any(Function));
+    });
+
+    it("saveRecording: with an undefind vid_id does not make an async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.saveRecording({  });
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
     });
 });
