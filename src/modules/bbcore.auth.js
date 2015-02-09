@@ -125,7 +125,7 @@ BBCore.prototype.__updateSession = function (respObj, done) {
 BBCore.prototype.verifyKey = function (key, complete) {
     // TODO; should ValidateSession replace this or vise-versa
     this.sendRequest({method: "GetEmails", api_key: key}, function (resp) {
-        if (!complete) {
+        if (complete) {
             complete({isValid: (resp.status === "success")});
         }
     });
@@ -135,15 +135,12 @@ BBCore.prototype.verifyKey = function (key, complete) {
  * @arg key
  */
 BBCore.prototype.storeKey = function (key) {
-    // TODO: Are the conditionals there to check for an authenticated user?
-    if (this.accessToken) {
-        this.accessToken = key;
-    }
-
-    if (!this.accessToken) {
+    if (this.getKey()) {
         return;
     }
+
     // currently this will use the API Key, in the future this should be updated to use a key which can be expired
+    this.accessToken = key;
     this.storage.setItem("access_token", this.accessToken);
 };
 
@@ -151,6 +148,6 @@ BBCore.prototype.getKey = function () {
     return this.accessToken;
 };
 BBCore.prototype.clearKey = function () {
-    // TODO: should the accessToken property be reset as well?
+    this.accessToken = null;
     this.storage.removeItem('access_token');
 };

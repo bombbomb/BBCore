@@ -282,31 +282,66 @@ describe("BBCore.auth", function() {
     });
 
     it("invalidateSession", function() {
-        setupMockApiRequest({});
+        setupMockApiRequest({ status: "success", info: {}});
+        spyOn(bbCore, 'clearKey').and.callThrough();
+        simulateAuthenticatedApi(bbCore);
 
         bbCore.invalidateSession();
 
+        expect(bbCore.clearKey).toHaveBeenCalled();
         expect(bbCore.isAuthenticated()).toBe(false);
     });
 
     it("verifyKey", function() {
-        setupMockApiRequest({ status: "success" });
-        spyOn(bbCore, 'sendRequest').and.callThrough();
-
+        setupMockApiRequest({ status: "success", info: {} });
         simulateAuthenticatedApi(bbCore);
 
-        bbCore.verifyKey("successfulApiKey", function(isValid) {
-            expect(isValid).toBe(true);
-        });
+        bbCore.verifyKey("successfulApiKey", successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith({isValid: true});
     });
 
     it("verifyKey - with an invalid api key", function() {
-        setupMockApiRequest({ status: "failure" });
+        var result = { status: "failure", info: {} };
+
+        setupMockApiRequest(result);
         simulateAuthenticatedApi(bbCore);
 
-        bbCore.verifyKey("invalidApiKey", function(isValid) {
-            expect(isValid).toBe(false);
-        });
+        bbCore.verifyKey("invalidApiKey", successCallbackSpy);
+
+        expect(bbCore.onError).toHaveBeenCalledWith(result);
+        expect(successCallbackSpy).not.toHaveBeenCalled();
+    });
+
+    it("storeKey", function() {
+        var apiKey = "api key";
+
+        bbCore.storeKey(apiKey);
+
+        expect(bbCore.getKey()).toBe(apiKey);
+    });
+
+    it("storeKey: with an existing key will not overwrite", function() {
+        var originalApiKey = "api key";
+        var newApiKey = "new api key";
+
+        bbCore.storeKey(originalApiKey);
+        expect(bbCore.getKey()).toBe(originalApiKey);
+
+        bbCore.storeKey(newApiKey);
+
+        expect(bbCore.getKey()).toBe(originalApiKey);
+    });
+
+    it("clearKey", function() {
+        var apiKey = "api key";
+
+        bbCore.storeKey(apiKey);
+        expect(bbCore.getKey()).toBe(apiKey);
+
+        bbCore.clearKey();
+
+        expect(bbCore.getKey()).toBe(null);
     });
 });
 
