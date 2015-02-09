@@ -437,6 +437,34 @@ describe("BBCore.contacts", function() {
     });
 });
 
+describe("BBCore.email", function() {
+    var bbCore = null;
+    var successCallbackSpy = null;
+
+    beforeEach(function() {
+        bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUrl });
+        simulateAuthenticatedApi(bbCore);
+
+        successCallbackSpy = jasmine.createSpy();
+
+        spyOn(bbCore, 'sendRequest');
+    });
+
+    it("getEmails", function() {
+        bbCore.getEmails(successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
+    });
+
+    it("sendCustomVideoEmail", function() {
+        var options = {html_content: 'html content', subject: 'email subject', email: 'test@test.com', email_id: testGuid, from_name: 'from@test.com'};
+
+        bbCore.sendCustomVideoEmail(options, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining(options), successCallbackSpy);
+    });
+});
+
 describe("BBCore.video", function() {
 
     var bbCore = null;
