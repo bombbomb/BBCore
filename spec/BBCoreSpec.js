@@ -270,6 +270,165 @@ describe("BBCore.auth", function() {
     });
 });
 
+describe("BBCore.video", function() {
+
+    var bbCore = null;
+    var successCallbackSpy = null;
+    var validVideoId = testGuid;
+
+    beforeEach(function() {
+        bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUrl });
+        simulateAuthenticatedApi(bbCore);
+
+        successCallbackSpy = jasmine.createSpy();
+    });
+
+    it("getVideoDeliveryUrl", function() {
+        var expected = 'http://dev.bbemaildelivery.com/bbext/?p=video_land&id=' + testGuid + '&autoplay=0';
+
+        var actual = bbCore.getVideoDeliveryUrl({ video_id: testGuid, autoplay: 0 });
+
+        expect(actual).toBe(expected);
+    });
+
+    it("getVideo", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideo(validVideoId, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({video_id: validVideoId}), successCallbackSpy);
+    });
+
+    it("getVideo: with undefined video id does not make async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        BBCore.prototype.getVideo(null);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    // TODO: test getVideos using default options
+    // TODO: test getVideos with custom options
+    // TODO: test getVideos using paging options
+
+    it("getVideoStatus", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideoStatus(validVideoId, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ id: validVideoId }), successCallbackSpy);
+    });
+
+    it("getVideoStatus: with undefined video id does not make async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideoStatus(null);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("getEncodingReport", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getEncodingReport(validVideoId, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ id: validVideoId }), successCallbackSpy);
+    });
+
+    it("getEncodingReport: with undefined video id does not make async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getEncodingReport(null);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("deleteVideo", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.deleteVideo(validVideoId, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: validVideoId }), successCallbackSpy);
+    });
+
+    it("getVideoId", function() {
+        bbCore.setVideoId(validVideoId);
+        bbCore.getVideoId(function(videoId) {
+            expect(videoId).toBe(validVideoId);
+        });
+    });
+
+    it("getVideoId: current video id has not been set yet", function() {
+        spyOn(bbCore, 'getNewVideoGuid');
+
+        bbCore.setVideoId(null);
+        bbCore.getVideoId(successCallbackSpy);
+
+        expect(bbCore.getNewVideoGuid).toHaveBeenCalledWith(successCallbackSpy);
+    });
+
+    it("hasVideoId", function() {
+        bbCore.setVideoId(validVideoId);
+
+        expect(bbCore.hasVideoId()).toBe(true);
+    });
+
+    it("hasVideoId: without a video id set", function() {
+        bbCore.setVideoId(null);
+
+        expect(bbCore.hasVideoId()).toBe(false);
+    });
+
+    it("getNewVideoGuid", function() {
+        spyOn(bbCore, 'sendRequest').and.callThrough();
+        spyOn($, 'ajax').and.callFake(function(e) {
+            e.success({ status: "success", info: { video_id: validVideoId }});
+        });
+
+        bbCore.getNewVideoGuid(successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalled();
+        expect(bbCore.hasVideoId()).toBe(true);
+        expect(successCallbackSpy).toHaveBeenCalledWith(validVideoId);
+    });
+
+    it("videoQuickSend", function() {
+        spyOn(bbCore, "sendRequest");
+
+        bbCore.videoQuickSend({ video_id: validVideoId, subject: "quick send subject", email_address: "test@test.com"});
+
+        expect(bbCore.sendRequest).toHaveBeenCalled();
+    });
+
+    it("videoQuickSend: using current video id", function() {
+        spyOn(bbCore, "sendRequest");
+
+        bbCore.setVideoId(validVideoId);
+        bbCore.videoQuickSend({ subject: "quick send subject", email_address: "test@test.com"}, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: validVideoId }), successCallbackSpy);
+    });
+
+    // TODO: test videoQuickSend when generating a new video id
+    // TODO: test videoQuickSend erroring async request when trying to generate a new video id
+
+    it("videoQuickSend: attempts to send without a subject", function() {
+        spyOn(bbCore, "sendRequest");
+
+        bbCore.videoQuickSend({ video_id: validVideoId, email_address: "test@test.com"});
+
+        expect(bbCore.sendRequest).toHaveBeenCalled();
+    });
+
+    it("videoQuickSend: attempts to send without an email address", function() {
+        spyOn(bbCore, "sendRequest");
+
+        bbCore.videoQuickSend({ video_id: validVideoId, subject: "quick send subject" });
+
+        expect(bbCore.sendRequest).toHaveBeenCalled();
+    });
+});
+
 describe("BBCore.videoRecorder", function() {
     var successCallbackSpy = null;
     var errorCallbackSpy = null;
@@ -324,72 +483,6 @@ describe("BBCore.videoRecorder", function() {
         expect($.ajax.calls.argsFor(0)[0].data).toEqual(defaultOptions);
         expect(successCallbackSpy).toHaveBeenCalledWith(result.withDefaultOptionsSuccess);
     });
-});
-
-describe("BBCore.video", function() {
-
-    var bbCore = new BBCore({ access_id: 'test', apiServer: apiServerUrl });
-
-    it("getVideo: authentication fails", function() {
-        var validVideoId = '11111111-1111-1111-1111-111111111111';
-        var successCallback = jasmine.createSpy();
-        var result = { status: "success", info: { video_id: validVideoId }};
-
-        spyOn($, 'ajax').and.callFake(function(e) {
-            e.success(result);
-        });
-
-        bbCore.getVideo(validVideoId, successCallback);
-
-        expect(successCallback).not.toHaveBeenCalled();
-    });
-
-    it("getVideo: exists with a valid id", function() {
-        var validVideoId = '11111111-1111-1111-1111-111111111111';
-        var successCallback = jasmine.createSpy();
-        var result = { status: "success", info: { video_id: validVideoId }};
-
-        simulateAuthenticatedApi(bbCore);
-
-        spyOn($, 'ajax').and.callFake(function(e) {
-            e.success(result);
-        });
-
-        bbCore.getVideo(validVideoId, successCallback);
-
-        expect(successCallback).toHaveBeenCalledWith(result);
-    });
-
-    it("doesn't exist for an invalid id", function() {
-        var invalidVideoId = 'invalid video id';
-        var successCallback = jasmine.createSpy();
-        var result = { status: "failure", info: "error"};
-
-        spyOn($, 'ajax').and.callFake(function(e) {
-            e.success(result);
-        });
-
-        BBCore.prototype.getVideo(invalidVideoId, successCallback);
-
-        expect(successCallback.calls.count()).toEqual(0);
-    });
-
-    it("isn't requested without a valid video id", function() {
-        spyOn($, 'ajax');
-
-        BBCore.prototype.getVideo(null, 'callback ignored');
-
-        expect($.ajax.calls.count()).toEqual(0);
-    });
-
-    it("isn't requested without a valid video id", function() {
-        spyOn($, 'ajax');
-
-        BBCore.prototype.getVideo(null, 'callback ignored');
-
-        expect($.ajax.calls.count()).toEqual(0);
-    });
-
 });
 
 describe("BBCore.contacts", function() {
