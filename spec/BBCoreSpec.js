@@ -42,6 +42,35 @@ function setupMockApiRequest(result, error) {
     });
 }
 
+describe("BBCore", function() {
+    beforeEach(function() {
+        setupTest(false, false);
+    });
+
+    it("ver", function() {
+        expect(bbCore.ver()).toBe(BBCore.CONFIG.VERSION);
+    });
+
+    it("onError: func_or_deet is a function", function() {
+        var func = function() {};
+
+        bbCore.onError(func, null);
+
+        expect(bbCore.onerror).toBe(func);
+    });
+
+    it("onError: func_or_deet is a function", function() {
+        var deet = { id: testGuid };
+        var xhr = {};
+        var funcCallbackSpy = jasmine.createSpy();
+
+        bbCore.onError(funcCallbackSpy, null);
+        bbCore.onError(deet, xhr);
+
+        expect(funcCallbackSpy).toHaveBeenCalledWith(deet, xhr);
+    });
+});
+
 describe("BBCore.api", function() {
     var result = {
         responseSuccess: {"status":"success","methodName":"GetVideos","info":[{"id":testGuid,"name":"Video Title","description":"Video Description","status":"1","thumbUrl":"thumbnailUrl","shortUrl":"shortUrl","height":"480","width":"640","created":"2\/06\/15 10:33:05 am","vidUrl":"videoDeliveryUrl"}]},
