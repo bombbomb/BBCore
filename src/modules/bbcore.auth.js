@@ -12,6 +12,7 @@ BBCore.prototype.login = function (uid, pwd, success) {
     }
 
     if (!uid) {
+        this.onError({ info: { errormsg: 'Username cannot be blank' } });
         return;
     }
 
@@ -86,6 +87,9 @@ BBCore.prototype.isAuthenticated = function () {
     return this.authenticated;
 };
 
+/**
+ * Invalidates and clears the active session
+ */
 BBCore.prototype.invalidateSession = function () {
     var that = this;
     this.sendRequest({method: "invalidateKey"}, function () {
@@ -132,6 +136,7 @@ BBCore.prototype.verifyKey = function (key, complete) {
 };
 
 /**
+ * Stores the give session key, typically used so a session can be resumed later on.
  * @arg key
  */
 BBCore.prototype.storeKey = function (key) {

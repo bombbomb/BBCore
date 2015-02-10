@@ -45,7 +45,8 @@ module.exports = function(grunt) {
                     'src/modules/bbcore.email.js',
                     'src/modules/bbcore.extras.js',
                     'src/modules/bbcore.videoRecorder.js',
-                    'src/modules/bbcore.video.js'
+                    'src/modules/bbcore.video.js',
+                    'src/modules/bbcore.helpers.js'
                 ],
                 dest: 'build/<%= pkg.name %>.combined.js'
             }

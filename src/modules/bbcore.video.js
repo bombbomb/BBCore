@@ -92,9 +92,9 @@ BBCore.prototype.getNewVideoGuid = function (pcall) {
 /**
  *
  * @param {object} opts
- * @param {responseSuccess} pcall
+ * @param {responseSuccess} onSuccess
  */
-BBCore.prototype.videoQuickSend = function (opts, pcall) {
+BBCore.prototype.videoQuickSend = function (opts, onSuccess) {
     // TODO; this should be calling the api
     var reqDetails = {
             method: 'VideoQuickSend',
@@ -140,7 +140,7 @@ BBCore.prototype.videoQuickSend = function (opts, pcall) {
         this.getVideoId(function (guid) {
             if (guid) {
                 opts.video_id = guid;
-                this.sendRequest(opts, pcall);
+                this.sendRequest(opts, onSuccess);
             }
             else {
                 sendErrors.push('quickSendVideo: Terminal Error: Unable to set video_id');
@@ -149,7 +149,7 @@ BBCore.prototype.videoQuickSend = function (opts, pcall) {
         });
     }
     else {
-        this.sendRequest(opts, pcall);
+        this.sendRequest(opts, onSuccess);
     }
 
 };

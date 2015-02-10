@@ -1,14 +1,19 @@
 // returns the url for the embedded video recorder, typically used for iframes
-BBCore.prototype.getEmbeddedRecorderUrl = function (opts, comp) {
-    if (typeof opts === "function") {
-        comp = opts;
+/**
+ *
+ * @param {Object} [options]
+ * @param {Function} onComplete
+ */
+BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
+    if (typeof options === "function") {
+        onComplete = options;
     }
     var defOpts = {height: 240, width: 340, force_ssl: false};
-    if (typeof opts.height === 'undefined') {
-        opts = defOpts;
+    if (typeof options.height === 'undefined') {
+        options = defOpts;
     }
 
-    var reqParams = $.extend({}, opts, {
+    var reqParams = $.extend({}, options, {
         module: 'videos',
         page: 'EmbeddedRecorder',
         popup: 1,
@@ -17,15 +22,20 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (opts, comp) {
     });
     var inst = this;
     this.getVideoId(function (vidId) {
-        var fda = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + $.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
-        comp.call(this, {url: fda, video_id: vidId});
+        var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + $.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
+        onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
     });
 
 };
 
-BBCore.prototype.getVideoRecorder = function (opts, comp) {
+/**
+ *
+ * @param {object} opts
+ * @param {Function} onComplete
+ */
+BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
     if (typeof opts === "function") {
-        comp = opts;
+        onComplete = opts;
         opts = null;
     }
     var defOpts = {height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null};
@@ -41,10 +51,8 @@ BBCore.prototype.getVideoRecorder = function (opts, comp) {
     // TODO; may need to inject the recorder event calls binding back to the API
 
     this.sendRequest(opts, function (response) {
-        console.log('GetVideoRecorder returned, calling callback');
-        console.log(comp);
-        if (comp) {
-            comp.call(this, response);
+        if (onComplete) {
+            onComplete.call(this, response);
         }
     });
 
@@ -65,7 +73,6 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         recorderLoaded: null,
         recordComplete: recordComplete
     };
-    //for (var op in defOpts) opts[op] = defOpts[op];
     opts = opts || defOpts;
 
     if (opts.recordComplete && !recordComplete) {
@@ -130,23 +137,37 @@ BBCore.prototype.liveStreamStopRecord = function (streamname) {
     this.sendRequest({method: 'liveStreamStopRecord', streamname: streamname});
 };
 
-
-BBCore.prototype.saveRecordedVideo = function (title, video_id, vfilename, success) {
-    var vidId = video_id || this.currentVideoId;
+/**
+ *
+ * @param {string} title
+ * @param {string} videoId
+ * @param {string} videoFilename
+ * @param {Function} success
+ */
+BBCore.prototype.saveRecordedVideo = function (title, videoId, videoFilename, success) {
+    var vidId = videoId || this.currentVideoId;
     var inst = this;
     this.sendRequest({
         method: 'VideoRecordedLive',
         title: title,
-        filename: vfilename,
+        filename: videoFilename,
         vid_id: vidId
     }, function (data) {
         success.call(inst, data);
     });
 };
 
+/**
+ * @class videoOptions
+ * @prop {string} vid_id
+ */
 
-BBCore.prototype.saveRecording = function (opts) {
-    var pVals = opts;
+/**
+ *
+ * @param {Object} options
+ */
+BBCore.prototype.saveRecording = function (options) {
+    var pVals = options;
     if (!pVals.vid_id) {
         return;
     }

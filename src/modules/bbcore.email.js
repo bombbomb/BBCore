@@ -8,12 +8,17 @@ BBCore.prototype.getEmails = function (success) {
 
 /**
  * @typedef {object} customVideoEmailOptions
+ * @prop {string} from_name
+ * @prop {string} email_id
+ * @prop {string} email
+ * @prop {string} subject
+ * @prop {string} html_content
  */
 
 /**
  *
  * @arg {customVideoEmailOptions} opts
- * @arg {responseSuccess} success
+ * @arg {Function} success
  */
 BBCore.prototype.sendCustomVideoEmail = function (opts, success) {
     var defaults = {method: 'SendCustomVideoEmail', html_content: null, subject: '', email: '', email_id: '', from_name: ''};

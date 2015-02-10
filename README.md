@@ -47,7 +47,7 @@ bb.videoQuickSend({
     alert("You've sent a video! " + data.info);
 });
 ```
-# BBCore
+# Global
 
 
 
@@ -55,45 +55,47 @@ bb.videoQuickSend({
 
 * * *
 
-### BBCore.contact(properties) 
+## Class: BBCore
 
-namespace BBCore.contact
+
+**userEmail**: `string` 
+**userId**: `string` 
+**clientId**: `string` 
+**accessToken**: `string` 
+**currentVideoId**: `string` 
+**email**: `string` 
+**onerror**: `string` 
+
+## Class: contacts
+
+
+### contacts.add(contact) 
+
+Adds a Contact [BBCore.contact](#bbcore.contact) to Contacts collection
 
 **Parameters**
 
-**properties**: `contactProperties`, namespace BBCore.contact
+**contact**: `contact`, Adds a Contact [BBCore.contact](#bbcore.contact) to Contacts collection
 
+**Returns**: `contacts`
 
+### contacts.find(fieldName, value) 
 
-
-# contacts
-
-Adds a Contact to Contacts Collection
-
-
-
-* * *
-
-
-# contacts
-
-fds
-
-
-
-* * *
-
-### contacts.video(properties) 
-
-namespace
+Returns the first matched contact from
 
 **Parameters**
 
-**properties**: , namespace
+**fieldName**: `string`, Name of the field to search for the value
+
+**value**: `string`, Value to search for in the contacts
+
+**Returns**: `* | BBCore.contact`
 
 
+## Class: videos
 
-### contacts.add(video) 
+
+### videos.add(video) 
 
 Adds a Video to the collection
 
@@ -104,28 +106,27 @@ Adds a Video to the collection
 **Returns**: `videos`
 
 
-### contacts.login(uid, pwd, success) 
+## Class: BBCore
 
-fds
+
+### BBCore.login(uid, pwd, success) 
 
 **Parameters**
 
-**uid**: `string`, fds
+**uid**: `string`
 
-**pwd**: `string`, fds
+**pwd**: `string`
 
-**success**: `responseSuccess`, fds
+**success**: `responseSuccess`
 
 
-
-### contacts.credentialsSaved() 
+### BBCore.credentialsSaved() 
 
 Returns bool for whether or not a prior authentication is stored locally
 
 **Returns**: `boolean`
 
-
-### contacts.saveCredentials(uid, pwd) 
+### BBCore.saveCredentials(uid, pwd) 
 
 Save credentials to local storage (not recommended)
 
@@ -136,8 +137,7 @@ Save credentials to local storage (not recommended)
 **pwd**: `string`, Password
 
 
-
-### contacts.resumeStoredSession(success, err) 
+### BBCore.resumeStoredSession(success, err) 
 
 Authenticates from previously stored credentials
 
@@ -148,15 +148,18 @@ Authenticates from previously stored credentials
 **err**: `responseSuccess`, Authenticates from previously stored credentials
 
 
-
-### contacts.isAuthenticated() 
+### BBCore.isAuthenticated() 
 
 Returns bool for authentication state
 
 **Returns**: `boolean | *`
 
+### BBCore.invalidateSession() 
 
-### contacts.verifyKey(key, complete) 
+Invalidates and clears the active session
+
+
+### BBCore.verifyKey(key, complete) 
 
 Validates the given key
 
@@ -167,32 +170,26 @@ Validates the given key
 **complete**: `responseSuccess`, Validates the given key
 
 
+### BBCore.storeKey(key) 
 
-### contacts.storeKey(key) 
-
-fds
+Stores the give session key, typically used so a session can be resumed later on.
 
 **Parameters**
 
-**key**: , fds
+**key**: , Stores the give session key, typically used so a session can be resumed later on.
 
 
-
-### contacts.getServerUrl() 
-
-fds
+### BBCore.getServerUrl() 
 
 **Returns**: `BBCore.apiServer | * | BBCore.CONFIG.SERVER_API_URL`
 
-
-### contacts.getRequestUrl() 
+### BBCore.getRequestUrl() 
 
 Returns the fully qualified URL for BB API
 
 **Returns**: `string`
 
-
-### contacts.sendRequest(method, params, success, error) 
+### BBCore.sendRequest(method, params, success, error) 
 
 Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
 
@@ -207,8 +204,7 @@ Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api
 **error**: `responseSuccess`, A callback when the request fails
 
 
-
-### contacts.getLists(success) 
+### BBCore.getLists(success) 
 
 Retrieves Contact Lists
 
@@ -217,8 +213,7 @@ Retrieves Contact Lists
 **success**: `responseSuccess`, Retrieves Contact Lists
 
 
-
-### contacts.createList(listName, success) 
+### BBCore.createList(listName, success) 
 
 Creates a Contact List and returns the Guid
 
@@ -229,8 +224,7 @@ Creates a Contact List and returns the Guid
 **success**: `responseSuccess`, Creates a Contact List and returns the Guid
 
 
-
-### contacts.getContact(contactId, success) 
+### BBCore.getContact(contactId, success) 
 
 Retrieves a Contact
 
@@ -241,8 +235,7 @@ Retrieves a Contact
 **success**: `responseSuccess`, Retrieves a Contact
 
 
-
-### contacts.getListContacts(listId, success) 
+### BBCore.getListContacts(listId, success) 
 
 Retrieves Contacts from a Contact List
 
@@ -253,8 +246,7 @@ Retrieves Contacts from a Contact List
 **success**: `responseSuccess`, Retrieves Contacts from a Contact List
 
 
-
-### contacts.addContact(contact, success) 
+### BBCore.addContact(contact, success) 
 
 Adds a Contact to a Contact List
 
@@ -265,8 +257,7 @@ Adds a Contact to a Contact List
 **success**: `responseSuccess`, Adds a Contact to a Contact List
 
 
-
-### contacts.bulkAddContacts(opts, success) 
+### BBCore.bulkAddContacts(opts, success) 
 
 Adds a batch of Contacts
 
@@ -277,20 +268,16 @@ Adds a batch of Contacts
 **success**: `responseSuccess`, Adds a batch of Contacts
 
 
-
-### contacts.updateContact(opts, success) 
-
-fds
+### BBCore.updateContact(opts, success) 
 
 **Parameters**
 
-**opts**: `object`, fds
+**opts**: `object`
 
-**success**: `responseSuccess`, fds
+**success**: `responseSuccess`
 
 
-
-### contacts.getImportAddressesByType(opts, success) 
+### BBCore.getImportAddressesByType(opts, success) 
 
 Retrieves an Import Address by a Type
 
@@ -301,8 +288,7 @@ Retrieves an Import Address by a Type
 **success**: `responseSuccess`, Retrieves an Import Address by a Type
 
 
-
-### contacts.addContactImportAddress(opts, success) 
+### BBCore.addContactImportAddress(opts, success) 
 
 Retrieves an Import Address by a Type
 
@@ -313,8 +299,7 @@ Retrieves an Import Address by a Type
 **success**: `responseSuccess`, Retrieves an Import Address by a Type
 
 
-
-### contacts.getClientRecentInteractions(opts, success) 
+### BBCore.getClientRecentInteractions(opts, success) 
 
 Retrieves a list of re
 
@@ -325,8 +310,7 @@ Retrieves a list of re
 **success**: `responseSuccess`, Retrieves a list of re
 
 
-
-### contacts.getEmails(success) 
+### BBCore.getEmails(success) 
 
 Retrieves a list of Emails from the current authenticated session
 
@@ -335,44 +319,77 @@ Retrieves a list of Emails from the current authenticated session
 **success**: `responseSuccess`, Retrieves a list of Emails from the current authenticated session
 
 
-
-### contacts.sendCustomVideoEmail(opts, success) 
-
-fds
+### BBCore.sendCustomVideoEmail(opts, success) 
 
 **Parameters**
 
-**opts**: `customVideoEmailOptions`, fds
+**opts**: `customVideoEmailOptions`
 
-**success**: `responseSuccess`, fds
+**success**: `function`
 
 
-
-### contacts.getDrips(opts, success) 
-
-fds
+### BBCore.getDrips(opts, success) 
 
 **Parameters**
 
-**opts**: `object`, fds
+**opts**: `object`
 
-**success**: `responseSuccess`, fds
+**success**: `responseSuccess`
 
 
-
-### contacts.getForms(opts, success) 
-
-fds
+### BBCore.getForms(opts, success) 
 
 **Parameters**
 
-**opts**: `object`, fds
+**opts**: `object`
 
-**success**: `responseSuccess`, fds
+**success**: `responseSuccess`
+
+
+### BBCore.getEmbeddedRecorderUrl(options, onComplete) 
+
+**Parameters**
+
+**options**: `Object`
+
+**onComplete**: `function`
+
+
+### BBCore.getVideoRecorder(opts, onComplete) 
+
+**Parameters**
+
+**opts**: `object`
+
+**onComplete**: `function`
+
+
+### BBCore.saveRecordedVideo(title, videoId, videoFilename, success) 
+
+**Parameters**
+
+**title**: `string`
+
+**videoId**: `string`
+
+**videoFilename**: `string`
+
+**success**: `function`
 
 
 
-### contacts.deleteVideo(videoId, success) 
+## Class: videoOptions
+
+
+**vid_id**: `string` 
+### videoOptions.saveRecording(options) 
+
+**Parameters**
+
+**options**: `Object`
+
+
+### videoOptions.deleteVideo(videoId, success) 
 
 Deletes a Video
 
@@ -383,18 +400,61 @@ Deletes a Video
 **success**: `responseSuccess`, Deletes a Video
 
 
-
-### contacts.videoQuickSend(opts, pcall) 
-
-fds
+### videoOptions.videoQuickSend(opts, onSuccess) 
 
 **Parameters**
 
-**opts**: `object`, fds
+**opts**: `object`
 
-**pcall**: `responseSuccess`, fds
+**onSuccess**: `responseSuccess`
 
 
+### videoOptions.responseSuccess(responseObject, jqXHR) 
+
+reponseSuccess
+
+**Parameters**
+
+**responseObject**: , reponseSuccess
+
+**jqXHR**: , reponseSuccess
+
+
+
+
+# BBCore
+
+
+
+
+
+* * *
+
+## Class: contact
+Contact Object
+
+**email**: `string` , Email Address
+**firstname**: `string` , First Name
+**lastname**: `string` , Last Name
+**phone_number**: `string` , Phone Number
+**address_line_1**: `string` , Address 1
+**address_line_2**: `string` , Address 2
+**city**: `string` , City
+**state**: `string` , State
+**country**: `string` , Country`
+**postal_code**: `string` , Postal Code
+**company**: `string` , Company
+**position**: `string` , Position
+**comments**: `string` , Comments
+**listlist**: `string` , Array of List Ids the Contact is subscribed to
+**id**: `string` , Contact Id
+
+## Class: video
+
+
+**vid_id**: `string` 
+**title**: `string` 
+**filename**: `string` 
 
 
 * * *
