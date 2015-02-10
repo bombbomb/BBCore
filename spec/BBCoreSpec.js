@@ -579,7 +579,72 @@ describe("BBCore.video", function() {
         expect(bbCore.sendRequest).not.toHaveBeenCalled();
     });
 
-    // TODO: test getVideos using default options
+    it("getVideos", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({}, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({method: "GetVideos"}), successCallbackSpy);
+    });
+
+    it("getVideos: using default options falls back on legacy GetVideos api method", function() {
+        var func = function() {};
+
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos(func);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({method: "GetVideos"}), func);
+    });
+
+    it("getVideos: invalid page falls back to legacy GetVideos api method", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({ page: -1 }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({method: "GetVideos"}), successCallbackSpy);
+    });
+
+    it("getVideos: requesting paged videos using default page size", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({ page: 1 }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({method: "GetVideosPaged", page: 1, pageSize: 50}), successCallbackSpy);
+    });
+
+    it("getVideos: requesting paged videos using null page size uses default page size", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({ page: 1, pageSize: null }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("getVideos: requesting paged videos using zero page size does not make the async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({ page: 1, pageSize: 0 }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("getVideos: requesting paged videos using a less than zero page size does not make the async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({ page: 1, pageSize: -1 }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it("getVideos: requesting paged videos using an invalid page size does not make the async request", function() {
+        spyOn(bbCore, 'sendRequest');
+
+        bbCore.getVideos({ page: 1, pageSize: "asdf" }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+    });
+
     // TODO: test getVideos with custom options
     // TODO: test getVideos using paging options
 
@@ -672,6 +737,17 @@ describe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalled();
     });
 
+    it("videoQuickSend: using alternative properties", function() {
+        var message = "message";
+        var email = "test@test.com";
+
+        spyOn(bbCore, "sendRequest");
+
+        bbCore.videoQuickSend({ video_id: validVideoId, subject: "quick send subject", message: message, email: email }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ mobile_message: message, email_address: email}), successCallbackSpy);
+    });
+
     it("videoQuickSend: using current video id", function() {
         spyOn(bbCore, "sendRequest");
 
@@ -681,7 +757,32 @@ describe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: validVideoId }), successCallbackSpy);
     });
 
-    // TODO: test videoQuickSend when generating a new video id
+    it("videoQuickSend: with undefined video_id and no current video id generates a new video id", function() {
+        spyOn(bbCore, 'getNewVideoGuid').and.callFake(function(pCall) {
+            pCall.call(bbCore, testGuid);
+        });
+        spyOn(bbCore, "sendRequest");
+
+        bbCore.videoQuickSend({ subject: "quick send subject", email_address: "test@test.com"}, successCallbackSpy);
+
+        expect(bbCore.getNewVideoGuid).toHaveBeenCalled();
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: testGuid }), successCallbackSpy);
+    });
+
+    it("videoQuickSend: with undefined video_id and no current video id fails to generate a new video id", function() {
+        spyOn(bbCore, 'getNewVideoGuid').and.callFake(function(pCall) {
+            pCall.call(bbCore, null);
+        });
+        spyOn(bbCore, "sendRequest");
+        spyOn(bbCore, 'onError');
+
+        bbCore.videoQuickSend({ subject: "quick send subject", email_address: "test@test.com"}, successCallbackSpy);
+
+        expect(bbCore.getNewVideoGuid).toHaveBeenCalled();
+        expect(bbCore.sendRequest).not.toHaveBeenCalled();
+        expect(bbCore.onError).toHaveBeenCalled();
+    });
+
     // TODO: test videoQuickSend erroring async request when trying to generate a new video id
 
     it("videoQuickSend: attempts to send without a subject", function() {
@@ -790,13 +891,15 @@ describe("BBCore.videoRecorder", function() {
     });
 
     it("startVideoRecorder", function() {
-        var options = { width: 640, height: 480 };
+        var options = { width: 640, height: 480, recorderLoaded: jasmine.createSpy() };
+        var result = { status: "success", info: { vid_id: testGuid } };
 
-        spyOn(bbCore, 'getVideoRecorder');
+        setupMockApiRequest(result);
 
         bbCore.startVideoRecorder(options, successCallbackSpy);
 
-        expect(bbCore.getVideoRecorder).toHaveBeenCalledWith(jasmine.objectContaining(options), jasmine.any(Function));
+        expect(bbCore.currentVideoId).toBe(testGuid);
+        expect(options.recorderLoaded).toHaveBeenCalledWith(result.info);
         expect(window.bbStreamStartRecord !== undefined).toBe(true);
         expect(window.bbStreamStopRecord !== undefined).toBe(true);
         expect(window.reportVideoRecorded !== undefined).toBe(true);
@@ -829,6 +932,34 @@ describe("BBCore.videoRecorder", function() {
         expect(window.bbStreamStartRecord !== undefined).toBe(true);
         expect(window.bbStreamStopRecord !== undefined).toBe(true);
         expect(window.reportVideoRecorded !== undefined).toBe(true);
+    });
+
+    it("startVideoRecorder: specify recordComplete callback in options", function() {
+        var options = { recordComplete: successCallbackSpy };
+        var streamName = "stream name";
+        var videoFilename = "video file name";
+
+        spyOn(bbCore, 'liveStreamStartRecord');
+        spyOn(bbCore, 'liveStreamStopRecord');
+
+        bbCore.setVideoId(testGuid);
+        bbCore.startVideoRecorder(options);
+
+        window.bbStreamStartRecord(streamName, videoFilename);
+        window.bbStreamStopRecord(streamName);
+
+        expect(bbCore.liveStreamStartRecord).toHaveBeenCalledWith(streamName, videoFilename);
+        expect(bbCore.liveStreamStopRecord).toHaveBeenCalledWith(streamName);
+    });
+
+    it("destroyVideoRecorder", function() {
+        bbCore.__vidRecHndl = $('body').append('<div id="b2recorder"></div>');
+
+        bbCore.destroyVideoRecorder();
+
+        expect(window.bbStreamStartRecord).toBe(null);
+        expect(window.bbStreamStopRecord).toBe(null);
+        expect(window.reportVideoRecorded).toBe(null);
     });
 
     it("liveStreamStartRecord", function() {

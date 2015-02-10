@@ -73,7 +73,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     }
     this.__vidRecHndl = opts.target ? $(opts.target) : $('body').append('<div id="b2recorder"></div>');
 
-    var rec_opts = opts;
+    var rec_opts = $.extend({}, opts);
     delete rec_opts.type;
     delete rec_opts.target;
     delete rec_opts.recordComplete;
@@ -87,6 +87,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         }
         console.log('startVideoRecorder :' + inst.currentVideoId);
         inst.__vidRecHndl.html(data.info.content);
+
         if (opts.recorderLoaded) {
             opts.recorderLoaded.call(inst, data.info);
         }

@@ -12,21 +12,27 @@ BBCore.prototype.getVideo = function (vidId, success) {
 };
 
 BBCore.prototype.getVideos = function (options, success) {
-    // TODO: Can we default the page and pageSize properties to match the api's defaults?
     var defaults = {
         updatedSince: '',
-        page: '',
-        pageSize: ''
+        page: null,
+        pageSize: 50
     };
     if (typeof options === "function") {
         success = options;
         options = {};
     }
+    else if (typeof options === "object" && options != null) {
+        if (options.pageSize !== undefined) {
+            if (options.pageSize == null || options.pageSize <= 0 || isNaN(options.pageSize)) {
+                return false;
+            }
+        }
+    }
 
     // TODO: Can we get away with just using GetVideosPaged?
     var parameters = $.extend({}, defaults, options);
     parameters.method = "GetVideos";
-    if (parameters.page.length || parameters.page > 0) {
+    if (parameters.page && parameters.page > 0) {
         parameters.method = "GetVideosPaged";
     }
     this.sendRequest(parameters, success);
@@ -69,11 +75,7 @@ BBCore.prototype.getVideoId = function (pcall) {
 };
 
 BBCore.prototype.hasVideoId = function () {
-    if (this.currentVideoId) {
-        return true;
-    }
-
-    return false;
+    return !!this.currentVideoId;
 };
 
 BBCore.prototype.getNewVideoGuid = function (pcall) {
@@ -127,9 +129,6 @@ BBCore.prototype.videoQuickSend = function (opts, pcall) {
     // check options
     if (!opts.video_id) {
         sendErrors.push('quickSendVideo Error: no video_id defined.');
-    }
-    if (!opts.subject) {
-        sendErrors.push('quickSendVideo Error: no subject defined.');
     }
 
     // TODO: should we attempt to send without specifying any email addresses?
