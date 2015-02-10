@@ -21,7 +21,9 @@ BBCore.prototype.getVideos = function (options, success) {
         success = options;
         options = {};
     }
-    else if (typeof options === "object" && options != null) {
+    var parameters = $.extend({}, defaults, options);
+
+    if (typeof options === "object" && options != null) {
         if (options.pageSize !== undefined) {
             if (options.pageSize == null || options.pageSize <= 0 || isNaN(options.pageSize)) {
                 return false;
@@ -30,7 +32,6 @@ BBCore.prototype.getVideos = function (options, success) {
     }
 
     // TODO: Can we get away with just using GetVideosPaged?
-    var parameters = $.extend({}, defaults, options);
     parameters.method = "GetVideos";
     if (parameters.page && parameters.page > 0) {
         parameters.method = "GetVideosPaged";

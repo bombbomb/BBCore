@@ -1,5 +1,5 @@
 /**
- *
+ * Authenticates a user using their Email Address (User Id) and Password
  * @arg {string} uid
  * @arg {string} pwd
  * @arg {responseSuccess} success
@@ -43,7 +43,7 @@ BBCore.prototype.credentialsSaved = function () {
 /**
  * Save credentials to local storage (not recommended)
  * @arg {string} uid - User ID/Email Address
- * @param {string} pwd - Password
+ * @arg {string} pwd - Password
  */
 BBCore.prototype.saveCredentials = function (uid, pwd) {
     this.storage.setItem("b2-uid", uid);
@@ -52,26 +52,30 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
 
 /**
  * Authenticates from previously stored credentials
- * @arg {responseSuccess} success
- * @arg {responseSuccess} err
+ * @arg {responseSuccess} onSuccess
+ * @arg {responseSuccess} onError
  */
-BBCore.prototype.resumeStoredSession = function (success, err) {
+BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
     this.accessToken = this.storage.getItem("access_token");
     if (this.accessToken) {
-        this.validateAccessToken(success);
+        this.validateAccessToken(onSuccess);
     }
     else if (this.storage.getItem("b2-uid")) {
-        this.login(success);
+        this.login(onSuccess);
     }
     else {
-        err();
+        onError();
     }
 };
 
-BBCore.prototype.validateAccessToken = function (done) {
+/**
+ *
+ * @param onSuccess
+ */
+BBCore.prototype.validateAccessToken = function (onSuccess) {
     var inst = this;
     this.sendRequest({method: "ValidateSession", api_key: this.accessToken, async: false}, function (respObj) {
-        inst.__updateSession(respObj, done);
+        inst.__updateSession(respObj, onSuccess);
     });
 };
 

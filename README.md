@@ -111,13 +111,15 @@ Adds a Video to the collection
 
 ### BBCore.login(uid, pwd, success) 
 
+Authenticates a user using their Email Address (User Id) and Password
+
 **Parameters**
 
-**uid**: `string`
+**uid**: `string`, Authenticates a user using their Email Address (User Id) and Password
 
-**pwd**: `string`
+**pwd**: `string`, Authenticates a user using their Email Address (User Id) and Password
 
-**success**: `responseSuccess`
+**success**: `responseSuccess`, Authenticates a user using their Email Address (User Id) and Password
 
 
 ### BBCore.credentialsSaved() 
@@ -137,15 +139,22 @@ Save credentials to local storage (not recommended)
 **pwd**: `string`, Password
 
 
-### BBCore.resumeStoredSession(success, err) 
+### BBCore.resumeStoredSession(onSuccess, onError) 
 
 Authenticates from previously stored credentials
 
 **Parameters**
 
-**success**: `responseSuccess`, Authenticates from previously stored credentials
+**onSuccess**: `responseSuccess`, Authenticates from previously stored credentials
 
-**err**: `responseSuccess`, Authenticates from previously stored credentials
+**onError**: `responseSuccess`, Authenticates from previously stored credentials
+
+
+### BBCore.validateAccessToken(onSuccess) 
+
+**Parameters**
+
+**onSuccess**: 
 
 
 ### BBCore.isAuthenticated() 
