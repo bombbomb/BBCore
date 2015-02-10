@@ -1,4 +1,4 @@
-## Usage Examples!
+## Quick Start
 
 To begin, include the `BBCore` and `jQuery` libraries in your html:
 
@@ -12,10 +12,12 @@ Then instantiate BBCore:
 ```javascript
 var bb = new BBCore({ accessToken: '<your api key>'});
 ```
+## Usage Examples
 
+### Record a Video On Your Website
+Embed a video recorder on your website and record to a BombBomb account without without leaving your site.
 
-### Capture a video with user's webcam
-Then create a video recorder, and save a recording, being by calling `startVideoRecorder()` specifying a css selctor `target` into which you would like the recorder to appear.
+Then create a video recorder, and save a recording, being by calling `startVideoRecorder()` specifying a css selector `target` into which you would like the recorder to appear.
 
 ```javascript
 bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
@@ -29,7 +31,9 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 
 
 ### Send a video in an email through BombBomb
-To send that video in your default template, use `videoQuickSend()`
+Wrap your video in a nicely designed template, add a personal written message if you like, and press send.
+
+To send a video in your default template, use `videoQuickSend()`
 
 ```javascript
 bb.videoQuickSend({
