@@ -20,7 +20,7 @@ var bb = new BBCore({ accessToken: '<your api key>'});
 ## Usage Examples
 
 ### Record a Video On Your Website
-<img src="http://bombbomb.com/img/github/record_animation.gif" alt="" style="float:left;margin-right:12px;margin-bottom:12px;" />Embed a video recorder on your website and record to a BombBomb account without without leaving your site.
+Embed a video recorder on your website and record to a BombBomb account without without leaving your site.
 
 Then create a video recorder, and save a recording, being by calling `startVideoRecorder()` specifying a css selector `target` into which you would like the recorder to appear.
 
@@ -36,7 +36,7 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 
 
 ### Send a video in an email through BombBomb
-<img src="http://bombbomb.com/img/github/send_animation_small.gif" alt="" style="float:left;margin-right:12px;margin-bottom:12px;" />Wrap your video in a nicely designed template, add a personal written message if you like, and press send.
+Wrap your video in a nicely designed template, add a personal written message if you like, and press send.
 
 To send a video in your default template, use `videoQuickSend()`
 
