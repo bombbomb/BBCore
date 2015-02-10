@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.org/bombbomb/BBCore.svg?branch=master)](https://travis-ci.org/bombbomb/BBCore) [![Code Climate](https://codeclimate.com/github/bombbomb/BBCore/badges/gpa.svg)](https://codeclimate.com/github/bombbomb/BBCore) [![Test Coverage](https://codeclimate.com/github/bombbomb/BBCore/badges/coverage.svg)](https://codeclimate.com/github/bombbomb/BBCore)
 
-A Javascript API enabling the use of BombBomb's video recording, sending and more!
-## Usage Examples!
+BombBomb makes it easy to build relationships with simple videos. Use this JavaScript API to record a video on your website, email it within a clean, beautiful design, and receive detailed analytics on opens, click and plays. With the free BombBomb app you can receive push notifications and respond right away when someone interacts with your email.
+## Quick Start
 
 To begin, include the `BBCore` and `jQuery` libraries in your html:
 
@@ -17,10 +17,12 @@ Then instantiate BBCore:
 ```javascript
 var bb = new BBCore({ accessToken: '<your api key>'});
 ```
+## Usage Examples
 
+### Record a Video On Your Website
+<img src="http://bombbomb.com/img/github/record_animation.gif" alt="" style="float:left;margin-right:12px;margin-bottom:12px;" />Embed a video recorder on your website and record to a BombBomb account without without leaving your site.
 
-### Capture a video with user's webcam
-Then create a video recorder, and save a recording, being by calling `startVideoRecorder()` specifying a css selctor `target` into which you would like the recorder to appear.
+Then create a video recorder, and save a recording, being by calling `startVideoRecorder()` specifying a css selector `target` into which you would like the recorder to appear.
 
 ```javascript
 bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
@@ -34,7 +36,9 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 
 
 ### Send a video in an email through BombBomb
-To send that video in your default template, use `videoQuickSend()`
+<img src="http://bombbomb.com/img/github/send_animation_small.gif" alt="" style="float:left;margin-right:12px;margin-bottom:12px;" />Wrap your video in a nicely designed template, add a personal written message if you like, and press send.
+
+To send a video in your default template, use `videoQuickSend()`
 
 ```javascript
 bb.videoQuickSend({
