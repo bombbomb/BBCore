@@ -1,0 +1,98 @@
+body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #eee;
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 730px;
+    }
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.listsList {
+    padding-top: 20px;
+}
+
+.item-lists li {
+    list-style: none;
+    width: 100%;
+    text-align: left;
+
+}
+
+.videosList li {
+    float: left;
+    border-radius: 4px;
+    width:200px;
+    margin: 5px;
+    overflow: hidden;
+    background-position: center;
+    background-size: cover;
+}
+
+.videosList li .title {
+    top:125px;
+    height:25px;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    background:rgba(31,36,38,0.8);
+    color: white;
+    text-overflow: ellipsis;
+    text-align: center;
+    border-radius: 0 0 4px 4px;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+
+#sendvideo {
+    width: 400px;
+    margin: 0 auto;
+}
+.tab-content {
+    text-align: center;
+}
+
+.recorder {
+    text-align: center;
+}
+.recorder div   {
+    margin: 0 auto;
+}
