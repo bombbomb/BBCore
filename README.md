@@ -5,11 +5,11 @@
 BombBomb makes it easy to build relationships with simple videos. Use this JavaScript API to record a video on your website, email it within a clean, beautiful design, and receive detailed analytics on opens, click and plays. With the free BombBomb app you can receive push notifications and respond right away when someone interacts with your email.
 ## Quick Start
 
-To begin, include the `BBCore` and `jQuery` libraries in your html:
+To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js`):
 
 ```html
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="/app/js/bbcore-min.js"></script>
+<script type="text/javascript" src="//s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js"></script>
 ```
 
 Then instantiate BBCore:
@@ -18,6 +18,8 @@ Then instantiate BBCore:
 var bb = new BBCore({ accessToken: '<your api key>'});
 ```
 ## Usage Examples
+
+Take a look in the `examples/` directory to see some example implementation.
 
 ### Record a Video On Your Website
 Embed a video recorder on your website and record to a BombBomb account without without leaving your site.
