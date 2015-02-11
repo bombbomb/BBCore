@@ -12,14 +12,17 @@ Then instantiate BBCore:
 ```javascript
 var bb = new BBCore({ accessToken: '<your api key>'});
 ```
+
 ## Usage Examples
 
 Take a look in the `examples/` directory to see some example implementation.
 
 ### Record a Video On Your Website
-Embed a video recorder on your website and record to a BombBomb account without without leaving your site.
+<img src="http://bbemail.s3.amazonaws.com/ART/githubImages/record_animated_250.gif" alt="" style="float:left;margin-right:12px;margin-bottom:12px;" />Embed a video recorder on your website and record to a BombBomb account without leaving your site.
 
-Then create a video recorder, and save a recording, being by calling `startVideoRecorder()` specifying a css selector `target` into which you would like the recorder to appear.
+Create a video recorder and save a recording by calling `startVideoRecorder()`, specifying a css selector `target` into which you would like the recorder to appear.
+
+<div style="clear:both;"></div>
 
 ```javascript
 bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
@@ -31,11 +34,15 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 });
 ```
 
+&nbsp;
 
-### Send a video in an email through BombBomb
-Wrap your video in a nicely designed template, add a personal written message if you like, and press send.
 
-To send a video in your default template, use `videoQuickSend()`
+### Send a Video in an Email Through BombBomb <img src="http://bbemail.s3.amazonaws.com/ART/githubImages/send.jpg" alt="" style="float:right;margin-left:12px;" />
+ Wrap your video in a nicely designed template, add a personal written message if you like, and press send.
+
+To send a video in your default template, use `videoQuickSend()`.
+
+<div style="clear:both;"></div>
 
 ```javascript
 bb.videoQuickSend({
@@ -48,3 +55,18 @@ bb.videoQuickSend({
     alert("You've sent a video! " + data.info);
 });
 ```
+
+&nbsp;
+
+### Detailed Analytics
+<img src="http://bbemail.s3.amazonaws.com/ART/githubImages/tracking_static.jpg" alt="" style="float:left;margin-right:12px;" /> View your email opens, link clicks and video plays. When you can see how people are interacting with your emails and videos you'll know exactly when to follow up.
+
+<div style="clear:both;"></div>
+
+&nbsp;
+
+### Realtime Notifications <img src="http://bbemail.s3.amazonaws.com/ART/githubImages/notification.jpg" alt="" style="float:right;margin-left:12px;" />
+Download the free BombBomb app for your <a href="https://itunes.apple.com/us/app/bombbomb/id449319652" target="_blank">iOS</a> or <a href="https://play.google.com/store/apps/details?id=com.bombbomb.prod.android" target="_blank">Android</a> device and enable realtime notifications. View contact details or respond from your mobile device with one click.
+
+<div style="clear:both;"></div>
+
