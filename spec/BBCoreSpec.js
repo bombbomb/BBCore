@@ -321,18 +321,6 @@ describe("BBCore.auth", function() {
         expect(bbCore.getKey()).toBe(apiKey);
     });
 
-    it("storeKey: with an existing key will not overwrite", function() {
-        var originalApiKey = "api key";
-        var newApiKey = "new api key";
-
-        bbCore.storeKey(originalApiKey);
-        expect(bbCore.getKey()).toBe(originalApiKey);
-
-        bbCore.storeKey(newApiKey);
-
-        expect(bbCore.getKey()).toBe(originalApiKey);
-    });
-
     it("clearKey", function() {
         var apiKey = "api key";
 

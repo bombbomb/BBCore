@@ -144,7 +144,8 @@ BBCore.prototype.verifyKey = function (key, complete) {
  * @arg key
  */
 BBCore.prototype.storeKey = function (key) {
-    if (this.getKey()) {
+    if (!key)
+    {
         return;
     }
 
