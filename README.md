@@ -220,6 +220,26 @@ Stores the give session key, typically used so a session can be resumed later on
 **key**: , Stores the give session key, typically used so a session can be resumed later on.
 
 
+### BBCore.verifyKey(key, complete) 
+
+Validates the given key
+
+**Parameters**
+
+**key**: `string`, Validates the given key
+
+**complete**: `responseSuccess`, Validates the given key
+
+
+### BBCore.storeJsonWebToken(key) 
+
+Stores the give session key, typically used so a session can be resumed later on.
+
+**Parameters**
+
+**key**: , Stores the give session key, typically used so a session can be resumed later on.
+
+
 ### BBCore.getServerUrl() 
 
 **Returns**: `BBCore.apiServer | * | BBCore.CONFIG.SERVER_API_URL`

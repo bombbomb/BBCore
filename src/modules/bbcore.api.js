@@ -54,11 +54,16 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         return false;
     }
 
+    var requestHeaders = {};
     var inst = this;
-
     var asyncSetting = true;
     if (typeof params.async !== 'undefined') {
         asyncSetting = params.async;
+    }
+
+    if (this.getJsonWebToken())
+    {
+        requestHeaders['BB-JWT'] = this.getJsonWebToken();
     }
 
     return $.ajax({
@@ -73,6 +78,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
          */
         crossDomain: true,
         data: params,
+        headers: requestHeaders,
         success: function (result) {
             // set state of bb instance
             // ?? could evaluate the two last statuses and

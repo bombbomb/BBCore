@@ -19,7 +19,7 @@ BBCore.prototype.login = function (uid, pwd, success) {
     this.userEmail = uid;
 
     var inst = this;
-    this.sendRequest({method: "ValidateSession", email: uid, pw: pwd}, function (respObj) {
+    this.sendRequest({method: "ValidateSession", email: uid, pw: pwd, jwt: true}, function (respObj) {
         inst.__updateSession(respObj, success);
     });
 };
@@ -28,6 +28,7 @@ BBCore.prototype.logout = function () {
     this.storage.removeItem('b2-uid');
     this.storage.removeItem('b2-pwd');
     this.storage.removeItem('access_token');
+    this.storage.removeItem('jsonWebToken');
     this.hasContext = false;
     this.authenticated = false;
 };
@@ -37,7 +38,7 @@ BBCore.prototype.logout = function () {
  * @returns {boolean}
  */
 BBCore.prototype.credentialsSaved = function () {
-    return null !== this.storage.getItem("b2-uid") || null !== this.storage.getItem("access_token");
+    return null !== this.storage.getItem("b2-uid") || null !== this.storage.getItem("access_token") || null !== this.storage.getItem("jsonWebToken");
 };
 
 /**
@@ -47,7 +48,6 @@ BBCore.prototype.credentialsSaved = function () {
  */
 BBCore.prototype.saveCredentials = function (uid, pwd) {
     this.storage.setItem("b2-uid", uid);
-    this.storage.setItem("b2-pwd", pwd);
 };
 
 /**
@@ -56,15 +56,26 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
  * @arg {responseSuccess} onError
  */
 BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
-    this.accessToken = this.storage.getItem("access_token");
-    if (this.accessToken) {
-        this.validateAccessToken(onSuccess);
+
+    if (this.getJsonWebToken())
+    {
+        this.verifyJsonWebToken(function(response){
+            this.__updateSession(response);
+            onSuccess.call(this,response);
+        });
     }
-    else if (this.storage.getItem("b2-uid")) {
-        this.login(onSuccess);
-    }
-    else {
-        onError();
+    else
+    {
+        this.accessToken = this.storage.getItem("access_token");
+        if (this.accessToken) {
+            this.validateAccessToken(onSuccess);
+        }
+        else if (this.storage.getItem("b2-uid")) {
+            this.login(onSuccess);
+        }
+        else {
+            onError();
+        }
     }
 };
 
@@ -74,7 +85,7 @@ BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
  */
 BBCore.prototype.validateAccessToken = function (onSuccess) {
     var inst = this;
-    this.sendRequest({method: "ValidateSession", api_key: this.accessToken, async: false}, function (respObj) {
+    this.sendRequest({method: "ValidateSession", api_key: this.accessToken, async: false, jwt: true}, function (respObj) {
         inst.__updateSession(respObj, onSuccess);
     });
 };
@@ -113,6 +124,7 @@ BBCore.prototype.__updateSession = function (respObj, done) {
         this.authenticated = true;
 
         this.storeKey(this.accessToken);
+        this.storeJsonWebToken(respObj.info.jwtoken);
 
         // TODO; send request to fetch and update user details
 
@@ -161,3 +173,43 @@ BBCore.prototype.clearKey = function () {
     this.accessToken = null;
     this.storage.removeItem('access_token');
 };
+
+
+/**
+ * Validates the given key
+ * @arg {string} key
+ * @arg {responseSuccess} complete
+ */
+BBCore.prototype.verifyJsonWebToken = function (key, complete) {
+    if (typeof complete == 'function')
+    {
+        key = this.getJsonWebToken();
+    }
+    this.sendRequest({method: "ValidateJsonWebToken", jwt: key}, function (resp) {
+        if (complete) {
+            complete({isValid: (resp.status === "success")});
+        }
+    });
+};
+
+/**
+ * Stores the give session key, typically used so a session can be resumed later on.
+ * @arg key
+ */
+BBCore.prototype.storeJsonWebToken = function (token) {
+    if (!token)
+    {
+        return;
+    }
+    this.jsonWebToken = token;
+    this.storage.setItem("jsonWebToken", this.jsonWebToken);
+};
+
+BBCore.prototype.getJsonWebToken = function () {
+    return this.jsonWebToken;
+};
+BBCore.prototype.clearJsonWebToken = function () {
+    this.jsonWebToken = null;
+    this.storage.removeItem('jsonWebToken');
+};
+
