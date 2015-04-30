@@ -220,7 +220,7 @@ Stores the give session key, typically used so a session can be resumed later on
 **key**: , Stores the give session key, typically used so a session can be resumed later on.
 
 
-### BBCore.verifyKey(key, complete) 
+### BBCore.verifyJsonWebToken(key, complete) 
 
 Validates the given key
 

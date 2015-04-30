@@ -25,10 +25,10 @@ BBCore.prototype.login = function (uid, pwd, success) {
 };
 
 BBCore.prototype.logout = function () {
+    this.clearJsonWebToken();
+    this.clearKey();
     this.storage.removeItem('b2-uid');
     this.storage.removeItem('b2-pwd');
-    this.storage.removeItem('access_token');
-    this.storage.removeItem('jsonWebToken');
     this.hasContext = false;
     this.authenticated = false;
 };
@@ -59,9 +59,10 @@ BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
 
     if (this.getJsonWebToken())
     {
+        var inst = this;
         this.verifyJsonWebToken(function(response){
-            this.__updateSession(response);
-            onSuccess.call(this,response);
+            inst.__updateSession(response);
+            onSuccess.call(inst,response);
         });
     }
     else
@@ -117,8 +118,16 @@ BBCore.prototype.invalidateSession = function () {
 
 BBCore.prototype.__updateSession = function (respObj, done) {
     if (respObj.status === "success") {
-        this.userId = respObj.info.user_id;
-        this.clientId = respObj.info.client_id;
+        if (respObj.info.userId)
+        {
+            this.userId = respObj.info.userId;
+            this.clientId = respObj.info.clientId;
+        }
+        else
+        {
+            this.userId = respObj.info.user_id;
+            this.clientId = respObj.info.client_id;
+        }
         this.accessToken = respObj.info.api_key;
         this.hasContext = true;
         this.authenticated = true;
@@ -181,13 +190,16 @@ BBCore.prototype.clearKey = function () {
  * @arg {responseSuccess} complete
  */
 BBCore.prototype.verifyJsonWebToken = function (key, complete) {
-    if (typeof complete == 'function')
+    if (typeof key == 'function')
     {
+        complete = key;
         key = this.getJsonWebToken();
     }
     this.sendRequest({method: "ValidateJsonWebToken", jwt: key}, function (resp) {
-        if (complete) {
-            complete({isValid: (resp.status === "success")});
+        if (complete)
+        {
+            resp.isValid = (resp.status === "success");
+            complete(resp);
         }
     });
 };
