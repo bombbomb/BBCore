@@ -33,7 +33,7 @@ BBCore.prototype.getVideos = function (options, success) {
 
     // TODO: Can we get away with just using GetVideosPaged?
     parameters.method = "GetVideos";
-    if (parameters.page && parameters.page > 0) {
+    if (parameters.page && parameters.pageSize && parameters.pageSize > 0) {
         parameters.method = "GetVideosPaged";
     }
     this.sendRequest(parameters, success);
