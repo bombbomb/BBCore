@@ -23,9 +23,9 @@ BBCore.prototype.getVideos = function (options, success) {
     }
     var parameters = $.extend({}, defaults, options);
 
-    if (typeof options === "object" && options != null) {
-        if (options.pageSize !== undefined) {
-            if (options.pageSize == null || options.pageSize <= 0 || isNaN(options.pageSize)) {
+    if (typeof parameters === "object" && parameters != null) {
+        if (parameters.pageSize !== undefined) {
+            if (parameters.pageSize == null || parameters.pageSize <= 0 || isNaN(parameters.pageSize)) {
                 return false;
             }
         }
@@ -33,7 +33,7 @@ BBCore.prototype.getVideos = function (options, success) {
 
     // TODO: Can we get away with just using GetVideosPaged?
     parameters.method = "GetVideos";
-    if (parameters.page && parameters.pageSize && parameters.pageSize > 0) {
+    if (parameters.page !== null && parameters.pageSize) {
         parameters.method = "GetVideosPaged";
     }
     this.sendRequest(parameters, success);
