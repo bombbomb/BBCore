@@ -57,7 +57,7 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
  */
 BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
 
-    if (this.getJsonWebToken())
+    if (!this.getKey() && this.getJsonWebToken())
     {
         var inst = this;
         this.verifyJsonWebToken(function(response){
@@ -67,15 +67,14 @@ BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
     }
     else
     {
-        this.accessToken = this.storage.getItem("access_token");
-        if (this.accessToken) {
+        if (this.getKey()) {
             this.validateAccessToken(onSuccess);
         }
         else if (this.storage.getItem("b2-uid")) {
             this.login(onSuccess);
         }
         else {
-            onError();
+            if (onError) onError();
         }
     }
 };
@@ -176,7 +175,7 @@ BBCore.prototype.storeKey = function (key) {
 };
 
 BBCore.prototype.getKey = function () {
-    return this.accessToken;
+    return this.accessToken ? this.accessToken : this.storage.getItem("access_token");
 };
 BBCore.prototype.clearKey = function () {
     this.accessToken = null;
@@ -218,7 +217,7 @@ BBCore.prototype.storeJsonWebToken = function (token) {
 };
 
 BBCore.prototype.getJsonWebToken = function () {
-    return this.jsonWebToken;
+    return this.jsonWebToken ? this.jsonWebToken : this.storage.getItem("jsonWebToken");
 };
 BBCore.prototype.clearJsonWebToken = function () {
     this.jsonWebToken = null;
