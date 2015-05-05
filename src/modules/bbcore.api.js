@@ -43,7 +43,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     }
 
     if (method !== "IsValidLogin" && !params.api_key) {
-        params.api_key = this.accessToken;
+        params.api_key = this.getKey();
     }
     if (method !== "ValidateSession" && !this.authenticated) {
         this.onError.call(this, {
