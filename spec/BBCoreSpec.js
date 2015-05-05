@@ -588,7 +588,7 @@ describe("BBCore.video", function() {
     it("getVideos: invalid page falls back to legacy GetVideos api method", function() {
         spyOn(bbCore, 'sendRequest');
 
-        bbCore.getVideos({ page: -1 }, successCallbackSpy);
+        bbCore.getVideos({ page: null }, successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({method: "GetVideos"}), successCallbackSpy);
     });
@@ -868,7 +868,7 @@ describe("BBCore.videoRecorder", function() {
     });
 
     it("getVideoRecorder: without options", function() {
-        var defaultOptions = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : '' };
+        var defaultOptions = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : null };
 
         setupMockApiRequest(result.withDefaultOptionsSuccess);
 
