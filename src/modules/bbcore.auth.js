@@ -224,3 +224,37 @@ BBCore.prototype.clearJsonWebToken = function () {
     this.storage.removeItem('jsonWebToken');
 };
 
+/**
+ * Attempts to always return a valid JWT which makes an async verification request
+ * @param callback - handler given a valid JWT.  If the JWT is null then the user
+ * is NOT authenticated.
+ */
+BBCore.prototype.getValidJsonWebTokenAsync = function(callback) {
+    var currentToken = this.getJsonWebToken();
+    if (!currentToken && callback) {
+        callback(null);
+        return;
+    }
+
+    this.verifyJsonWebToken(currentToken, function(response) {
+        if (response && response.isValid) {
+            if (callback) {
+                callback(currentToken);
+            }
+        }
+        else {
+            this.validateAccessToken(function(responseObj) {
+                if (callback) {
+                    if (response) {
+                        this.storeJsonWebToken(responseObj.jwtoken);
+                        callback(this.getJsonWebToken());
+                    }
+                    else {
+                        callback(null);
+                    }
+                }
+            });
+        }
+    });
+};
+
