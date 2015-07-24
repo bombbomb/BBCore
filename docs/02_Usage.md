@@ -58,6 +58,22 @@ bb.videoQuickSend({
 
 &nbsp;
 
+
+### Register to receive real-time feedback via web hooks 
+Have your system be notified in real-time as events happen in your customer's BombBomb account.
+[BombBomb's Webhooks](https://bombbomb.desk.com/customer/portal/articles/2062941-bombbomb-webhooks) make
+it easy to keep your system up to date.
+
+&nbsp;
+
+```javascript
+bb.sendRequest('AddWebHook', {
+    hookUrl: '<Your Listener URL>'
+});
+```
+
+&nbsp;
+
 ### Detailed Analytics
 <img src="http://bbemail.s3.amazonaws.com/ART/githubImages/tracking_static.png" alt="" align="left" /> View your email opens, link clicks and video plays. When you can see how people are interacting with your emails and videos you'll know exactly when to follow up.
 
