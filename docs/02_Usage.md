@@ -61,7 +61,7 @@ bb.videoQuickSend({
 
 ### Register to receive real-time feedback via web hooks 
 Have your system be notified in real-time as events happen in your customer's BombBomb account.
-[BombBomb's Webhooks](https://bombbomb.desk.com/customer/portal/articles/2062941-bombbomb-webhooks) make
+[BombBomb's Webhooks](http://support.bombbomb.com/customer/portal/articles/2062941-bombbomb-webhooks) make
 it easy to keep your system up to date.
 
 &nbsp;
