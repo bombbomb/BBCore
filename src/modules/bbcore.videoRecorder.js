@@ -10,7 +10,7 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
     }
     var defOpts = {height: 240, width: 340, force_ssl: false};
     if (typeof options.height === 'undefined') {
-        options = defOpts;
+        options = $.extend({}, defOpts, options);
     }
 
     var reqParams = $.extend({}, options, {
