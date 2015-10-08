@@ -1,7 +1,7 @@
 //
 // BBCore Video Tests
 //
-var apiServerUrl = 'http://dev.app.bombbomb.com/app/api/api.php';
+var apiServerUrl = 'http://dev.app.bombbomb.com';
 var requestUrl = apiServerUrl + BBCore.CONFIG.API_END_POINT;
 var testGuid = '11111111-1111-1111-1111-111111111111';
 
@@ -818,7 +818,7 @@ describe("BBCore.videoRecorder", function() {
 
     it("getEmbeddedRecorderUrl: with undefined height uses default options", function() {
         var apiKey = "api key";
-        var requestParams = $.param({ height: 240, width: 340, force_ssl: false, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
+        var requestParams = $.param({ height: 240, width: 340, force_ssl: true, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
 
         spyOn(bbCore, 'getKey').and.callFake(function() {
@@ -826,7 +826,7 @@ describe("BBCore.videoRecorder", function() {
         });
 
         bbCore.setVideoId(testGuid);
-        bbCore.getEmbeddedRecorderUrl({ width: 640, force_ssl: true }, successCallbackSpy);
+        bbCore.getEmbeddedRecorderUrl({ width: 340, force_ssl: true }, successCallbackSpy);
 
         expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
