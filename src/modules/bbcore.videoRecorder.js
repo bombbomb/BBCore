@@ -9,7 +9,7 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         onComplete = options;
         options = {};
     }
-    var defOpts = {height: 240, width: 340, force_ssl: false};
+    var defOpts = {height: 240, width: 320, force_ssl: false};
     if (typeof options.height === 'undefined') {
         options = $.extend({}, defOpts, (options ?  options : {}));
     }
@@ -39,7 +39,7 @@ BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
         onComplete = opts;
         opts = null;
     }
-    var defOpts = {height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null};
+    var defOpts = {height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null};
     opts = opts || {};
     $.extend(opts, defOpts);
     if (!this.isAuthenticated()) {
@@ -69,7 +69,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         type: 'embedded',
         target: null,
         height: 240,
-        width: 340,
+        width: 320,
         force_ssl: false,
         recorderLoaded: null,
         recordComplete: recordComplete
