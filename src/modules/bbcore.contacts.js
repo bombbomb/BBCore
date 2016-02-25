@@ -48,7 +48,9 @@ BBCore.prototype.getListContacts = function (listId, success) {
  */
 BBCore.prototype.addContact = function (contact, success) {
     if (typeof contact === "object") {
-        this.sendRequest({method: "AddContact", contact: contact}, success);
+        //combine the contact object into a request object
+        contact.method = "AddContact";
+        this.sendRequest(contact, success);
     }
 };
 

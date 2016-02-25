@@ -1,6 +1,6 @@
 /*
  BombBomb's App Core API JS Implementation
- Copyright 2013-2015 BombBomb, Inc.
+ Copyright 2013-2016 BombBomb, Inc.
  Version 2.0
  */
 
