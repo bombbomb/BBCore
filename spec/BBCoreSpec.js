@@ -385,7 +385,7 @@ describe("BBCore.contacts", function() {
 
         bbCore.addContact(contact, successCallbackSpy);
 
-        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ contact: contact }), successCallbackSpy);
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ eml: 'test@test.com' }), successCallbackSpy);
     });
 
     it("addContact: only works with objects", function() {
