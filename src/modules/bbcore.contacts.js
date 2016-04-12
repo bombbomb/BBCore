@@ -25,7 +25,7 @@ BBCore.prototype.getContact = function (contactId, success) {
         return;
     }
     var defaults = {width: 340, force_ssl: false};
-    var parameters = $.extend({}, defaults, {contact_id: contactId, method: 'GetContact'});
+    var parameters = jQuery.extend({}, defaults, {contact_id: contactId, method: 'GetContact'});
     this.sendRequest(parameters, success);
 };
 
@@ -91,7 +91,7 @@ BBCore.prototype.updateContact = function (opts, success) {
  * @param {responseSuccess} success
  */
 BBCore.prototype.getImportAddressesByType = function (opts, success) {
-    opts = $.extend({method: 'getImportAddressesByType'}, opts);
+    opts = jQuery.extend({method: 'getImportAddressesByType'}, opts);
     if (!opts.type) {
         this.onError({info: {errmsg: ['A Type must be provided.']}});
     }
@@ -104,7 +104,7 @@ BBCore.prototype.getImportAddressesByType = function (opts, success) {
  * @param {responseSuccess} success
  */
 BBCore.prototype.addContactImportAddress = function (opts, success) {
-    opts = $.extend({method: 'addContactImportAddress'}, opts);
+    opts = jQuery.extend({method: 'addContactImportAddress'}, opts);
     if (!opts.importAddrCode || !opts.importAddrName) {
         this.onError({info: {errmsg: ['An Import Address Code and Import Address Name must be provided.']}});
     }
@@ -112,7 +112,7 @@ BBCore.prototype.addContactImportAddress = function (opts, success) {
 };
 
 BBCore.prototype.deleteContactImportAddress = function (opts, success) {
-    opts = $.extend({importAddrCode: 1, method: 'deleteContactImportAddress'}, opts);
+    opts = jQuery.extend({importAddrCode: 1, method: 'deleteContactImportAddress'}, opts);
     if (!opts.importAddrCode) {
         this.onError({info: {errmsg: ['Invalid Import Address Code']}});
     }

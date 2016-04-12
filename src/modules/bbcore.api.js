@@ -66,7 +66,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         requestHeaders['BB-JWT'] = this.getJsonWebToken();
     }
 
-    return $.ajax({
+    return jQuery.ajax({
         url: params.url ? params.url : this.getRequestUrl(), //BBCore.CONFIG.SERVER_API_URL + BBCore.CONFIG.API_END_POINT,
         async: asyncSetting,
         type: "post",
@@ -114,5 +114,3 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         }
     });
 };
-
-
