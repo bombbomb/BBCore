@@ -22,6 +22,6 @@ BBCore.prototype.getEmails = function (success) {
  */
 BBCore.prototype.sendCustomVideoEmail = function (opts, success) {
     var defaults = {method: 'SendCustomVideoEmail', html_content: null, subject: '', email: '', email_id: '', from_name: ''};
-    var parameters = $.extend({}, defaults, opts);
+    var parameters = jQuery.extend({}, defaults, opts);
     this.sendRequest(parameters, success);
 };
