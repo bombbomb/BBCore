@@ -22,7 +22,17 @@ BBCore.prototype.getForms = function (opts, success) {
     this.sendRequest(opts, success);
 };
 
-
-BBCore.prototype.getClientIntegrations = function (success) {
-    this.sendRequest({method: "getClientIntegrations"}, success);
+/**
+ *
+ * @param opts
+ * @param success
+ */
+BBCore.prototype.getClientIntegrations = function (opts, success) {
+    if (typeof opts === 'function')
+    {
+        success = opts;
+        opts = {};
+    }
+    opts.method = 'getClientIntegrations';
+    this.sendRequest(opts, success);
 };

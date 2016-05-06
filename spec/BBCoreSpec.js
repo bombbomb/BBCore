@@ -534,6 +534,11 @@ describe("BBCore.extras", function() {
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
+    it("getClientIntegrations with Options", function() {
+        bbCore.getClientIntegrations({ integrationCode: 'GAPPS' }, successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
+    });
 });
 
 describe("BBCore.video", function() {
