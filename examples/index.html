@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="example.css">
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
     <!-- Latest compiled BBCore JS API -->
@@ -211,16 +211,16 @@
 
         bbInstance = new BBCore();
         bbInstance.onError(function(errorInfo) {
-            if (errorInfo.methodName=="BadLogin")
+            if (errorInfo.methodName=="BadLogin" || (errorInfo.methodName == "IsValidLogin" && errorInfo.status == "failure"))
             {
                 alert('Invalid Username or Password');
                 $(this).removeClass('disabled');
             }
             else
             {
-                console.log('BBCore Error: ', errorInfo);
                 alert('An error occurred, please check the console for more information.');
             }
+            console.log('BBCore Error: ', errorInfo);
         });
 
         // attempt to resume the last session, if available

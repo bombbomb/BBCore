@@ -385,7 +385,7 @@ describe("BBCore.contacts", function() {
 
         bbCore.addContact(contact, successCallbackSpy);
 
-        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ contact: contact }), successCallbackSpy);
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ eml: 'test@test.com' }), successCallbackSpy);
     });
 
     it("addContact: only works with objects", function() {
@@ -531,6 +531,11 @@ describe("BBCore.extras", function() {
 
     it("getClientIntegrations", function() {
         bbCore.getClientIntegrations(successCallbackSpy);
+
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
+    });
+    it("getClientIntegrations with Options", function() {
+        bbCore.getClientIntegrations({ integrationCode: 'GAPPS' }, successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
@@ -793,7 +798,7 @@ describe("BBCore.video", function() {
 describe("BBCore.videoRecorder", function() {
     var result = {
         withOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 640, height: 480, https: true }},
-        withDefaultOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 340, height: 240, https: false }},
+        withDefaultOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 320, height: 240, https: false }},
         authenticationFailure: { status: "failure", methodName: 'BadLogin', info: { errormsg: 'invalid session' } }
     };
 
@@ -818,7 +823,7 @@ describe("BBCore.videoRecorder", function() {
 
     it("getEmbeddedRecorderUrl: with undefined height uses default options", function() {
         var apiKey = "api key";
-        var requestParams = $.param({ height: 240, width: 340, force_ssl: true, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
+        var requestParams = $.param({ height: 240, width: 320, force_ssl: true, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
 
         spyOn(bbCore, 'getKey').and.callFake(function() {
@@ -826,14 +831,14 @@ describe("BBCore.videoRecorder", function() {
         });
 
         bbCore.setVideoId(testGuid);
-        bbCore.getEmbeddedRecorderUrl({ width: 340, force_ssl: true }, successCallbackSpy);
+        bbCore.getEmbeddedRecorderUrl({ width: 320, force_ssl: true }, successCallbackSpy);
 
         expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
 
     it("getEmbeddedRecorderUrl: with undefined options uses default options", function() {
         var apiKey = "api key";
-        var requestParams = $.param({ height: 240, width: 340, force_ssl: false, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
+        var requestParams = $.param({ height: 240, width: 320, force_ssl: false, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
 
         spyOn(bbCore, 'getKey').and.callFake(function() {
@@ -868,7 +873,7 @@ describe("BBCore.videoRecorder", function() {
     });
 
     it("getVideoRecorder: without options", function() {
-        var defaultOptions = { height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : null };
+        var defaultOptions = { height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : null };
 
         setupMockApiRequest(result.withDefaultOptionsSuccess);
 

@@ -9,12 +9,12 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         onComplete = options;
         options = {};
     }
-    var defOpts = {height: 240, width: 340, force_ssl: false};
+    var defOpts = {height: 240, width: 320, force_ssl: false};
     if (typeof options.height === 'undefined') {
-        options = $.extend({}, defOpts, (options ?  options : {}));
+        options = jQuery.extend({}, defOpts, (options ?  options : {}));
     }
 
-    var reqParams = $.extend({}, options, {
+    var reqParams = jQuery.extend({}, options, {
         module: 'videos',
         page: 'EmbeddedRecorder',
         popup: 1,
@@ -23,7 +23,7 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
     });
     var inst = this;
     this.getVideoId(function (vidId) {
-        var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + $.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
+        var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
         onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
     });
 
@@ -39,9 +39,9 @@ BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
         onComplete = opts;
         opts = null;
     }
-    var defOpts = {height: 240, width: 340, force_ssl: false, start: null, stop: null, recorded: null};
+    var defOpts = {height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null};
     opts = opts || {};
-    $.extend(opts, defOpts);
+    jQuery.extend(opts, defOpts);
     if (!this.isAuthenticated()) {
         this.onError({message: "Must authenticate session before invoking methods."});
         return;
@@ -69,7 +69,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         type: 'embedded',
         target: null,
         height: 240,
-        width: 340,
+        width: 320,
         force_ssl: false,
         recorderLoaded: null,
         recordComplete: recordComplete
@@ -79,9 +79,9 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     if (opts.recordComplete && !recordComplete) {
         recordComplete = opts.recordComplete;
     }
-    this.__vidRecHndl = opts.target ? $(opts.target) : $('body').append('<div id="b2recorder"></div>');
+    this.__vidRecHndl = opts.target ? jQuery(opts.target) : jQuery('body').append('<div id="b2recorder"></div>');
 
-    var rec_opts = $.extend({}, opts);
+    var rec_opts = jQuery.extend({}, opts);
     delete rec_opts.type;
     delete rec_opts.target;
     delete rec_opts.recordComplete;
