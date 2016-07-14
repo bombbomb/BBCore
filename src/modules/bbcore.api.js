@@ -42,6 +42,10 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         method = params.method;
     }
 
+    if (typeof method === 'string' && !params.method) {
+        params.method = method;
+    }
+
     if (method !== "IsValidLogin" && !params.api_key) {
         params.api_key = this.getKey();
     }
