@@ -11,7 +11,7 @@ BBCore.prototype.login = function (uid, pwd, success) {
         pwd = this.storage.getItem('b2-pwd');
     }
 
-    if (!uid) {
+    if (!uid && !this.accessToken) {
         this.onError({ info: { errormsg: 'Username cannot be blank' } });
         return;
     }
