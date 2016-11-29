@@ -867,8 +867,10 @@ describe("BBCore.videoRecorder", function() {
         setupMockApiRequest(result.withOptionsSuccess);
 
         bbCore.getVideoRecorder(opts, successCallbackSpy);
-
-        expect($.ajax.calls.argsFor(0)[0].data).toEqual(opts);
+        data = $.ajax.calls.argsFor(0)[0].data
+        for (var k in opts) {
+          expect(data[k]).toEqual(opts[k]);
+        }
         expect(successCallbackSpy).toHaveBeenCalledWith(result.withOptionsSuccess);
     });
 
