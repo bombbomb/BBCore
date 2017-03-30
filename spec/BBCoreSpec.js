@@ -10,7 +10,7 @@ var successCallbackSpy = null;
 
 function setupTest(spyOnBBCoreOnError, spyOnBBCoreSendRequest) {
     bbCore = new BBCore({ apiServer: apiServerUrl, storage: window.storage || [] });
-    successCallbackSpy = jasmine.createSpy();
+    successCallbackSpy = jasmine.createSpy('successCallbackSpy');
 
     if (spyOnBBCoreOnError) {
         spyOn(bbCore, 'onError');
@@ -29,6 +29,10 @@ function setupAuthenticatedTest(spyOnBBCoreOnError, spyOnBBCoreSendRequest) {
 function simulateAuthenticatedApi(bbCore) {
     // This is only simulate a successful api call to login.  DO NOT do this in your implementation
     bbCore.authenticated = true;
+}
+
+function simulateUnauthenticatedApi(bbCore) {
+    bbCore.authenticated = false;
 }
 
 function setupMockApiRequest(result, error) {
@@ -281,6 +285,19 @@ describe("BBCore.auth", function() {
         expect(bbCore.isAuthenticated()).toBe(true);
     });
 
+    it("validateSession - fails", function() {
+        setupMockApiRequest({ status: "success", info: {}});
+        spyOn(bbCore, 'clearKey').and.callThrough();
+
+        var successSpy = jasmine.createSpy('successCallbackSpy');
+        var errorSpy = jasmine.createSpy('errorCallbackSpy');
+
+        bbCore.validateSession(successSpy,errorSpy);
+
+        expect(successSpy).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalled();
+    });
+
     it("invalidateSession", function() {
         setupMockApiRequest({ status: "success", info: {}});
         spyOn(bbCore, 'clearKey').and.callThrough();
@@ -302,14 +319,14 @@ describe("BBCore.auth", function() {
     });
 
     it("verifyKey - with an invalid api key", function() {
-        var result = { status: "failure", info: {} };
+        var result = { status : 'failure', methodName : 'InvalidSession', info : { errormsg : 'Invalid login' } };
 
         setupMockApiRequest(result);
-        simulateAuthenticatedApi(bbCore);
+        simulateUnauthenticatedApi(bbCore);
 
         bbCore.verifyKey("invalidApiKey", successCallbackSpy);
 
-        expect(bbCore.onError).toHaveBeenCalledWith(result);
+        expect(bbCore.onError).toHaveBeenCalledWith(result, null);
         expect(successCallbackSpy).not.toHaveBeenCalled();
     });
 
@@ -331,6 +348,21 @@ describe("BBCore.auth", function() {
 
         expect(bbCore.getKey()).toBe(null);
     });
+
+    it("getOAuthTokenForRequest", function() {
+
+        var fakeTokenPayload = { token_type: '', access_token: '' };
+
+        spyOn(bbCore, 'getOAuthPayload').and.returnValue(JSON.stringify(fakeTokenPayload));
+        spyOn(bbCore, 'isOAuthTokenValid').and.returnValue(true);
+
+        var tokenForRequest = bbCore.getOAuthTokenForRequest();
+
+        expect(bbCore.isOAuthTokenValid).toHaveBeenCalled();
+        expect(tokenForRequest).toBe(fakeTokenPayload.token_type+' '+fakeTokenPayload.access_token);
+
+    });
+
 });
 
 describe("BBCore.contacts", function() {
