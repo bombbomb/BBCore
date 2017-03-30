@@ -216,22 +216,12 @@
         });
 
         // Start BBCore
-/*
+        // ** Generate OAuth Client Credentials from developer.bombbomb.com
         bbInstance = new BBCore({
             oAuthCredentials: {
-                clientSecret: '5976b76d-641f-3bf3-e578-9d791012ddde',
-                clientIdentifier: '488ee17e-b27b-8780-33cf-2012c202d3c7',
-                redirectUri: 'http://localhost:63342/bbcore/examples/oauth.html?_ijt=nk1qu999d9p2318gouefvdob6n'
-            }
-        });
-*/
-        BBCore.CONFIG.SERVER_API_URL = "https://local.app.bombbomb.com";
-        bbInstance = new BBCore({
-            apiServer: 'https://local.app.bombbomb.com',
-            oAuthCredentials: {
-                clientSecret: '14cf7c13-aaa8-6600-af9b-cd3c147bf57a',
-                clientIdentifier: 'a1d1c2d6-e9c8-473b-0faf-1eec37bae800',
-                redirectUri: 'http://localhost:63342/bbcore/examples/oauth.html?_ijt=nk1qu999d9p2318gouefvdob6n'
+                clientSecret: '',
+                clientIdentifier: '',
+                redirectUri: ''
             }
         });
         bbInstance.onError(function(errorInfo) {
