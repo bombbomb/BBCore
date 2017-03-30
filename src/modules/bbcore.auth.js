@@ -293,7 +293,7 @@ BBCore.prototype.getOAuthTokenForRequest = function() {
     }
     catch (e)
     {
-        console.warn("Exception occurred retrieving ")
+        console.error("Exception occurred retrieving OAuth Token for Request",e);
     }
     return token;
 };
