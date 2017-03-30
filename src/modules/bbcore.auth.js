@@ -76,8 +76,7 @@ BBCore.prototype.validateSession = function (onSuccess, onError) {
     {
         this.validateOAuthRequest(decodeURIComponent(authCode[1]), function(payload){
             this.storeOAuthTokens(payload);
-            onSuccess.apply(this,arguments);
-            //window.location.href = authCode[0].substr(0,5) === '?code' ? window.location.href.replace('?code='+authCode[1],'') : window.location.href.replace('&code='+authCode[1],'');
+            window.location.href = authCode[0].substr(0,5) === '?code' ? window.location.href.replace('?code='+authCode[1],'') : window.location.href.replace('&code='+authCode[1],'');
         }, onError);
     }
     else if (this.isOAuthTokenValid(oAuthPayload))
