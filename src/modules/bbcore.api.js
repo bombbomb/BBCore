@@ -97,7 +97,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
                     success.call(inst, result);
                 }
             }
-            else if ((params.grant_type !== "authorization_code" || params.grant_type !== "refresh_token")) {
+            else if ((params.grant_type === "authorization_code" || params.grant_type === "refresh_token")) {
                 success.call(inst, result);
             }
             else {
