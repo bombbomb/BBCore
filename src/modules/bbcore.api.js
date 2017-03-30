@@ -49,7 +49,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     if (method !== "IsValidLogin" && !params.api_key) {
         params.api_key = this.getKey();
     }
-    if (method !== "ValidateSession" && !this.authenticated) {
+    if ((method !== "ValidateSession" && params.grant_type !== "authorization_code") && !this.authenticated) {
         this.onError.call(this, {
             status: 'failure',
             methodName: 'InvalidSession',
@@ -65,7 +65,13 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         asyncSetting = params.async;
     }
 
-    if (this.getJsonWebToken())
+    var requestToken = this.getOAuthTokenForRequest();
+    if (requestToken && requestToken.length)
+    {
+        requestHeaders['Authorization'] = requestToken;
+        params.api_key && delete params.api_key
+    }
+    else if (this.getJsonWebToken())
     {
         requestHeaders['BB-JWT'] = this.getJsonWebToken();
     }
@@ -75,11 +81,6 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         async: asyncSetting,
         type: "post",
         dataType: "json",
-        /*
-         xhrFields: {
-         withCredentials: true
-         },
-         */
         crossDomain: true,
         data: params,
         headers: requestHeaders,
@@ -95,6 +96,9 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
                 if (success) {
                     success.call(inst, result);
                 }
+            }
+            else if ((params.grant_type !== "authorization_code" || params.grant_type !== "refresh_token")) {
+                success.call(inst, result);
             }
             else {
                 inst.onError.call(inst, result);

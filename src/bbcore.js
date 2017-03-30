@@ -48,6 +48,7 @@ function BBCore(properties) {
     this.currentVideoId = null;
     this.email = null;
     this.apiServer = null;
+    this.authClient = { clientIdentifier: null, redirectUri: null, clientSecret: null };
     this.onerror = null;
 
     for (var prop in properties) {
@@ -136,7 +137,8 @@ BBCore.CONFIG =
 {
     VERSION: "1.0",
     API_END_POINT: "/app/api/api.php",
-    SERVER_API_URL: "https://app.bombbomb.com"
+    SERVER_API_URL: "https://app.bombbomb.com",
+    OAUTH_STORAGE: 'authToken'
 };
 
 BBCore.prototype.onError = function (func_or_deet, xhr) {

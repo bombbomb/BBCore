@@ -5,23 +5,36 @@
  * @arg {responseSuccess} success
  */
 BBCore.prototype.login = function (uid, pwd, success) {
-    if (typeof uid === "function") {
-        success = uid;
-        uid = this.storage.getItem('b2-uid');
-        pwd = this.storage.getItem('b2-pwd');
+    if (arguments.length < 2 && this.oAuthCredentials)
+    {
+        var oAuthCreds = this.oAuthCredentials,
+            locationTarget = window;
+        if (typeof usePopup !== 'undefined')
+        {
+            locationTarget = window.open("about:blank", "_blank");
+        }
+        locationTarget.location = this.getServerUrl()+"/auth/authorize?client_id="+oAuthCreds.clientIdentifier+"&scope="+encodeURIComponent(oAuthCreds.scope ? oAuthCreds.scope : 'all:manage')+"&redirect_uri="+encodeURIComponent(oAuthCreds.redirectUri)+"&response_type=code";
     }
+    else
+    {
+        if (typeof uid === "function") {
+            success = uid;
+            uid = this.storage.getItem('b2-uid');
+            pwd = this.storage.getItem('b2-pwd');
+        }
 
-    if (!uid && !this.accessToken) {
-        this.onError({ info: { errormsg: 'Username cannot be blank' } });
-        return;
+        if (!uid && !this.accessToken) {
+            this.onError({ info: { errormsg: 'Username cannot be blank' } });
+            return;
+        }
+
+        this.userEmail = uid;
+
+        var inst = this;
+        this.sendRequest({method: "ValidateSession", email: uid, pw: pwd, jwt: true}, function (respObj) {
+            inst.__updateSession(respObj, success);
+        });
     }
-
-    this.userEmail = uid;
-
-    var inst = this;
-    this.sendRequest({method: "ValidateSession", email: uid, pw: pwd, jwt: true}, function (respObj) {
-        inst.__updateSession(respObj, success);
-    });
 };
 
 BBCore.prototype.logout = function () {
@@ -55,9 +68,26 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
  * @arg {responseSuccess} onSuccess
  * @arg {responseSuccess} onError
  */
-BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
+BBCore.prototype.validateSession = function (onSuccess, onError) {
 
-    if (!this.getKey() && this.getJsonWebToken())
+    var oAuthPayload = this.getOAuthPayload();
+    var authCode = /\?.*&*code=([^&]+)/gi.exec(window.location);
+    if (authCode && authCode.length > 1)
+    {
+        this.validateOAuthRequest(decodeURIComponent(authCode[1]), function(payload){
+            this.storeOAuthTokens(payload);
+            onSuccess.apply(this,arguments);
+            //window.location.href = authCode[0].substr(0,5) === '?code' ? window.location.href.replace('?code='+authCode[1],'') : window.location.href.replace('&code='+authCode[1],'');
+        }, onError);
+    }
+    else if (this.isOAuthTokenValid(oAuthPayload))
+    {
+        var jwtPayload = this.__getOAuthAccessPayload(oAuthPayload);
+        this.__updateSession({ status: "success", info: { clientId: jwtPayload.bbcid, userId: jwtPayload.sub } },function(){
+            onSuccess.call(inst);
+        });
+    }
+    else if (!this.getKey() && this.getJsonWebToken())
     {
         var inst = this;
         this.verifyJsonWebToken(function(response){
@@ -78,6 +108,11 @@ BBCore.prototype.resumeStoredSession = function (onSuccess, onError) {
         }
     }
 };
+
+/**
+ * DEPRECATED - Alias for resumeSession
+ */
+BBCore.prototype.resumeStoredSession = BBCore.prototype.validateSession;
 
 /**
  *
@@ -105,14 +140,21 @@ BBCore.prototype.isAuthenticated = function () {
 /**
  * Invalidates and clears the active session
  */
-BBCore.prototype.invalidateSession = function () {
-    var that = this;
-    this.sendRequest({method: "invalidateKey"}, function () {
-        that.clearKey();
-        that.accessToken = "";
-        that.authenticated = false;
-        that.hasContext = false;
-    });
+BBCore.prototype.invalidateSession = function()
+{
+    try
+    {
+        this.clearOAuthToken();
+        this.clearKey();
+        this.accessToken = "";
+        this.authenticated = false;
+        this.hasContext = false;
+    }
+    catch (e)
+    {
+        return false;
+    }
+    return true;
 };
 
 BBCore.prototype.__updateSession = function (respObj, done) {
@@ -127,14 +169,17 @@ BBCore.prototype.__updateSession = function (respObj, done) {
             this.userId = respObj.info.user_id;
             this.clientId = respObj.info.client_id;
         }
-        this.accessToken = respObj.info.api_key;
+
+        if (respObj.info.api_key)
+        {
+            this.accessToken = respObj.info.api_key;
+        }
+
         this.hasContext = true;
         this.authenticated = true;
 
         this.storeKey(this.accessToken);
         this.storeJsonWebToken(respObj.info.jwtoken);
-
-        // TODO; send request to fetch and update user details
 
         console.log('bbcore: __updateSession session updated.');
 
@@ -204,6 +249,162 @@ BBCore.prototype.verifyJsonWebToken = function (key, complete) {
 };
 
 /**
+ * Stores the OAuth Token for API calls
+ * @arg key
+ */
+BBCore.prototype.storeOAuthTokens = function(oAuthPayload) {
+    if (!oAuthPayload)
+    {
+        return;
+    }
+    try
+    {
+        oAuthPayload = typeof oAuthPayload === 'string' ? oAuthPayload : JSON.stringify(oAuthPayload);
+        this.storage.setItem(BBCore.CONFIG.OAUTH_STORAGE, btoa(oAuthPayload));
+    }
+    catch (e)
+    {
+    }
+};
+
+/**
+ *
+ * @returns {string}
+ */
+BBCore.prototype.getOAuthPayload = function()
+{
+    var storagePayload = this.storage.getItem(BBCore.CONFIG.OAUTH_STORAGE);
+    return storagePayload ? atob(storagePayload) : null;
+};
+
+BBCore.prototype.getOAuthTokenForRequest = function() {
+    var token = null;
+    try
+    {
+        var storagePayload = this.getOAuthPayload();
+        if (storagePayload && this.isOAuthTokenValid(storagePayload))
+        {
+            var parsedPayload = JSON.parse(storagePayload);
+            if (typeof parsedPayload === 'object')
+            {
+                token = parsedPayload.token_type + ' ' + parsedPayload.access_token;
+            }
+        }
+    }
+    catch (e)
+    {
+        console.warn("Exception occurred retrieving ")
+    }
+    return token;
+};
+
+BBCore.prototype.clearOAuthToken = function () {
+    this.authenticated = false;
+    this.storage.removeItem(BBCore.CONFIG.OAUTH_STORAGE);
+};
+
+BBCore.prototype.__getOAuthAccessPayload = function(payload) {
+    var jsonPayload = typeof payload === 'string' ? JSON.parse(payload) : payload,
+        jwtObj = null;
+    if (jsonPayload)
+    {
+        try
+        {
+            var jwtParts = jsonPayload.access_token.split('.');
+            if (jwtParts.length > 2)
+            {
+                jwtObj = JSON.parse(atob(jwtParts[1]));
+            }
+        }
+        catch (e)
+        {
+            console.warn('Exception __getOAuthAccessPayload fetching access_token payload',e);
+        }
+    }
+    return jwtObj;
+};
+
+BBCore.prototype.isOAuthTokenValid = function(payload) {
+
+    var isValid = false;
+    try
+    {
+        var jwtObj = this.__getOAuthAccessPayload(payload);
+        if (jwtObj && (new Date(jwtObj.exp)) < Date.now())
+        {
+            isValid = true;
+        }
+    }
+    catch (e)
+    {
+        console.warn('Exception while validating OAuthToken',e);
+    }
+    return isValid;
+
+};
+
+/**
+ *
+ * @param authCode
+ * @param onSuccess
+ * @param onError
+ */
+BBCore.prototype.validateOAuthRequest = function(authCode,onSuccess,onError) {
+
+    var inst = this,
+        credentials = this.oAuthCredentials,
+        authRequestPayload = {
+            url: this.getServerUrl() + '/auth/access_token',
+            grant_type: 'authorization_code',
+            client_id: credentials.clientIdentifier,
+            client_secret: credentials.clientSecret,
+            redirect_uri: credentials.redirectUri,
+            code: JSON.stringify(authCode)
+        };
+    this.sendRequest(authRequestPayload, function(resp) {
+        if (resp && this.isOAuthTokenValid(resp))
+        {
+            this.authenticated = true;
+            this.storeOAuthTokens(resp);
+            onSuccess && onSuccess.call(inst);
+        }
+        else
+        {
+            onError && onError.call(inst);
+        }
+    });
+};
+
+/**
+ *
+ */
+BBCore.prototype.refreshOAuthToken = function(onSuccess) {
+
+    var credentials = this.oAuthCredentials,
+        refreshRequestPayload = {
+            url: this.getServerUrl() + '/auth/access_token',
+            grant_type: 'refresh_token',
+            refresh_token: this.getOAuthRefreshToken(),
+            client_id: credentials.clientIdentifier,
+            client_secret: credentials.clientSecret,
+            redirect_uri: credentials.redirectUri,
+            code: JSON.stringify(authCode)
+        };
+    this.sendRequest(refreshRequestPayload, function(resp) {
+        console.log('got refresh auth back',resp);
+        if (resp)
+        {
+            if (this.isOAuthTokenValid(resp))
+            {
+                this.authenticated = true;
+            }
+            this.storeOAuthTokens(resp);
+            onSuccess && onSuccess();
+        }
+    });
+};
+
+/**
  * Stores the give session key, typically used so a session can be resumed later on.
  * @arg key
  */
@@ -257,4 +458,3 @@ BBCore.prototype.getValidJsonWebTokenAsync = function(callback) {
         }
     });
 };
-
