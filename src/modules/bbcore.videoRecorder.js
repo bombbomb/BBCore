@@ -40,18 +40,17 @@ BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
         opts = null;
     }
     var defOpts = {height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null};
-    opts = opts || {};
-    jQuery.extend(opts, defOpts);
+    mergedOpts = jQuery.extend(defOpts, opts);
     if (!this.isAuthenticated()) {
         this.onError({message: "Must authenticate session before invoking methods."});
         return;
     }
-    opts.method = "GetVideoRecorder";
+    mergedOpts.method = "GetVideoRecorder";
 
     // TODO; might be good to set the video id before passing to success execution
     // TODO; may need to inject the recorder event calls binding back to the API
 
-    this.sendRequest(opts, function (response) {
+    this.sendRequest(mergedOpts, function (response) {
         if (onComplete) {
             onComplete.call(this, response);
         }
