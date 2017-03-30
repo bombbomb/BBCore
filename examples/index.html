@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="BombBomb JavaScript API Example">
+    <meta name="author" content="BombBomb">
+
+    <title>BBCore JS API OAuth Example App</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- example theme -->
+    <link rel="stylesheet" href="example.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <!-- Latest compiled BBCore JS API -->
+    <!--<script src="https://s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js"></script>-->
+
+    <!-- uncomment this to use the local uncompressed version
+    -->
+    <script src="../build/BBCore.combined.js"></script>
+
+</head>
+<body>
+
+<div id="app-panel" class="container" style="display: none;">
+
+    <div class="header">
+        <nav>
+            <ul class="nav nav-pills pull-right">
+                <li role="presentation" class="active"><a href="#sendvideo" role="tab" aria-controls="sendvideo" data-toggle="tab">Send Video</a></li>
+                <li role="presentation"><a href="#videos" role="tab" aria-controls="videos" data-toggle="tab">My Videos</a></li>
+                <li role="presentation"><a href="#lists" role="tab" aria-controls="lists" data-toggle="tab">My Lists</a></li>
+                <li role="presentation"><button class="btn btn-default btnLogout" style="display: none;">Logout</button></li>
+                </ul>
+        </nav>
+        <h3 class="text-muted">BombBomb JS API Demo</h3>
+    </div>
+
+    <div class="container">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="sendvideo">
+                <form class="form-sendvideoemail">
+                    <h2 class="form-signin-heading">Send a Video</h2>
+                    <p>Enter some details, then record a video to sent it.</p>
+                    <label for="inputRecipient" class="sr-only">To</label>
+                    <input type="email" id="inputRecipient" class="form-control" placeholder="Recipient" required autofocus>
+                    <label for="inputSubject" class="sr-only">Subject</label>
+                    <input type="text" id="inputSubject" class="form-control" placeholder="Subject" value="BB API Demo" required>
+                    <textarea id="inputMessage" class="form-control" placeholder="Message"></textarea>
+                    <div id="recorder">
+                    </div>
+                    <button class="btn btn-lg btn-primary btn-block sendVideo" type="submit" style="display: none;">Send</button>
+                </form>
+            </div>
+            <div role="tabpanel" class="tab-pane active" id="videos">
+            </div>
+            <div role="tabpanel" class="tab-pane active" id="lists">
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div id="login-panel" class="container">
+
+    <form class="form-signin">
+        <h2 class="form-signin-heading">Login to Send a BombBomb Video</h2>
+<!--
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+-->
+        <button class="btn btn-lg btn-primary btn-block" type="submit">OAuth Sign in</button>
+    </form>
+
+</div> <!-- /container -->
+
+
+<script type="text/javascript">
+
+    var bbInstance;
+
+    function setupVideoSender()
+    {
+        $('#login-panel').hide();
+        $('.nav .btnLogout').show();
+
+        console.log('resumeBBVideo');
+
+        if (bbInstance)
+        {
+            $('#app-panel').show();
+
+            // get the recorder and attach it to a target selector
+            bbInstance.startVideoRecorder({ target: '#recorder' }, function (videoInfo) {
+                if (confirm('Go with this take? If you want to retake, click cancel.'))
+                {
+
+                    // save the video once it's been recorded
+                    bbInstance.saveRecordedVideo('BB Demo Video!', videoInfo.videoId, videoInfo.filename, function (data) {
+
+                        alert('Your video has been saved!');
+
+                        $('.sendVideo').show().on('click',function(){
+
+                            // get the email address to send to
+                            var toAddress = $('#inputRecipient').val();
+
+                            // call the quick sender
+                            bbInstance.videoQuickSend({
+                                subject: $('#inputSubject').val(),
+                                video_id: videoInfo.videoId,
+                                email_addresses: toAddress,
+                                mobile_message: "This was a fun demo"
+                            }, function (data) {
+
+                                alert("You've sent a video! " + data.info);
+
+                                $('#sendvideo').html('')
+                                    .append('<div id="update">Your video has been <b>uploaded and sent</b>!<p>' +
+                                        'The URL is <a href="'+bbInstance.getVideoDeliveryUrl({video_id:videoInfo.videoId,autoplay:true})+'" target="_blank">' + bbInstance.getVideoDeliveryUrl({video_id:videoInfo.videoId,autoplay:true}) +
+                                        '</a><br><br> filename: ' + videoInfo.filename + '</div>');
+                            });
+                        });
+
+                    });
+                    // END saveRecordedVideo
+
+                }
+            });
+
+        }
+    }
+
+    function prepareLogin()
+    {
+        $('#login-panel').show();
+        $('#recorder').children().remove();
+        $('#app-panel').hide();
+    }
+
+    $(function(){
+
+        // setup events and actions
+
+        $('#login-panel form,#app-panel .form-sendvideoemail').on('submit',function(event){
+            $(this).addClass('disabled');
+            bbInstance.login(setupVideoSender);
+            event.preventDefault();
+        });
+
+        $('.nav .btnLogout').on('click',function() {
+            if (bbInstance.invalidateSession())
+            {
+                prepareLogin();
+            }
+        });
+
+        $('.nav [aria-controls="videos"]').on('click',function(){
+            bbInstance.getVideos({ page: 1, pageSize: 15 },function(data){
+                var videos = data.info;
+                var $videos = $('#videos');
+                if (videos.length)
+                {
+                    $videos.html('');
+                    var videosList = $("<ul/>",{ class: 'videosList' }).appendTo($videos);
+                    for (var index in videos)
+                    {
+                        if (videos.hasOwnProperty(index))
+                        {
+                            var video = videos[index];
+                            var videoItem = $('<li />',{ id: video.id, style:'height:150px; background-image: url('+video.thumbUrl+');' }).appendTo(videosList);
+                            $("<span/>",{ class: 'title', text: video.name }).appendTo(videoItem);
+                            $("<span/>",{ class: 'badge glyphicon glyphicon-envelope pull-right', style: 'padding: 5px;', title: 'Send Video' })
+                                .click(function(){ alert('This button could be hooked up to send this video.'); })
+                                .appendTo(videoItem);
+                            if (video.vidUrl)
+                            {
+                                $(videoItem).wrap('<a href="'+video.shortUrl+'" target="_blank"></a>');
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        $('.nav [aria-controls="lists"]').on('click',function(){
+            bbInstance.getLists(function(data){
+                var lists = data.info;
+                var $lists = $('#lists');
+                if (lists.length)
+                {
+                    $lists.html('');
+                    var listsList = $("<ul/>",{ class: 'listsList item-lists' }).appendTo($lists);
+                    for (var index in lists)
+                    {
+                        if (lists.hasOwnProperty(index))
+                        {
+                            var list = lists[index];
+                            $('<li id="'+list.id+'">'+list.name+'<span class="badge pull-right">'+list.ContactCount+'</span></li>').appendTo(listsList);
+                        }
+                    }
+                }
+            });
+        });
+
+        // Start BBCore
+/*
+        bbInstance = new BBCore({
+            oAuthCredentials: {
+                clientSecret: '5976b76d-641f-3bf3-e578-9d791012ddde',
+                clientIdentifier: '488ee17e-b27b-8780-33cf-2012c202d3c7',
+                redirectUri: 'http://localhost:63342/bbcore/examples/oauth.html?_ijt=nk1qu999d9p2318gouefvdob6n'
+            }
+        });
+*/
+        BBCore.CONFIG.SERVER_API_URL = "https://local.app.bombbomb.com";
+        bbInstance = new BBCore({
+            apiServer: 'https://local.app.bombbomb.com',
+            oAuthCredentials: {
+                clientSecret: '14cf7c13-aaa8-6600-af9b-cd3c147bf57a',
+                clientIdentifier: 'a1d1c2d6-e9c8-473b-0faf-1eec37bae800',
+                redirectUri: 'http://localhost:63342/bbcore/examples/oauth.html?_ijt=nk1qu999d9p2318gouefvdob6n'
+            }
+        });
+        bbInstance.onError(function(errorInfo) {
+            if (errorInfo.methodName=="BadLogin" || (errorInfo.methodName == "IsValidLogin" && errorInfo.status == "failure"))
+            {
+                alert('Invalid Username or Password');
+                $(this).removeClass('disabled');
+            }
+            else
+            {
+                alert('An error occurred, please check the console for more information. '+(errorInfo.message ? errorInfo.message : errorInfo));
+            }
+            console.log('BBCore Error: ', errorInfo);
+        });
+
+        // attempt to resume the last session, if available
+        bbInstance.validateSession(setupVideoSender, prepareLogin);
+
+    });
+</script>
+
+</body>
+</html>
