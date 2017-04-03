@@ -13,7 +13,11 @@ BBCore.prototype.login = function (uid, pwd, success) {
         {
             locationTarget = window.open("about:blank", "_blank");
         }
-        locationTarget.location = this.getServerUrl()+"/auth/authorize?client_id="+oAuthCreds.clientIdentifier+"&scope="+encodeURIComponent(oAuthCreds.scope ? oAuthCreds.scope : 'all:manage')+"&redirect_uri="+encodeURIComponent(oAuthCreds.redirectUri)+"&response_type=code";
+        locationTarget.location = this.getServerUrl()+"/auth/authorize?"
+            +"client_id="+oAuthCreds.clientIdentifier
+            +"&scope="+encodeURIComponent(oAuthCreds.scope ? oAuthCreds.scope : 'all:manage')
+            +"&redirect_uri="+encodeURIComponent(oAuthCreds.redirectUri)
+            +"&response_type=" + (oAuthCreds.type === 'implicit' ? "token" : "code");
     }
     else
     {
@@ -71,13 +75,32 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
 BBCore.prototype.validateSession = function (onSuccess, onError) {
 
     var oAuthPayload = this.getOAuthPayload();
-    var authCode = /\?.*&*code=([^&]+)/gi.exec(window.location);
+    var authCode = /[\?\#].*&*(access_token|code)=([^&]+)/gi.exec(window.location);
     if (authCode && authCode.length > 1)
     {
-        this.validateOAuthRequest(decodeURIComponent(authCode[1]), function(payload){
-            this.storeOAuthTokens(payload);
-            window.location.href = authCode[0].substr(0,5) === '?code' ? window.location.href.replace('?code='+authCode[1],'') : window.location.href.replace('&code='+authCode[1],'');
-        }, onError);
+        var tokenOrCode = authCode[2];
+        if (authCode[1] === 'code')
+        {
+            this.validateOAuthCode(decodeURIComponent(tokenOrCode), function(payload){
+                this.storeOAuthTokens(payload);
+                window.location.href = authCode[0].substr(0,5) === '?code' ? window.location.href.replace('?code='+tokenOrCode,'') : window.location.href.replace('&code='+authCode[1],'');
+            }, onError);
+        }
+        else
+        {
+            var authPayload = { access_token: tokenOrCode, token_type: null, expires_in: null },
+                cleanedHash = window.location.hash.replace('access_token='+tokenOrCode,''),
+                hashKeyMatches = null;
+            while (hashKeyMatches = /\&*(token_type|expires_in)=([^&]+)/gi.exec(window.location.hash))
+            {
+                authPayload[hashKeyMatches[1]] = hashKeyMatches[2];
+                cleanedHash = cleanedHash.replace(hashKeyMatches[0],'');
+                window.location.hash = cleanedHash.length > 1 ? cleanedHash : '';
+            }
+            this.authenticated = true;
+            this.storeOAuthTokens(authPayload);
+            onSuccess.call(inst);
+        }
     }
     else if (this.isOAuthTokenValid(oAuthPayload))
     {
@@ -286,7 +309,7 @@ BBCore.prototype.getOAuthTokenForRequest = function() {
             var parsedPayload = JSON.parse(storagePayload);
             if (typeof parsedPayload === 'object')
             {
-                token = parsedPayload.token_type + ' ' + parsedPayload.access_token;
+                token = parsedPayload.token_type.substr(0,1).toUpperCase()+parsedPayload.token_type.substr(1) + ' ' + parsedPayload.access_token;
             }
         }
     }
@@ -348,18 +371,31 @@ BBCore.prototype.isOAuthTokenValid = function(payload) {
  * @param onSuccess
  * @param onError
  */
-BBCore.prototype.validateOAuthRequest = function(authCode,onSuccess,onError) {
+BBCore.prototype.validateOAuthCode = function(authCode, onSuccess, onError) {
 
     var inst = this,
         credentials = this.oAuthCredentials,
         authRequestPayload = {
             url: this.getServerUrl() + '/auth/access_token',
-            grant_type: 'authorization_code',
+            grant_type: credentials.type || 'implicit',
             client_id: credentials.clientIdentifier,
-            client_secret: credentials.clientSecret,
             redirect_uri: credentials.redirectUri,
             code: JSON.stringify(authCode)
         };
+    if (credentials.type !== 'implicit')
+    {
+        if (credentials.clientSecret && credentials.clientSecret)
+        {
+            authRequestPayload.client_secret = credentials.clientSecret;
+        }
+        else
+        {
+            var warningMessage = 'Client Secret required when making '+credentials.type+' grant requests';
+            console.warn(warningMessage);
+            onError.call(this,warningMessage);
+            return;
+        }
+    }
     this.sendRequest(authRequestPayload, function(resp) {
         if (resp && this.isOAuthTokenValid(resp))
         {
