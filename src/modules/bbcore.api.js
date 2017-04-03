@@ -69,7 +69,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     if (requestToken && requestToken.length)
     {
         requestHeaders['Authorization'] = requestToken;
-        params.api_key && delete params.api_key
+        typeof params.api_key !== 'undefined' && delete params.api_key
     }
     else if (this.getJsonWebToken())
     {
