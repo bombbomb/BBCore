@@ -19,6 +19,14 @@
  */
 
 /**
+ * @typedef {Object} OAuthClientCredentials
+ * @prop {string} clientIdentifier
+ * @prop {string} clientSecret
+ * @prop {string} redirectUri
+ * @prop {string} type 'implicit' | 'authorization_code'
+ */
+
+/**
  @class
  @prop {string} userEmail
  @prop {string} userId
@@ -37,6 +45,7 @@
  @param {string} properties.currentVideoId
  @param {string} properties.email
  @param {string} properties.onerror
+ @param {OAuthClientCredentials} properties.authClient
  */
 
 function BBCore(properties) {
@@ -48,7 +57,7 @@ function BBCore(properties) {
     this.currentVideoId = null;
     this.email = null;
     this.apiServer = null;
-    this.authClient = { clientIdentifier: null, redirectUri: null, clientSecret: null };
+    this.authClient = { clientIdentifier: null, redirectUri: null, clientSecret: null, type: 'implicit' };
     this.onerror = null;
 
     for (var prop in properties) {
