@@ -261,7 +261,7 @@ Stores the OAuth Token for API calls
 
 **Returns**: `string`
 
-### BBCore.validateOAuthRequest(authCode, onSuccess, onError) 
+### BBCore.validateOAuthCode(authCode, onSuccess, onError) 
 
 **Parameters**
 
