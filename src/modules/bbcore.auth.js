@@ -7,17 +7,12 @@
 BBCore.prototype.login = function (uid, pwd, success) {
     if (arguments.length < 2 && this.oAuthCredentials)
     {
-        var oAuthCreds = this.oAuthCredentials,
-            locationTarget = window;
+        var locationTarget = window;
         if (typeof usePopup !== 'undefined')
         {
             locationTarget = window.open("about:blank", "_blank");
         }
-        locationTarget.location = this.getServerUrl()+"/auth/authorize?"
-            +"client_id="+oAuthCreds.clientIdentifier
-            +"&scope="+encodeURIComponent(oAuthCreds.scope ? oAuthCreds.scope : 'all:manage')
-            +"&redirect_uri="+encodeURIComponent(oAuthCreds.redirectUri)
-            +"&response_type=" + (oAuthCreds.type === 'implicit' ? "token" : "code");
+        locationTarget.location = this.getOAuthUrl();
     }
     else
     {
@@ -129,6 +124,22 @@ BBCore.prototype.validateSession = function (onSuccess, onError) {
             if (onError) onError();
         }
     }
+};
+
+BBCore.prototype.getOAuthUrl = function()
+{
+    var url = null,
+        oAuthCreds = this.oAuthCredentials;
+    if (oAuthCreds.clientIdentifier && oAuthCreds.redirectUri)
+    {
+        url = this.getServerUrl()+"/auth/authorize?"
+            +"client_id="+oAuthCreds.clientIdentifier
+            +"&scope="+encodeURIComponent(oAuthCreds.scope ? oAuthCreds.scope : 'all:manage')
+            +"&redirect_uri="+encodeURIComponent(oAuthCreds.redirectUri)
+            +"&response_type=" + (oAuthCreds.type === 'implicit' ? "token" : "code");
+    }
+    return url;
+
 };
 
 /**
