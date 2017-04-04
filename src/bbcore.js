@@ -45,7 +45,7 @@
  @param {string} options.currentVideoId
  @param {string} options.email
  @param {string} options.onerror
- @param {OAuthClientCredentials} options.authClient
+ @param {OAuthClientCredentials} options.credentials
  */
 
 function BBCore(options) {
@@ -57,7 +57,7 @@ function BBCore(options) {
     this.currentVideoId = null;
     this.email = null;
     this.apiServer = null;
-    this.authClient = { clientIdentifier: null, redirectUri: null, clientSecret: null, type: 'implicit' };
+    this.credentials = { clientIdentifier: null, redirectUri: null, clientSecret: null, type: 'implicit' };
     this.onerror = null;
 
     this.__mergeProperties(null, options);

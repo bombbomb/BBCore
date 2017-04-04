@@ -5,7 +5,7 @@
  * @arg {responseSuccess} success
  */
 BBCore.prototype.login = function (uid, pwd, success) {
-    if (arguments.length < 2 && this.oAuthCredentials)
+    if (arguments.length < 2 && this.credentials)
     {
         var locationTarget = window;
         if (typeof usePopup !== 'undefined')
@@ -129,7 +129,7 @@ BBCore.prototype.validateSession = function (onSuccess, onError) {
 BBCore.prototype.getOAuthUrl = function()
 {
     var url = null,
-        oAuthCreds = this.oAuthCredentials;
+        oAuthCreds = this.credentials;
     if (oAuthCreds.clientIdentifier && oAuthCreds.redirectUri)
     {
         url = this.getServerUrl()+"/auth/authorize?"
@@ -385,7 +385,7 @@ BBCore.prototype.isOAuthTokenValid = function(payload) {
 BBCore.prototype.validateOAuthCode = function(authCode, onSuccess, onError) {
 
     var inst = this,
-        credentials = this.oAuthCredentials,
+        credentials = this.credentials,
         authRequestPayload = {
             url: this.getServerUrl() + '/auth/access_token',
             grant_type: credentials.type || 'implicit',
@@ -426,7 +426,7 @@ BBCore.prototype.validateOAuthCode = function(authCode, onSuccess, onError) {
  */
 BBCore.prototype.refreshOAuthToken = function(onSuccess) {
 
-    var credentials = this.oAuthCredentials,
+    var credentials = this.credentials,
         refreshRequestPayload = {
             url: this.getServerUrl() + '/auth/access_token',
             grant_type: 'refresh_token',
