@@ -37,18 +37,18 @@
  @prop {string} onerror
 
  @constructs BBCore
- @param {Object} properties
- @param {string} properties.userEmail
- @param {string} properties.userId
- @param {string} properties.clientId
- @param {string} properties.accessToken
- @param {string} properties.currentVideoId
- @param {string} properties.email
- @param {string} properties.onerror
- @param {OAuthClientCredentials} properties.authClient
+ @param {Object} options
+ @param {string} options.userEmail
+ @param {string} options.userId
+ @param {string} options.clientId
+ @param {string} options.accessToken
+ @param {string} options.currentVideoId
+ @param {string} options.email
+ @param {string} options.onerror
+ @param {OAuthClientCredentials} options.authClient
  */
 
-function BBCore(properties) {
+function BBCore(options) {
 
     this.userEmail = "";
     this.userId = "";
@@ -60,11 +60,7 @@ function BBCore(properties) {
     this.authClient = { clientIdentifier: null, redirectUri: null, clientSecret: null, type: 'implicit' };
     this.onerror = null;
 
-    for (var prop in properties) {
-        if (properties.hasOwnProperty(prop)) {
-            this[prop] = properties[prop];
-        }
-    }
+    this.__mergeProperties(null, options);
 
     // private properties
     this.authenticated = false;
@@ -148,6 +144,21 @@ BBCore.CONFIG =
     API_END_POINT: "/app/api/api.php",
     SERVER_API_URL: "https://app.bombbomb.com",
     OAUTH_STORAGE: 'authToken'
+};
+
+BBCore.prototype.__mergeProperties = function (base, addl) {
+    if (!base)
+    {
+        base = this;
+    }
+    for (var prop in addl)
+    {
+        if (prop && addl.hasOwnProperty(prop))
+        {
+            base[prop] = (base[prop] && typeof base[prop] === 'object') ? this.__mergeProperties(base[prop],addl[prop]) : addl[prop];
+        }
+    }
+    return base;
 };
 
 BBCore.prototype.onError = function (func_or_deet, xhr) {

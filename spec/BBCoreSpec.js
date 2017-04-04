@@ -47,6 +47,7 @@ function setupMockApiRequest(result, error) {
 }
 
 describe("BBCore", function() {
+
     beforeEach(function() {
         setupTest(false, false);
     });
@@ -73,6 +74,28 @@ describe("BBCore", function() {
 
         expect(funcCallbackSpy).toHaveBeenCalledWith(deet, xhr);
     });
+
+    it("__mergeProperties", function() {
+        var baseProperties = { thisThing: '', otherThing: '', lastThing: { tops: 'bottom' } };
+        var expectedResult = { thisThing: 'one', otherThing: 'two', lastThing: { tops: 'bottom', a: '1', b: '2'  } };
+        var result = bbCore.__mergeProperties(baseProperties,{ thisThing: 'one', otherThing: 'two', lastThing: { a: '1', b: '2' } });
+
+        expect(JSON.stringify(result)).toEqual(JSON.stringify(expectedResult));
+    });
+
+    it("__mergeProperties against Class", function() {
+        var BaseClass = function BaseThing(opts) {
+            this.first = '';
+            this.second = '';
+            this.third = { one: 'a' };
+            this.__mergeProperties = bbCore.__mergeProperties;
+            this.__mergeProperties.call(this,null,opts)
+        };
+        var expectedResult = { first: '', second: 'fine', third: { one: 'a', two: 'b'  } };
+
+        expect(JSON.stringify(new BaseClass({ third: { two: 'b' }, second: 'fine' }))).toEqual(JSON.stringify(expectedResult));
+    });
+
 });
 
 describe("BBCore.api", function() {
