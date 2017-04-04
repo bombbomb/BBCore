@@ -5,7 +5,7 @@
  * @arg {responseSuccess} success
  */
 BBCore.prototype.login = function (uid, pwd, success) {
-    if (arguments.length < 2 && this.credentials)
+    if (arguments.length < 2 && (this.credentials && this.credentials.clientIdentifier))
     {
         var locationTarget = window;
         if (typeof usePopup !== 'undefined')
