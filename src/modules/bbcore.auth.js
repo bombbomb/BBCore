@@ -143,7 +143,7 @@ BBCore.prototype.getOAuthUrl = function()
 };
 
 /**
- * DEPRECATED - Alias for resumeSession
+ * DEPRECATED - Use validateSession
  */
 BBCore.prototype.resumeStoredSession = BBCore.prototype.validateSession;
 
