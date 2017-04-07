@@ -38,9 +38,11 @@ BBCore.prototype.login = function (uid, pwd, success) {
 
 BBCore.prototype.logout = function () {
     this.clearJsonWebToken();
+    this.clearOAuthToken();
     this.clearKey();
     this.storage.removeItem('b2-uid');
     this.storage.removeItem('b2-pwd');
+    this.accessToken = '';
     this.hasContext = false;
     this.authenticated = false;
 };
@@ -171,17 +173,14 @@ BBCore.prototype.isAuthenticated = function () {
 };
 
 /**
- * Invalidates and clears the active session
+ * Invalidates and clears the active session, similar to logout
+ * @returns {boolean|*}
  */
 BBCore.prototype.invalidateSession = function()
 {
     try
     {
-        this.clearOAuthToken();
-        this.clearKey();
-        this.accessToken = "";
-        this.authenticated = false;
-        this.hasContext = false;
+        this.logout();
     }
     catch (e)
     {
