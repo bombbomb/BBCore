@@ -34,6 +34,7 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 });
 ```
 
+**IMPORTANT NOTE**: If you intend to reuse the same BBCore object, it's HIGHLY recommended you call *getNewVideoGuid()* prior to calling *startVideoRecorder*. However, it's recommended that you otherwise destroy the BBCore object after the recorder has completed and create a new one.
 &nbsp;
 
 
