@@ -140,10 +140,10 @@ Returns the first matched contact from
 **Returns**: `* | BBCore.contact`
 
 
-## Class: videos
+## Class: video
 
 
-### videos.add(video) 
+### video.add(video) 
 
 Adds a Video to the collection
 
@@ -157,6 +157,7 @@ Adds a Video to the collection
 ## Class: BBCore
 
 
+**resumeStoredSession**:  , DEPRECATED - Use validateSession
 ### BBCore.login(uid, pwd, success) 
 
 Authenticates a user using their Email Address (User Id) and Password
@@ -187,7 +188,7 @@ Save credentials to local storage (not recommended)
 **pwd**: `string`, Password
 
 
-### BBCore.resumeStoredSession(onSuccess, onError) 
+### BBCore.validateSession(onSuccess, onError) 
 
 Authenticates from previously stored credentials
 
@@ -213,8 +214,9 @@ Returns bool for authentication state
 
 ### BBCore.invalidateSession() 
 
-Invalidates and clears the active session
+Invalidates and clears the active session, similar to logout
 
+**Returns**: `boolean | *`
 
 ### BBCore.verifyKey(key, complete) 
 
@@ -247,6 +249,33 @@ Validates the given key
 **complete**: `responseSuccess`, Validates the given key
 
 
+### BBCore.storeOAuthTokens(key) 
+
+Stores the OAuth Token for API calls
+
+**Parameters**
+
+**key**: , Stores the OAuth Token for API calls
+
+
+### BBCore.getOAuthPayload() 
+
+**Returns**: `string`
+
+### BBCore.validateOAuthCode(authCode, onSuccess, onError) 
+
+**Parameters**
+
+**authCode**: 
+
+**onSuccess**: 
+
+**onError**: 
+
+
+### BBCore.refreshOAuthToken() 
+
+
 ### BBCore.storeJsonWebToken(key) 
 
 Stores the give session key, typically used so a session can be resumed later on.
@@ -262,8 +291,7 @@ Attempts to always return a valid JWT which makes an async verification request
 
 **Parameters**
 
-**callback**: , handler given a valid JWT.  If the JWT is null then the user
-is NOT authenticated.
+**callback**: , handler given a valid JWT.  If the JWT is null then the useris NOT authenticated.
 
 
 ### BBCore.getServerUrl() 
@@ -431,6 +459,15 @@ Retrieves a list of Emails from the current authenticated session
 **opts**: `object`
 
 **success**: `responseSuccess`
+
+
+### BBCore.getClientIntegrations(opts, success) 
+
+**Parameters**
+
+**opts**: 
+
+**success**: 
 
 
 ### BBCore.getEmbeddedRecorderUrl(options, onComplete) 

@@ -96,3 +96,7 @@ body {
 .recorder div   {
     margin: 0 auto;
 }
+
+.header {
+    height: 50px;
+}

@@ -10,7 +10,7 @@ var successCallbackSpy = null;
 
 function setupTest(spyOnBBCoreOnError, spyOnBBCoreSendRequest) {
     bbCore = new BBCore({ apiServer: apiServerUrl, storage: window.storage || [] });
-    successCallbackSpy = jasmine.createSpy();
+    successCallbackSpy = jasmine.createSpy('successCallbackSpy');
 
     if (spyOnBBCoreOnError) {
         spyOn(bbCore, 'onError');
@@ -31,6 +31,10 @@ function simulateAuthenticatedApi(bbCore) {
     bbCore.authenticated = true;
 }
 
+function simulateUnauthenticatedApi(bbCore) {
+    bbCore.authenticated = false;
+}
+
 function setupMockApiRequest(result, error) {
     spyOn($, 'ajax').and.callFake(function (e) {
         if (error) {
@@ -43,6 +47,7 @@ function setupMockApiRequest(result, error) {
 }
 
 describe("BBCore", function() {
+
     beforeEach(function() {
         setupTest(false, false);
     });
@@ -69,6 +74,28 @@ describe("BBCore", function() {
 
         expect(funcCallbackSpy).toHaveBeenCalledWith(deet, xhr);
     });
+
+    it("__mergeProperties", function() {
+        var baseProperties = { thisThing: '', otherThing: '', lastThing: { tops: 'bottom' } };
+        var expectedResult = { thisThing: 'one', otherThing: 'two', lastThing: { tops: 'bottom', a: '1', b: '2'  } };
+        var result = bbCore.__mergeProperties(baseProperties,{ thisThing: 'one', otherThing: 'two', lastThing: { a: '1', b: '2' } });
+
+        expect(JSON.stringify(result)).toEqual(JSON.stringify(expectedResult));
+    });
+
+    it("__mergeProperties against Class", function() {
+        var BaseClass = function BaseThing(opts) {
+            this.first = '';
+            this.second = '';
+            this.third = { one: 'a' };
+            this.__mergeProperties = bbCore.__mergeProperties;
+            this.__mergeProperties.call(this,null,opts)
+        };
+        var expectedResult = { first: '', second: 'fine', third: { one: 'a', two: 'b'  } };
+
+        expect(JSON.stringify(new BaseClass({ third: { two: 'b' }, second: 'fine' }))).toEqual(JSON.stringify(expectedResult));
+    });
+
 });
 
 describe("BBCore.api", function() {
@@ -281,6 +308,19 @@ describe("BBCore.auth", function() {
         expect(bbCore.isAuthenticated()).toBe(true);
     });
 
+    it("validateSession - fails", function() {
+        setupMockApiRequest({ status: "success", info: {}});
+        spyOn(bbCore, 'clearKey').and.callThrough();
+
+        var successSpy = jasmine.createSpy('successCallbackSpy');
+        var errorSpy = jasmine.createSpy('errorCallbackSpy');
+
+        bbCore.validateSession(successSpy,errorSpy);
+
+        expect(successSpy).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalled();
+    });
+
     it("invalidateSession", function() {
         setupMockApiRequest({ status: "success", info: {}});
         spyOn(bbCore, 'clearKey').and.callThrough();
@@ -302,14 +342,14 @@ describe("BBCore.auth", function() {
     });
 
     it("verifyKey - with an invalid api key", function() {
-        var result = { status: "failure", info: {} };
+        var result = { status : 'failure', methodName : 'InvalidSession', info : { errormsg : 'Invalid login' } };
 
         setupMockApiRequest(result);
-        simulateAuthenticatedApi(bbCore);
+        simulateUnauthenticatedApi(bbCore);
 
         bbCore.verifyKey("invalidApiKey", successCallbackSpy);
 
-        expect(bbCore.onError).toHaveBeenCalledWith(result);
+        expect(bbCore.onError).toHaveBeenCalledWith(result, null);
         expect(successCallbackSpy).not.toHaveBeenCalled();
     });
 
@@ -331,6 +371,21 @@ describe("BBCore.auth", function() {
 
         expect(bbCore.getKey()).toBe(null);
     });
+
+    it("getOAuthTokenForRequest", function() {
+
+        var fakeTokenPayload = { token_type: '', access_token: '' };
+
+        spyOn(bbCore, 'getOAuthPayload').and.returnValue(JSON.stringify(fakeTokenPayload));
+        spyOn(bbCore, 'isOAuthTokenValid').and.returnValue(true);
+
+        var tokenForRequest = bbCore.getOAuthTokenForRequest();
+
+        expect(bbCore.isOAuthTokenValid).toHaveBeenCalled();
+        expect(tokenForRequest).toBe(fakeTokenPayload.token_type+' '+fakeTokenPayload.access_token);
+
+    });
+
 });
 
 describe("BBCore.contacts", function() {
