@@ -72,6 +72,7 @@ BBCore.prototype.saveCredentials = function (uid, pwd) {
 BBCore.prototype.validateSession = function (onSuccess, onError) {
 
     var oAuthPayload = this.getOAuthPayload();
+    var inst = this;
     var authCode = /[\?\#].*&*(access_token|code)=([^&]+)/gi.exec(window.location);
     if (authCode && authCode.length > 1)
     {
@@ -108,7 +109,6 @@ BBCore.prototype.validateSession = function (onSuccess, onError) {
     }
     else if (!this.getKey() && this.getJsonWebToken())
     {
-        var inst = this;
         this.verifyJsonWebToken(function(response){
             inst.__updateSession(response);
             onSuccess.call(inst,response);
@@ -116,7 +116,10 @@ BBCore.prototype.validateSession = function (onSuccess, onError) {
     }
     else
     {
-        if (this.getKey()) {
+        if (this.credentials && this.credentials.clientIdentifier) {
+            if (onError) onError(); // use error callback to signal OAuth login is require
+        }
+        else if (this.getKey()) {
             this.validateAccessToken(onSuccess);
         }
         else if (this.storage.getItem("b2-uid")) {
