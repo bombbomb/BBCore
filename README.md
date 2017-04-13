@@ -157,7 +157,7 @@ Adds a Video to the collection
 ## Class: BBCore
 
 
-**resumeStoredSession**:  , DEPRECATED - Alias for resumeSession
+**resumeStoredSession**:  , DEPRECATED - Use validateSession
 ### BBCore.login(uid, pwd, success) 
 
 Authenticates a user using their Email Address (User Id) and Password
@@ -214,8 +214,9 @@ Returns bool for authentication state
 
 ### BBCore.invalidateSession() 
 
-Invalidates and clears the active session
+Invalidates and clears the active session, similar to logout
 
+**Returns**: `boolean | *`
 
 ### BBCore.verifyKey(key, complete) 
 
