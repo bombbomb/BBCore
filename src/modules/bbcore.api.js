@@ -49,7 +49,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     if (method !== "IsValidLogin" && !params.api_key) {
         params.api_key = this.getKey();
     }
-    if ((method !== "ValidateSession" && params.grant_type !== "authorization_code") && !this.authenticated) {
+    if (((method !== "ValidateSession" && method !== "ValidateJsonWebToken") && params.grant_type !== "authorization_code") && !this.authenticated) {
         this.onError.call(this, {
             status: 'failure',
             methodName: 'InvalidSession',
@@ -65,15 +65,16 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         asyncSetting = params.async;
     }
 
-    var requestToken = this.getOAuthTokenForRequest();
+    var requestToken = this.getOAuthTokenForRequest(),
+        legacyJWT = this.getJsonWebToken();
     if (requestToken && requestToken.length)
     {
         requestHeaders['Authorization'] = requestToken;
         typeof params.api_key !== 'undefined' && delete params.api_key
     }
-    else if (this.getJsonWebToken())
+    else if (legacyJWT && legacyJWT.length)
     {
-        requestHeaders['BB-JWT'] = this.getJsonWebToken();
+        requestHeaders['BB-JWT'] = legacyJWT;
     }
 
     return jQuery.ajax({
