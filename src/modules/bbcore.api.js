@@ -49,7 +49,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     if (method !== "IsValidLogin" && !params.api_key) {
         params.api_key = this.getKey();
     }
-    if (((method !== "ValidateSession" && method !== "ValidateJsonWebToken") && params.grant_type !== "authorization_code") && !this.authenticated) {
+    if ((method !== "ValidateSession" && params.grant_type !== "authorization_code") && !this.authenticated) {
         this.onError.call(this, {
             status: 'failure',
             methodName: 'InvalidSession',
