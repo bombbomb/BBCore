@@ -300,6 +300,16 @@ describe("BBCore.auth", function() {
         expect(bbCore.isAuthenticated()).toBe(false);
     });
 
+    it("verifyJsonWebToken", function() {
+        setupMockApiRequest(result.authenticationSuccess);
+
+        bbCore.verifyJsonWebToken('junkkey',function(){
+            console.log('should not be output');
+        });
+
+        expect(bbCore.onError).toHaveBeenCalled();
+    });
+
     it("validateAccessToken", function() {
         setupMockApiRequest(result.authenticationSuccess);
 
