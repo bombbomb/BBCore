@@ -27,7 +27,7 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         if (legacyToken && legacyToken.length)
         {
             reqParams.api_key = legacyToken;
-            embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(embeddedVideoRecorderUrl + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
+            embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + legacyToken + '&redir=' + btoa(embeddedVideoRecorderUrl + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
             onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
         }
         else
