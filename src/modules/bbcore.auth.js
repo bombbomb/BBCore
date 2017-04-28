@@ -52,7 +52,7 @@ BBCore.prototype.logout = function () {
  * @returns {boolean}
  */
 BBCore.prototype.credentialsSaved = function () {
-    return null !== this.storage.getItem("b2-uid") || null !== this.storage.getItem("access_token") || null !== this.storage.getItem("jsonWebToken");
+    return null !== this.storage.getItem("b2-uid") || null !== this.storage.getItem("access_token") || null !== this.storage.getItem("jsonWebToken") || null !== localStorage.getItem("authToken");
 };
 
 /**

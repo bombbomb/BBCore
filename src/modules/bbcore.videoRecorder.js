@@ -18,13 +18,31 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         module: 'videos',
         page: 'EmbeddedRecorder',
         popup: 1,
-        nohtml: 1,
-        api_key: this.getKey()
+        nohtml: 1
     });
     var inst = this;
     this.getVideoId(function (vidId) {
-        var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?module=login&actn=login&api_key=' + inst.getKey() + '&redir=' + btoa(inst.getServerUrl() + '/app/?' + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
-        onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
+        var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?',
+            legacyToken = inst.getKey();
+        if (legacyToken && legacyToken.length)
+        {
+            reqParams.api_key = legacyToken;
+            embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + legacyToken + '&redir=' + btoa(embeddedVideoRecorderUrl + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
+            onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
+        }
+        else
+        {
+            options.videoId = vidId;
+            this.getVideoRecorder(options, function(data){
+                var recorderUrl = '';
+                if (data && data.info && data.info.content.length)
+                {
+                    var recMatchUrl =  /https*:\/\/[^<"]+/.exec(data.info.content);
+                    recorderUrl = recMatchUrl[0];
+                }
+                onComplete({ url: recorderUrl, video_id: vidId });
+            });
+        }
     });
 
 };

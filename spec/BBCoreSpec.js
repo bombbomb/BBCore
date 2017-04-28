@@ -871,13 +871,32 @@ describe("BBCore.videoRecorder", function() {
         setupAuthenticatedTest(true, false);
     });
 
-    it("getEmbeddedRecorderUrl", function() {
+    it("getEmbeddedRecorderUrl with Legacy Access Token", function() {
         var apiKey = "api key";
         var requestParams = $.param({ width: 640, height: 480, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
 
         spyOn(bbCore, 'getKey').and.callFake(function() {
             return apiKey;
+        });
+
+        bbCore.setVideoId(testGuid);
+        bbCore.getEmbeddedRecorderUrl({ width: 640, height: 480 }, successCallbackSpy);
+
+        expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
+    });
+
+    it("getEmbeddedRecorderUrl using OAuth", function() {
+        var apiKey = "api key";
+        var requestParams = $.param({ width: 640, height: 480, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1 });
+        var expectedUrl = apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid;
+
+        spyOn(bbCore, 'getKey').and.callFake(function() {
+            return null;
+        });
+
+        spyOn(bbCore, 'getVideoRecorder').and.callFake(function(opts,onComplete) {
+            onComplete({ info: { content: '<div><iframe src="'+expectedUrl+'"></iframe></div>' } });
         });
 
         bbCore.setVideoId(testGuid);
