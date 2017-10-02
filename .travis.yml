@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '0.10'
+- '5.8.0'
 before_install: npm install -g grunt-cli
 deploy:
   provider: s3
