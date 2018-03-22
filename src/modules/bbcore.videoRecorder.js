@@ -23,8 +23,10 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
     var inst = this;
     this.getVideoId(function (vidId) {
         var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?',
-            legacyToken = inst.getKey();
-        if (legacyToken && legacyToken.length)
+            legacyToken = inst.getKey()
+            // if a legacy token is set, but we don't want to trigger login functionality...
+            ignoreLegacyToken = options.ignoreLegacyToken || false;
+        if (legacyToken && legacyToken.length && !ignoreLegacyToken)
         {
             reqParams.api_key = legacyToken;
             embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + legacyToken + '&redir=' + btoa(embeddedVideoRecorderUrl + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
