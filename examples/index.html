@@ -162,7 +162,7 @@
         });
 
         $('.nav [aria-controls="videos"]').on('click',function(){
-            bbInstance.getVideos({ page: 1, pageSize: 15 },function(data){
+            bbInstance.getVideos({ page: 0, pageSize: 15 },function(data){
                 var videos = data.info;
                 var $videos = $('#videos');
                 if (videos.length)
