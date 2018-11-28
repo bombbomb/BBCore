@@ -66,7 +66,6 @@
 }
 
 function BBCore(options) {
-    console.log('eyyy I\'ma computer');
     this.userEmail = "";
     this.userId = "";
     this.clientId = "";
@@ -99,7 +98,6 @@ function BBCore(options) {
      * @returns {contacts}
      */
     this.contacts.prototype.add = function (contact) {
-        console.warn('running this.contacts.add!');
         this.push(contact);
         return this;
     };
@@ -110,7 +108,6 @@ function BBCore(options) {
      * @returns {*|BBCore.contact}
      */
     this.contacts.prototype.find = function (fieldName, value) {
-        console.warn('running this.contacts.find!');
         for (var contact in this) {
             if (this.hasOwnProperty(contact) && contact[fieldName] === value) {
                 return contact;
@@ -119,7 +116,6 @@ function BBCore(options) {
         return null;
     };
     this.contacts.prototype.get = function (contactId) {
-        console.warn('running this.contacts.get!');
         return this.find('id', contactId);
     };
 
