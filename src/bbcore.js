@@ -48,8 +48,25 @@
  @param {OAuthClientCredentials} options.credentials
  */
 
-function BBCore(options) {
+ // polyfill for Object.create.
+ if (typeof Object.create !== "function") {
+    Object.create = function (proto, propertiesObject) {
+        if (typeof proto !== 'object' && typeof proto !== 'function') {
+            throw new TypeError('Object prototype may only be an Object: ' + proto);
+        } else if (proto === null) {
+            throw new Error("This browser's implementation of Object.create is a shim and doesn't support 'null' as the first argument.");
+        }
+         if (typeof propertiesObject != 'undefined') {
+            throw new Error("This browser's implementation of Object.create is a shim and doesn't support a second argument.");
+        }
+         function F() {}
+        F.prototype = proto;
+         return new F();
+    };
+}
 
+function BBCore(options) {
+    console.log('eyyy I\'ma computer');
     this.userEmail = "";
     this.userId = "";
     this.clientId = "";
@@ -72,9 +89,9 @@ function BBCore(options) {
     this.__vidRecHndl = null;
 
     /** @class */
-    this.contacts = function () {
+    this.contacts = function () {console.warn('running this.contacts!');
     };
-    this.contacts.prototype = Array.prototype;
+    this.contacts.prototype = Object.create(Array.prototype);
     this.contacts.constructor = this.contacts;
     /**
      * Adds a Contact {@link BBCore.contact} to Contacts collection
@@ -82,6 +99,7 @@ function BBCore(options) {
      * @returns {contacts}
      */
     this.contacts.prototype.add = function (contact) {
+        console.warn('running this.contacts.add!');
         this.push(contact);
         return this;
     };
@@ -92,6 +110,7 @@ function BBCore(options) {
      * @returns {*|BBCore.contact}
      */
     this.contacts.prototype.find = function (fieldName, value) {
+        console.warn('running this.contacts.find!');
         for (var contact in this) {
             if (this.hasOwnProperty(contact) && contact[fieldName] === value) {
                 return contact;
@@ -100,6 +119,7 @@ function BBCore(options) {
         return null;
     };
     this.contacts.prototype.get = function (contactId) {
+        console.warn('running this.contacts.get!');
         return this.find('id', contactId);
     };
 
@@ -109,7 +129,7 @@ function BBCore(options) {
      */
     this.videos = function () {
     };
-    this.videos.prototype = Array.prototype;
+    this.videos.prototype = Object.create(Array.prototype);
     this.videos.constructor = this.videos;
     /**
      * Adds a Video to the collection
