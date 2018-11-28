@@ -77,6 +77,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         requestHeaders['BB-JWT'] = legacyJWT;
     }
 
+    params['xsrc'] = 'bbcore-' + BBCore.CONFIG.VERSION;
     return jQuery.ajax({
         url: params.url ? params.url : this.getRequestUrl(), //BBCore.CONFIG.SERVER_API_URL + BBCore.CONFIG.API_END_POINT,
         async: asyncSetting,

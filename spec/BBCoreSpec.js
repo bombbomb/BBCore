@@ -959,7 +959,7 @@ describe("BBCore.videoRecorder", function() {
     });
 
     it("getVideoRecorder: without options", function() {
-        var defaultOptions = { height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : null };
+        var defaultOptions = { height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null, method : 'GetVideoRecorder', api_key : null, xsrc: 'bbcore-' + BBCore.CONFIG.VERSION };
 
         setupMockApiRequest(result.withDefaultOptionsSuccess);
 
