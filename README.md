@@ -5,11 +5,11 @@
 BombBomb makes it easy to build relationships with simple videos. Use this JavaScript API to record a video on your website, email it within a clean, beautiful design, and receive detailed analytics on opens, click and plays. With the free BombBomb app you can receive push notifications and respond right away when someone interacts with your email.
 ## Quick Start
 
-To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js`):
+To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://static.bombbomb.com/js/BBCore.min.js`):
 
 ```html
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="//s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://static.bombbomb.com/js/BBCore.min.js"></script>
 ```
 
 Then instantiate BBCore:
@@ -39,7 +39,7 @@ bb.startVideoRecorder({ target: '#recorderDiv'}, function (vidInfo) {
 });
 ```
 
-**IMPORTANT NOTE**:If you would like to record a new video on the same page, you will need to destroy and recreate the recorder. You can destroy the recorder with the destroyVideoRecorder() function.
+**IMPORTANT NOTE**: If you intend to reuse the same BBCore object, it's HIGHLY recommended you call *getNewVideoGuid()* prior to calling *startVideoRecorder*. However, it's recommended that you otherwise destroy the BBCore object after the recorder has completed and create a new one.
 &nbsp;
 
 
@@ -67,7 +67,7 @@ bb.videoQuickSend({
 
 ### Register to receive real-time feedback via web hooks 
 Have your system be notified in real-time as events happen in your customer's BombBomb account.
-[BombBomb's Webhooks](https://support.bombbomb.com/hc/en-us/articles/115000439932-How-do-I-set-up-BombBomb-webhooks-) make
+[BombBomb's Webhooks](http://support.bombbomb.com/customer/portal/articles/2062941-bombbomb-webhooks) make
 it easy to keep your system up to date.
 
 &nbsp;
@@ -103,17 +103,6 @@ Download the free BombBomb app for your <a href="https://itunes.apple.com/us/app
 
 
 * * *
-
-## Class: BBCore
-
-
-**userEmail**: `string` 
-**userId**: `string` 
-**clientId**: `string` 
-**accessToken**: `string` 
-**currentVideoId**: `string` 
-**email**: `string` 
-**onerror**: `string` 
 
 ## Class: contacts
 
@@ -292,8 +281,7 @@ Attempts to always return a valid JWT which makes an async verification request
 
 **Parameters**
 
-**callback**: , handler given a valid JWT.  If the JWT is null then the user
-is NOT authenticated.
+**callback**: , handler given a valid JWT.  If the JWT is null then the useris NOT authenticated.
 
 
 ### BBCore.getServerUrl() 

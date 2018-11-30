@@ -1,10 +1,10 @@
 ## Quick Start
 
-To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js`):
+To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://static.bombbomb.com/js/BBCore.min.js`):
 
 ```html
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="//s3.amazonaws.com/static.bombbomb.com/js/BBCore.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://static.bombbomb.com/js/BBCore.min.js"></script>
 ```
 
 Then instantiate BBCore:
