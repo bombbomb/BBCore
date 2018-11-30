@@ -23,6 +23,13 @@ BBCore.prototype.getRequestUrl = function () {
  * @prop {string} [url]
  */
 
+ BBCore._addParameterToUrl = function (urlString, parameterKey, parameterValue) {
+    var separator = '?';
+    if(urlString.indexOf('?') !== -1) {
+        separator = '&'
+    }
+    return urlString + separator + parameterKey + "=" + parameterValue;
+ }
 
 /**
  * Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
@@ -76,10 +83,10 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     {
         requestHeaders['BB-JWT'] = legacyJWT;
     }
-
-    params['xsrc'] = 'bbcore-' + BBCore.CONFIG.VERSION;
+    var url = params.url ? params.url : this.getRequestUrl();
+    url = BBCore._addParameterToUrl(url, 'xsrc', 'bbcore-' + BBCore.CONFIG.VERSION);
     return jQuery.ajax({
-        url: params.url ? params.url : this.getRequestUrl(), //BBCore.CONFIG.SERVER_API_URL + BBCore.CONFIG.API_END_POINT,
+        url: url,
         async: asyncSetting,
         type: "post",
         dataType: "json",
