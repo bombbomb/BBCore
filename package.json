@@ -20,7 +20,7 @@
   "main": "Gruntfile.js",
   "scripts": {
     "clean": "gulp clean",
-    "build" : "gulp build && gulp uglify && gulp add-core-header",
+    "build" : "gulp test && gulp build && gulp uglify && gulp add-core-header",
     "docs" : "gulp docs",
     "test" : "gulp test"
   },
