@@ -88,8 +88,7 @@ function BBCore(options) {
     this.__vidRecHndl = null;
 
     /** @class */
-    this.contacts = function () {console.warn('running this.contacts!');
-    };
+    this.contacts = function () {};
     this.contacts.prototype = Object.create(Array.prototype);
     this.contacts.constructor = this.contacts;
     /**
