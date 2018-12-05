@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/bombbomb/BBCore.svg?branch=master)](https://travis-ci.org/bombbomb/BBCore) [![Code Climate](https://codeclimate.com/github/bombbomb/BBCore/badges/gpa.svg)](https://codeclimate.com/github/bombbomb/BBCore) [![Test Coverage](https://codeclimate.com/github/bombbomb/BBCore/badges/coverage.svg)](https://codeclimate.com/github/bombbomb/BBCore)
 
 BombBomb makes it easy to build relationships with simple videos. Use this JavaScript API to record a video on your website, email it within a clean, beautiful design, and receive detailed analytics on opens, click and plays. With the free BombBomb app you can receive push notifications and respond right away when someone interacts with your email.
+
 ## Quick Start
 
 To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://static.bombbomb.com/js/BBCore.min.js`):
@@ -96,489 +97,1352 @@ Download the free BombBomb app for your <a href="https://itunes.apple.com/us/app
 
 &nbsp;
 
-# Global
 
+## Classes
 
+<dl>
+<dt><a href="#contacts">contacts</a></dt>
+<dd></dd>
+<dt><a href="#BBCore">BBCore</a></dt>
+<dd></dd>
+<dt><a href="#videoOptions">videoOptions</a></dt>
+<dd></dd>
+</dl>
 
+## Objects
 
+<dl>
+<dt><a href="#BBCore">BBCore</a> : <code>object</code></dt>
+<dd></dd>
+</dl>
 
-* * *
+## Functions
 
-## Class: contacts
+<dl>
+<dt><a href="#responseSuccess">responseSuccess(responseObject, jqXHR)</a></dt>
+<dd><p>reponseSuccess</p>
+</dd>
+</dl>
 
+## Typedefs
 
-### contacts.add(contact) 
+<dl>
+<dt><a href="#responseSuccess">responseSuccess</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#responseObject">responseObject</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#OAuthClientCredentials">OAuthClientCredentials</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#responseSuccess">responseSuccess</a> : <code>function</code></dt>
+<dd><p>This callback is displayed as a global member.</p>
+</dd>
+<dt><a href="#requestParameters">requestParameters</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#getClientInteractionOptions">getClientInteractionOptions</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#customVideoEmailOptions">customVideoEmailOptions</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#responseSuccess">responseSuccess</a> : <code>function</code></dt>
+<dd><p>This callback is displayed as a global member.</p>
+</dd>
+<dt><a href="#contactProperties">contactProperties</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#videoProperties">videoProperties</a> : <code>object</code></dt>
+<dd></dd>
+</dl>
 
-Adds a Contact [BBCore.contact](#bbcore.contact) to Contacts collection
+<a name="contacts"></a>
 
-**Parameters**
+## contacts
+**Kind**: global class  
 
-**contact**: `contact`, Adds a Contact [BBCore.contact](#bbcore.contact) to Contacts collection
+* [contacts](#contacts)
+    * [.add(contact)](#contacts+add) ⇒ <code>[contacts](#contacts)</code>
+    * [.find(fieldName, value)](#contacts+find) ⇒ <code>\*</code> &#124; <code>[contact](#BBCore.contact)</code>
 
-**Returns**: `contacts`
+<a name="contacts+add"></a>
 
-### contacts.find(fieldName, value) 
+### contacts.add(contact) ⇒ <code>[contacts](#contacts)</code>
+Adds a Contact [contact](#BBCore.contact) to Contacts collection
 
+**Kind**: instance method of <code>[contacts](#contacts)</code>  
+
+| Param | Type |
+| --- | --- |
+| contact | <code>contact</code> | 
+
+<a name="contacts+find"></a>
+
+### contacts.find(fieldName, value) ⇒ <code>\*</code> &#124; <code>[contact](#BBCore.contact)</code>
 Returns the first matched contact from
 
-**Parameters**
-
-**fieldName**: `string`, Name of the field to search for the value
-
-**value**: `string`, Value to search for in the contacts
-
-**Returns**: `* | BBCore.contact`
-
-
-## Class: video
-
-
-### video.add(video) 
-
-Adds a Video to the collection
-
-**Parameters**
-
-**video**: `video`, Adds a Video to the collection
-
-**Returns**: `videos`
-
-
-## Class: BBCore
-
-
-**resumeStoredSession**:  , DEPRECATED - Use validateSession
-### BBCore.login(uid, pwd, success) 
-
-Authenticates a user using their Email Address (User Id) and Password
-
-**Parameters**
-
-**uid**: `string`, Authenticates a user using their Email Address (User Id) and Password
-
-**pwd**: `string`, Authenticates a user using their Email Address (User Id) and Password
-
-**success**: `responseSuccess`, Authenticates a user using their Email Address (User Id) and Password
-
-
-### BBCore.credentialsSaved() 
-
-Returns bool for whether or not a prior authentication is stored locally
-
-**Returns**: `boolean`
-
-### BBCore.saveCredentials(uid, pwd) 
-
-Save credentials to local storage (not recommended)
-
-**Parameters**
-
-**uid**: `string`, User ID/Email Address
-
-**pwd**: `string`, Password
-
-
-### BBCore.validateSession(onSuccess, onError) 
-
-Authenticates from previously stored credentials
-
-**Parameters**
-
-**onSuccess**: `responseSuccess`, Authenticates from previously stored credentials
-
-**onError**: `responseSuccess`, Authenticates from previously stored credentials
-
-
-### BBCore.validateAccessToken(onSuccess) 
-
-**Parameters**
-
-**onSuccess**: 
-
-
-### BBCore.isAuthenticated() 
-
-Returns bool for authentication state
-
-**Returns**: `boolean | *`
-
-### BBCore.invalidateSession() 
-
-Invalidates and clears the active session, similar to logout
-
-**Returns**: `boolean | *`
-
-### BBCore.verifyKey(key, complete) 
-
-Validates the given key
-
-**Parameters**
-
-**key**: `string`, Validates the given key
-
-**complete**: `responseSuccess`, Validates the given key
-
-
-### BBCore.storeKey(key) 
-
-Stores the give session key, typically used so a session can be resumed later on.
-
-**Parameters**
-
-**key**: , Stores the give session key, typically used so a session can be resumed later on.
-
-
-### BBCore.verifyJsonWebToken(key, complete) 
-
-Validates the given key
-
-**Parameters**
-
-**key**: `string`, Validates the given key
-
-**complete**: `responseSuccess`, Validates the given key
-
-
-### BBCore.storeOAuthTokens(key) 
-
-Stores the OAuth Token for API calls
-
-**Parameters**
-
-**key**: , Stores the OAuth Token for API calls
-
-
-### BBCore.getOAuthPayload() 
-
-**Returns**: `string`
-
-### BBCore.validateOAuthCode(authCode, onSuccess, onError) 
-
-**Parameters**
-
-**authCode**: 
-
-**onSuccess**: 
-
-**onError**: 
-
-
-### BBCore.refreshOAuthToken() 
-
-
-### BBCore.storeJsonWebToken(key) 
-
-Stores the give session key, typically used so a session can be resumed later on.
-
-**Parameters**
-
-**key**: , Stores the give session key, typically used so a session can be resumed later on.
-
-
-### BBCore.getValidJsonWebTokenAsync(callback) 
-
-Attempts to always return a valid JWT which makes an async verification request
-
-**Parameters**
-
-**callback**: , handler given a valid JWT.  If the JWT is null then the useris NOT authenticated.
-
-
-### BBCore.getServerUrl() 
-
-**Returns**: `BBCore.apiServer | * | BBCore.CONFIG.SERVER_API_URL`
-
-### BBCore.getRequestUrl() 
-
+**Kind**: instance method of <code>[contacts](#contacts)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fieldName | <code>string</code> | Name of the field to search for the value |
+| value | <code>string</code> | Value to search for in the contacts |
+
+<a name="BBCore"></a>
+
+## BBCore
+**Kind**: global class  
+
+* [BBCore](#BBCore)
+    * _instance_
+        * [.resumeStoredSession](#BBCore+resumeStoredSession)
+        * [.getServerUrl()](#BBCore+getServerUrl) ⇒ <code>BBCore.apiServer</code> &#124; <code>\*</code> &#124; <code>BBCore.CONFIG.SERVER_API_URL</code>
+        * [.getRequestUrl()](#BBCore+getRequestUrl) ⇒ <code>string</code>
+        * [.sendRequest(method, [params], [success], [error])](#BBCore+sendRequest)
+        * [.login(uid, pwd, success)](#BBCore+login)
+        * [.credentialsSaved()](#BBCore+credentialsSaved) ⇒ <code>boolean</code>
+        * [.saveCredentials(uid, pwd)](#BBCore+saveCredentials)
+        * [.validateSession(onSuccess, onError)](#BBCore+validateSession)
+        * [.validateAccessToken(onSuccess)](#BBCore+validateAccessToken)
+        * [.isAuthenticated()](#BBCore+isAuthenticated) ⇒ <code>boolean</code> &#124; <code>\*</code>
+        * [.invalidateSession()](#BBCore+invalidateSession) ⇒ <code>boolean</code> &#124; <code>\*</code>
+        * [.verifyKey(key, complete)](#BBCore+verifyKey)
+        * [.storeKey(key)](#BBCore+storeKey)
+        * [.verifyJsonWebToken(key, complete)](#BBCore+verifyJsonWebToken)
+        * [.storeOAuthTokens(key)](#BBCore+storeOAuthTokens)
+        * [.getOAuthPayload()](#BBCore+getOAuthPayload) ⇒ <code>string</code>
+        * [.validateOAuthCode(authCode, onSuccess, onError)](#BBCore+validateOAuthCode)
+        * [.refreshOAuthToken()](#BBCore+refreshOAuthToken)
+        * [.storeJsonWebToken(key)](#BBCore+storeJsonWebToken)
+        * [.getValidJsonWebTokenAsync(callback)](#BBCore+getValidJsonWebTokenAsync)
+        * [.getLists(success)](#BBCore+getLists)
+        * [.createList(listName, success)](#BBCore+createList)
+        * [.getContact(contactId, success)](#BBCore+getContact)
+        * [.getListContacts(listId, success)](#BBCore+getListContacts)
+        * [.addContact(contact, success)](#BBCore+addContact)
+        * [.bulkAddContacts(opts, success)](#BBCore+bulkAddContacts)
+        * [.updateContact(opts, success)](#BBCore+updateContact)
+        * [.getImportAddressesByType(opts, success)](#BBCore+getImportAddressesByType)
+        * [.addContactImportAddress(opts, success)](#BBCore+addContactImportAddress)
+        * [.getClientRecentInteractions(opts, success)](#BBCore+getClientRecentInteractions)
+        * [.getEmails(success)](#BBCore+getEmails)
+        * [.sendCustomVideoEmail(opts, success)](#BBCore+sendCustomVideoEmail)
+        * [.getDrips(opts, success)](#BBCore+getDrips)
+        * [.getForms(opts, success)](#BBCore+getForms)
+        * [.getClientIntegrations(opts, success)](#BBCore+getClientIntegrations)
+        * [.deleteVideo(videoId, success)](#BBCore+deleteVideo)
+        * [.videoQuickSend(opts, onSuccess)](#BBCore+videoQuickSend)
+        * [.getEmbeddedRecorderUrl([options], onComplete)](#BBCore+getEmbeddedRecorderUrl)
+        * [.getVideoRecorder(opts, onComplete)](#BBCore+getVideoRecorder)
+        * [.saveRecordedVideo(title, videoId, videoFilename, success)](#BBCore+saveRecordedVideo)
+        * [.saveRecording(options)](#BBCore+saveRecording)
+    * _static_
+        * [.video](#BBCore.video)
+            * [new video(properties)](#new_BBCore.video_new)
+        * [.contact](#BBCore.contact)
+            * [new contact(properties)](#new_BBCore.contact_new)
+        * [.video](#BBCore.video)
+            * [new video(properties)](#new_BBCore.video_new)
+        * [.CONFIG](#BBCore.CONFIG) : <code>Object</code>
+
+<a name="BBCore+resumeStoredSession"></a>
+
+### bbCore.resumeStoredSession
+DEPRECATED - Use validateSession
+
+**Kind**: instance property of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+getServerUrl"></a>
+
+### bbCore.getServerUrl() ⇒ <code>BBCore.apiServer</code> &#124; <code>\*</code> &#124; <code>BBCore.CONFIG.SERVER_API_URL</code>
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+getRequestUrl"></a>
+
+### bbCore.getRequestUrl() ⇒ <code>string</code>
 Returns the fully qualified URL for BB API
 
-**Returns**: `string`
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+sendRequest"></a>
 
-### BBCore.sendRequest(method, params, success, error) 
-
+### bbCore.sendRequest(method, [params], [success], [error])
 Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**method**: `string`, The method name to call
+| Param | Type | Description |
+| --- | --- | --- |
+| method | <code>string</code> | The method name to call |
+| [params] | <code>[requestParameters](#requestParameters)</code> | The parameters to send with the request |
+| [success] | <code>[responseSuccess](#responseSuccess)</code> | A callback when the request succeeds |
+| [error] | <code>[responseSuccess](#responseSuccess)</code> | A callback when the request fails |
 
-**params**: `requestParameters`, The parameters to send with the request
+<a name="BBCore+login"></a>
 
-**success**: `responseSuccess`, A callback when the request succeeds
+### bbCore.login(uid, pwd, success)
+Authenticates a user using their Email Address (User Id) and Password
 
-**error**: `responseSuccess`, A callback when the request fails
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
+| Param | Type |
+| --- | --- |
+| uid | <code>string</code> | 
+| pwd | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-### BBCore.getLists(success) 
+<a name="BBCore+credentialsSaved"></a>
 
+### bbCore.credentialsSaved() ⇒ <code>boolean</code>
+Returns bool for whether or not a prior authentication is stored locally
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+saveCredentials"></a>
+
+### bbCore.saveCredentials(uid, pwd)
+Save credentials to local storage (not recommended)
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| uid | <code>string</code> | User ID/Email Address |
+| pwd | <code>string</code> | Password |
+
+<a name="BBCore+validateSession"></a>
+
+### bbCore.validateSession(onSuccess, onError)
+Authenticates from previously stored credentials
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| onSuccess | <code>[responseSuccess](#responseSuccess)</code> | 
+| onError | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+validateAccessToken"></a>
+
+### bbCore.validateAccessToken(onSuccess)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| onSuccess | 
+
+<a name="BBCore+isAuthenticated"></a>
+
+### bbCore.isAuthenticated() ⇒ <code>boolean</code> &#124; <code>\*</code>
+Returns bool for authentication state
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+invalidateSession"></a>
+
+### bbCore.invalidateSession() ⇒ <code>boolean</code> &#124; <code>\*</code>
+Invalidates and clears the active session, similar to logout
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+verifyKey"></a>
+
+### bbCore.verifyKey(key, complete)
+Validates the given key
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| key | <code>string</code> | 
+| complete | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+storeKey"></a>
+
+### bbCore.storeKey(key)
+Stores the give session key, typically used so a session can be resumed later on.
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| key | 
+
+<a name="BBCore+verifyJsonWebToken"></a>
+
+### bbCore.verifyJsonWebToken(key, complete)
+Validates the given key
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| key | <code>string</code> | 
+| complete | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+storeOAuthTokens"></a>
+
+### bbCore.storeOAuthTokens(key)
+Stores the OAuth Token for API calls
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| key | 
+
+<a name="BBCore+getOAuthPayload"></a>
+
+### bbCore.getOAuthPayload() ⇒ <code>string</code>
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+validateOAuthCode"></a>
+
+### bbCore.validateOAuthCode(authCode, onSuccess, onError)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| authCode | 
+| onSuccess | 
+| onError | 
+
+<a name="BBCore+refreshOAuthToken"></a>
+
+### bbCore.refreshOAuthToken()
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+storeJsonWebToken"></a>
+
+### bbCore.storeJsonWebToken(key)
+Stores the give session key, typically used so a session can be resumed later on.
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| key | 
+
+<a name="BBCore+getValidJsonWebTokenAsync"></a>
+
+### bbCore.getValidJsonWebTokenAsync(callback)
+Attempts to always return a valid JWT which makes an async verification request
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Description |
+| --- | --- |
+| callback | handler given a valid JWT.  If the JWT is null then the user is NOT authenticated. |
+
+<a name="BBCore+getLists"></a>
+
+### bbCore.getLists(success)
 Retrieves Contact Lists
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**success**: `responseSuccess`, Retrieves Contact Lists
+| Param | Type |
+| --- | --- |
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
+<a name="BBCore+createList"></a>
 
-### BBCore.createList(listName, success) 
-
+### bbCore.createList(listName, success)
 Creates a Contact List and returns the Guid
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**listName**: `string`, Creates a Contact List and returns the Guid
+| Param | Type |
+| --- | --- |
+| listName | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Creates a Contact List and returns the Guid
+<a name="BBCore+getContact"></a>
 
-
-### BBCore.getContact(contactId, success) 
-
+### bbCore.getContact(contactId, success)
 Retrieves a Contact
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**contactId**: `string`, Retrieves a Contact
+| Param | Type |
+| --- | --- |
+| contactId | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Retrieves a Contact
+<a name="BBCore+getListContacts"></a>
 
-
-### BBCore.getListContacts(listId, success) 
-
+### bbCore.getListContacts(listId, success)
 Retrieves Contacts from a Contact List
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**listId**: `string`, Retrieves Contacts from a Contact List
+| Param | Type |
+| --- | --- |
+| listId | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Retrieves Contacts from a Contact List
+<a name="BBCore+addContact"></a>
 
-
-### BBCore.addContact(contact, success) 
-
+### bbCore.addContact(contact, success)
 Adds a Contact to a Contact List
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**contact**: `contact`, Adds a Contact to a Contact List
+| Param | Type |
+| --- | --- |
+| contact | <code>contact</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Adds a Contact to a Contact List
+<a name="BBCore+bulkAddContacts"></a>
 
-
-### BBCore.bulkAddContacts(opts, success) 
-
+### bbCore.bulkAddContacts(opts, success)
 Adds a batch of Contacts
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**opts**: `object`, Adds a batch of Contacts
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Adds a batch of Contacts
+<a name="BBCore+updateContact"></a>
 
+### bbCore.updateContact(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-### BBCore.updateContact(opts, success) 
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**Parameters**
+<a name="BBCore+getImportAddressesByType"></a>
 
-**opts**: `object`
-
-**success**: `responseSuccess`
-
-
-### BBCore.getImportAddressesByType(opts, success) 
-
+### bbCore.getImportAddressesByType(opts, success)
 Retrieves an Import Address by a Type
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**opts**: , Retrieves an Import Address by a Type
+| Param | Type |
+| --- | --- |
+| opts |  | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Retrieves an Import Address by a Type
+<a name="BBCore+addContactImportAddress"></a>
 
-
-### BBCore.addContactImportAddress(opts, success) 
-
+### bbCore.addContactImportAddress(opts, success)
 Retrieves an Import Address by a Type
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**opts**: `object`, Retrieves an Import Address by a Type
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Retrieves an Import Address by a Type
+<a name="BBCore+getClientRecentInteractions"></a>
 
-
-### BBCore.getClientRecentInteractions(opts, success) 
-
+### bbCore.getClientRecentInteractions(opts, success)
 Retrieves a list of re
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**opts**: `getClientInteractionOptions`, Retrieves a list of re
+| Param | Type |
+| --- | --- |
+| opts | <code>[getClientInteractionOptions](#getClientInteractionOptions)</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Retrieves a list of re
+<a name="BBCore+getEmails"></a>
 
-
-### BBCore.getEmails(success) 
-
+### bbCore.getEmails(success)
 Retrieves a list of Emails from the current authenticated session
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**success**: `responseSuccess`, Retrieves a list of Emails from the current authenticated session
+| Param | Type |
+| --- | --- |
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
+<a name="BBCore+sendCustomVideoEmail"></a>
 
-### BBCore.sendCustomVideoEmail(opts, success) 
+### bbCore.sendCustomVideoEmail(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**Parameters**
+| Param | Type |
+| --- | --- |
+| opts | <code>[customVideoEmailOptions](#customVideoEmailOptions)</code> | 
+| success | <code>function</code> | 
 
-**opts**: `customVideoEmailOptions`
+<a name="BBCore+getDrips"></a>
 
-**success**: `function`
+### bbCore.getDrips(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-### BBCore.getDrips(opts, success) 
+<a name="BBCore+getForms"></a>
 
-**Parameters**
+### bbCore.getForms(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**opts**: `object`
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`
+<a name="BBCore+getClientIntegrations"></a>
 
+### bbCore.getClientIntegrations(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-### BBCore.getForms(opts, success) 
+| Param |
+| --- |
+| opts | 
+| success | 
 
-**Parameters**
+<a name="BBCore+deleteVideo"></a>
 
-**opts**: `object`
-
-**success**: `responseSuccess`
-
-
-### BBCore.getClientIntegrations(opts, success) 
-
-**Parameters**
-
-**opts**: 
-
-**success**: 
-
-
-### BBCore.getEmbeddedRecorderUrl(options, onComplete) 
-
-**Parameters**
-
-**options**: `Object`
-
-**onComplete**: `function`
-
-
-### BBCore.getVideoRecorder(opts, onComplete) 
-
-**Parameters**
-
-**opts**: `object`
-
-**onComplete**: `function`
-
-
-### BBCore.saveRecordedVideo(title, videoId, videoFilename, success) 
-
-**Parameters**
-
-**title**: `string`
-
-**videoId**: `string`
-
-**videoFilename**: `string`
-
-**success**: `function`
-
-
-
-## Class: videoOptions
-
-
-**vid_id**: `string` 
-### videoOptions.saveRecording(options) 
-
-**Parameters**
-
-**options**: `Object`
-
-
-### videoOptions.deleteVideo(videoId, success) 
-
+### bbCore.deleteVideo(videoId, success)
 Deletes a Video
 
-**Parameters**
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**videoId**: `string`, Deletes a Video
+| Param | Type |
+| --- | --- |
+| videoId | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**success**: `responseSuccess`, Deletes a Video
+<a name="BBCore+videoQuickSend"></a>
 
+### bbCore.videoQuickSend(opts, onSuccess)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-### videoOptions.videoQuickSend(opts, onSuccess) 
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| onSuccess | <code>[responseSuccess](#responseSuccess)</code> | 
 
-**Parameters**
+<a name="BBCore+getEmbeddedRecorderUrl"></a>
 
-**opts**: `object`
+### bbCore.getEmbeddedRecorderUrl([options], onComplete)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**onSuccess**: `responseSuccess`
+| Param | Type |
+| --- | --- |
+| [options] | <code>Object</code> | 
+| onComplete | <code>function</code> | 
 
+<a name="BBCore+getVideoRecorder"></a>
 
-### videoOptions.responseSuccess(responseObject, jqXHR) 
+### bbCore.getVideoRecorder(opts, onComplete)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-reponseSuccess
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| onComplete | <code>function</code> | 
 
-**Parameters**
+<a name="BBCore+saveRecordedVideo"></a>
 
-**responseObject**: , reponseSuccess
+### bbCore.saveRecordedVideo(title, videoId, videoFilename, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
-**jqXHR**: , reponseSuccess
+| Param | Type |
+| --- | --- |
+| title | <code>string</code> | 
+| videoId | <code>string</code> | 
+| videoFilename | <code>string</code> | 
+| success | <code>function</code> | 
 
+<a name="BBCore+saveRecording"></a>
 
+### bbCore.saveRecording(options)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
 
+| Param | Type |
+| --- | --- |
+| options | <code>Object</code> | 
 
-# BBCore
+<a name="BBCore.video"></a>
 
+### BBCore.video
+{Object} BBCore.videos
 
+**Kind**: static class of <code>[BBCore](#BBCore)</code>  
+<a name="new_BBCore.video_new"></a>
 
+#### new video(properties)
 
+| Param | Type |
+| --- | --- |
+| properties | <code>[videoProperties](#videoProperties)</code> | 
 
-* * *
+<a name="BBCore.contact"></a>
 
-## Class: contact
+### BBCore.contact
+stuff
+
+**Kind**: static class of <code>[BBCore](#BBCore)</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| email | <code>string</code> | Email Address |
+| firstname | <code>string</code> | First Name |
+| lastname | <code>string</code> | Last Name |
+| phone_number | <code>string</code> | Phone Number |
+| address_line_1 | <code>string</code> | Address 1 |
+| address_line_2 | <code>string</code> | Address 2 |
+| city | <code>string</code> | City |
+| state | <code>string</code> | State |
+| country | <code>string</code> | Country` |
+| postal_code | <code>string</code> | Postal Code |
+| company | <code>string</code> | Company |
+| position | <code>string</code> | Position |
+| comments | <code>string</code> | Comments |
+| listlist | <code>string</code> | Array of List Ids the Contact is subscribed to |
+| id | <code>string</code> | Contact Id |
+
+<a name="new_BBCore.contact_new"></a>
+
+#### new contact(properties)
 Contact Object
 
-**email**: `string` , Email Address
-**firstname**: `string` , First Name
-**lastname**: `string` , Last Name
-**phone_number**: `string` , Phone Number
-**address_line_1**: `string` , Address 1
-**address_line_2**: `string` , Address 2
-**city**: `string` , City
-**state**: `string` , State
-**country**: `string` , Country`
-**postal_code**: `string` , Postal Code
-**company**: `string` , Company
-**position**: `string` , Position
-**comments**: `string` , Comments
-**listlist**: `string` , Array of List Ids the Contact is subscribed to
-**id**: `string` , Contact Id
 
-## Class: video
+| Param | Type | Description |
+| --- | --- | --- |
+| properties | <code>[contactProperties](#contactProperties)</code> | [contactProperties](#contactProperties) |
+
+<a name="BBCore.video"></a>
+
+### BBCore.video
+BBCore.video
+
+**Kind**: static class of <code>[BBCore](#BBCore)</code>  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| vid_id | <code>string</code> | 
+| title | <code>string</code> | 
+| filename | <code>string</code> | 
+
+<a name="new_BBCore.video_new"></a>
+
+#### new video(properties)
+
+| Param | Type |
+| --- | --- |
+| properties | <code>[videoProperties](#videoProperties)</code> | 
+
+<a name="BBCore.CONFIG"></a>
+
+### BBCore.CONFIG : <code>Object</code>
+**Kind**: static constant of <code>[BBCore](#BBCore)</code>  
+**Properties**
+
+| Name |
+| --- |
+| VERSION | 
+| API_END_POINT | 
+| SERVER_API_URL | 
+
+<a name="videoOptions"></a>
+
+## videoOptions
+**Kind**: global class  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| vid_id | <code>string</code> | 
+
+<a name="BBCore"></a>
+
+## BBCore : <code>object</code>
+**Kind**: global namespace  
+
+* [BBCore](#BBCore) : <code>object</code>
+    * _instance_
+        * [.resumeStoredSession](#BBCore+resumeStoredSession)
+        * [.getServerUrl()](#BBCore+getServerUrl) ⇒ <code>BBCore.apiServer</code> &#124; <code>\*</code> &#124; <code>BBCore.CONFIG.SERVER_API_URL</code>
+        * [.getRequestUrl()](#BBCore+getRequestUrl) ⇒ <code>string</code>
+        * [.sendRequest(method, [params], [success], [error])](#BBCore+sendRequest)
+        * [.login(uid, pwd, success)](#BBCore+login)
+        * [.credentialsSaved()](#BBCore+credentialsSaved) ⇒ <code>boolean</code>
+        * [.saveCredentials(uid, pwd)](#BBCore+saveCredentials)
+        * [.validateSession(onSuccess, onError)](#BBCore+validateSession)
+        * [.validateAccessToken(onSuccess)](#BBCore+validateAccessToken)
+        * [.isAuthenticated()](#BBCore+isAuthenticated) ⇒ <code>boolean</code> &#124; <code>\*</code>
+        * [.invalidateSession()](#BBCore+invalidateSession) ⇒ <code>boolean</code> &#124; <code>\*</code>
+        * [.verifyKey(key, complete)](#BBCore+verifyKey)
+        * [.storeKey(key)](#BBCore+storeKey)
+        * [.verifyJsonWebToken(key, complete)](#BBCore+verifyJsonWebToken)
+        * [.storeOAuthTokens(key)](#BBCore+storeOAuthTokens)
+        * [.getOAuthPayload()](#BBCore+getOAuthPayload) ⇒ <code>string</code>
+        * [.validateOAuthCode(authCode, onSuccess, onError)](#BBCore+validateOAuthCode)
+        * [.refreshOAuthToken()](#BBCore+refreshOAuthToken)
+        * [.storeJsonWebToken(key)](#BBCore+storeJsonWebToken)
+        * [.getValidJsonWebTokenAsync(callback)](#BBCore+getValidJsonWebTokenAsync)
+        * [.getLists(success)](#BBCore+getLists)
+        * [.createList(listName, success)](#BBCore+createList)
+        * [.getContact(contactId, success)](#BBCore+getContact)
+        * [.getListContacts(listId, success)](#BBCore+getListContacts)
+        * [.addContact(contact, success)](#BBCore+addContact)
+        * [.bulkAddContacts(opts, success)](#BBCore+bulkAddContacts)
+        * [.updateContact(opts, success)](#BBCore+updateContact)
+        * [.getImportAddressesByType(opts, success)](#BBCore+getImportAddressesByType)
+        * [.addContactImportAddress(opts, success)](#BBCore+addContactImportAddress)
+        * [.getClientRecentInteractions(opts, success)](#BBCore+getClientRecentInteractions)
+        * [.getEmails(success)](#BBCore+getEmails)
+        * [.sendCustomVideoEmail(opts, success)](#BBCore+sendCustomVideoEmail)
+        * [.getDrips(opts, success)](#BBCore+getDrips)
+        * [.getForms(opts, success)](#BBCore+getForms)
+        * [.getClientIntegrations(opts, success)](#BBCore+getClientIntegrations)
+        * [.deleteVideo(videoId, success)](#BBCore+deleteVideo)
+        * [.videoQuickSend(opts, onSuccess)](#BBCore+videoQuickSend)
+        * [.getEmbeddedRecorderUrl([options], onComplete)](#BBCore+getEmbeddedRecorderUrl)
+        * [.getVideoRecorder(opts, onComplete)](#BBCore+getVideoRecorder)
+        * [.saveRecordedVideo(title, videoId, videoFilename, success)](#BBCore+saveRecordedVideo)
+        * [.saveRecording(options)](#BBCore+saveRecording)
+    * _static_
+        * [.video](#BBCore.video)
+            * [new video(properties)](#new_BBCore.video_new)
+        * [.contact](#BBCore.contact)
+            * [new contact(properties)](#new_BBCore.contact_new)
+        * [.video](#BBCore.video)
+            * [new video(properties)](#new_BBCore.video_new)
+        * [.CONFIG](#BBCore.CONFIG) : <code>Object</code>
+
+<a name="BBCore+resumeStoredSession"></a>
+
+### bbCore.resumeStoredSession
+DEPRECATED - Use validateSession
+
+**Kind**: instance property of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+getServerUrl"></a>
+
+### bbCore.getServerUrl() ⇒ <code>BBCore.apiServer</code> &#124; <code>\*</code> &#124; <code>BBCore.CONFIG.SERVER_API_URL</code>
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+getRequestUrl"></a>
+
+### bbCore.getRequestUrl() ⇒ <code>string</code>
+Returns the fully qualified URL for BB API
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+sendRequest"></a>
+
+### bbCore.sendRequest(method, [params], [success], [error])
+Sends a request to the specified method of the [BombBomb API](//bombbomb.com/api)
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| method | <code>string</code> | The method name to call |
+| [params] | <code>[requestParameters](#requestParameters)</code> | The parameters to send with the request |
+| [success] | <code>[responseSuccess](#responseSuccess)</code> | A callback when the request succeeds |
+| [error] | <code>[responseSuccess](#responseSuccess)</code> | A callback when the request fails |
+
+<a name="BBCore+login"></a>
+
+### bbCore.login(uid, pwd, success)
+Authenticates a user using their Email Address (User Id) and Password
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| uid | <code>string</code> | 
+| pwd | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+credentialsSaved"></a>
+
+### bbCore.credentialsSaved() ⇒ <code>boolean</code>
+Returns bool for whether or not a prior authentication is stored locally
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+saveCredentials"></a>
+
+### bbCore.saveCredentials(uid, pwd)
+Save credentials to local storage (not recommended)
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| uid | <code>string</code> | User ID/Email Address |
+| pwd | <code>string</code> | Password |
+
+<a name="BBCore+validateSession"></a>
+
+### bbCore.validateSession(onSuccess, onError)
+Authenticates from previously stored credentials
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| onSuccess | <code>[responseSuccess](#responseSuccess)</code> | 
+| onError | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+validateAccessToken"></a>
+
+### bbCore.validateAccessToken(onSuccess)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| onSuccess | 
+
+<a name="BBCore+isAuthenticated"></a>
+
+### bbCore.isAuthenticated() ⇒ <code>boolean</code> &#124; <code>\*</code>
+Returns bool for authentication state
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+invalidateSession"></a>
+
+### bbCore.invalidateSession() ⇒ <code>boolean</code> &#124; <code>\*</code>
+Invalidates and clears the active session, similar to logout
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+verifyKey"></a>
+
+### bbCore.verifyKey(key, complete)
+Validates the given key
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| key | <code>string</code> | 
+| complete | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+storeKey"></a>
+
+### bbCore.storeKey(key)
+Stores the give session key, typically used so a session can be resumed later on.
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| key | 
+
+<a name="BBCore+verifyJsonWebToken"></a>
+
+### bbCore.verifyJsonWebToken(key, complete)
+Validates the given key
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| key | <code>string</code> | 
+| complete | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+storeOAuthTokens"></a>
+
+### bbCore.storeOAuthTokens(key)
+Stores the OAuth Token for API calls
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| key | 
+
+<a name="BBCore+getOAuthPayload"></a>
+
+### bbCore.getOAuthPayload() ⇒ <code>string</code>
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+validateOAuthCode"></a>
+
+### bbCore.validateOAuthCode(authCode, onSuccess, onError)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| authCode | 
+| onSuccess | 
+| onError | 
+
+<a name="BBCore+refreshOAuthToken"></a>
+
+### bbCore.refreshOAuthToken()
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+<a name="BBCore+storeJsonWebToken"></a>
+
+### bbCore.storeJsonWebToken(key)
+Stores the give session key, typically used so a session can be resumed later on.
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| key | 
+
+<a name="BBCore+getValidJsonWebTokenAsync"></a>
+
+### bbCore.getValidJsonWebTokenAsync(callback)
+Attempts to always return a valid JWT which makes an async verification request
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Description |
+| --- | --- |
+| callback | handler given a valid JWT.  If the JWT is null then the user is NOT authenticated. |
+
+<a name="BBCore+getLists"></a>
+
+### bbCore.getLists(success)
+Retrieves Contact Lists
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+createList"></a>
+
+### bbCore.createList(listName, success)
+Creates a Contact List and returns the Guid
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| listName | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getContact"></a>
+
+### bbCore.getContact(contactId, success)
+Retrieves a Contact
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| contactId | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getListContacts"></a>
+
+### bbCore.getListContacts(listId, success)
+Retrieves Contacts from a Contact List
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| listId | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+addContact"></a>
+
+### bbCore.addContact(contact, success)
+Adds a Contact to a Contact List
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| contact | <code>contact</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+bulkAddContacts"></a>
+
+### bbCore.bulkAddContacts(opts, success)
+Adds a batch of Contacts
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+updateContact"></a>
+
+### bbCore.updateContact(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getImportAddressesByType"></a>
+
+### bbCore.getImportAddressesByType(opts, success)
+Retrieves an Import Address by a Type
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts |  | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+addContactImportAddress"></a>
+
+### bbCore.addContactImportAddress(opts, success)
+Retrieves an Import Address by a Type
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getClientRecentInteractions"></a>
+
+### bbCore.getClientRecentInteractions(opts, success)
+Retrieves a list of re
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>[getClientInteractionOptions](#getClientInteractionOptions)</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getEmails"></a>
+
+### bbCore.getEmails(success)
+Retrieves a list of Emails from the current authenticated session
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+sendCustomVideoEmail"></a>
+
+### bbCore.sendCustomVideoEmail(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>[customVideoEmailOptions](#customVideoEmailOptions)</code> | 
+| success | <code>function</code> | 
+
+<a name="BBCore+getDrips"></a>
+
+### bbCore.getDrips(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getForms"></a>
+
+### bbCore.getForms(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getClientIntegrations"></a>
+
+### bbCore.getClientIntegrations(opts, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param |
+| --- |
+| opts | 
+| success | 
+
+<a name="BBCore+deleteVideo"></a>
+
+### bbCore.deleteVideo(videoId, success)
+Deletes a Video
+
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| videoId | <code>string</code> | 
+| success | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+videoQuickSend"></a>
+
+### bbCore.videoQuickSend(opts, onSuccess)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| onSuccess | <code>[responseSuccess](#responseSuccess)</code> | 
+
+<a name="BBCore+getEmbeddedRecorderUrl"></a>
+
+### bbCore.getEmbeddedRecorderUrl([options], onComplete)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| [options] | <code>Object</code> | 
+| onComplete | <code>function</code> | 
+
+<a name="BBCore+getVideoRecorder"></a>
+
+### bbCore.getVideoRecorder(opts, onComplete)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> | 
+| onComplete | <code>function</code> | 
+
+<a name="BBCore+saveRecordedVideo"></a>
+
+### bbCore.saveRecordedVideo(title, videoId, videoFilename, success)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| title | <code>string</code> | 
+| videoId | <code>string</code> | 
+| videoFilename | <code>string</code> | 
+| success | <code>function</code> | 
+
+<a name="BBCore+saveRecording"></a>
+
+### bbCore.saveRecording(options)
+**Kind**: instance method of <code>[BBCore](#BBCore)</code>  
+
+| Param | Type |
+| --- | --- |
+| options | <code>Object</code> | 
+
+<a name="BBCore.video"></a>
+
+### BBCore.video
+{Object} BBCore.videos
+
+**Kind**: static class of <code>[BBCore](#BBCore)</code>  
+<a name="new_BBCore.video_new"></a>
+
+#### new video(properties)
+
+| Param | Type |
+| --- | --- |
+| properties | <code>[videoProperties](#videoProperties)</code> | 
+
+<a name="BBCore.contact"></a>
+
+### BBCore.contact
+stuff
+
+**Kind**: static class of <code>[BBCore](#BBCore)</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| email | <code>string</code> | Email Address |
+| firstname | <code>string</code> | First Name |
+| lastname | <code>string</code> | Last Name |
+| phone_number | <code>string</code> | Phone Number |
+| address_line_1 | <code>string</code> | Address 1 |
+| address_line_2 | <code>string</code> | Address 2 |
+| city | <code>string</code> | City |
+| state | <code>string</code> | State |
+| country | <code>string</code> | Country` |
+| postal_code | <code>string</code> | Postal Code |
+| company | <code>string</code> | Company |
+| position | <code>string</code> | Position |
+| comments | <code>string</code> | Comments |
+| listlist | <code>string</code> | Array of List Ids the Contact is subscribed to |
+| id | <code>string</code> | Contact Id |
+
+<a name="new_BBCore.contact_new"></a>
+
+#### new contact(properties)
+Contact Object
 
 
-**vid_id**: `string` 
-**title**: `string` 
-**filename**: `string` 
+| Param | Type | Description |
+| --- | --- | --- |
+| properties | <code>[contactProperties](#contactProperties)</code> | [contactProperties](#contactProperties) |
 
+<a name="BBCore.video"></a>
 
-* * *
+### BBCore.video
+BBCore.video
 
+**Kind**: static class of <code>[BBCore](#BBCore)</code>  
+**Properties**
 
+| Name | Type |
+| --- | --- |
+| vid_id | <code>string</code> | 
+| title | <code>string</code> | 
+| filename | <code>string</code> | 
 
+<a name="new_BBCore.video_new"></a>
 
+#### new video(properties)
 
+| Param | Type |
+| --- | --- |
+| properties | <code>[videoProperties](#videoProperties)</code> | 
 
+<a name="BBCore.CONFIG"></a>
 
+### BBCore.CONFIG : <code>Object</code>
+**Kind**: static constant of <code>[BBCore](#BBCore)</code>  
+**Properties**
 
+| Name |
+| --- |
+| VERSION | 
+| API_END_POINT | 
+| SERVER_API_URL | 
 
+<a name="responseSuccess"></a>
+
+## responseSuccess(responseObject, jqXHR)
+reponseSuccess
+
+**Kind**: global function  
+
+| Param |
+| --- |
+| responseObject | 
+| jqXHR | 
+
+<a name="responseSuccess"></a>
+
+## responseSuccess : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| status | <code>string</code> | 
+| method | <code>string</code> | 
+| info | <code>Object</code> | 
+
+<a name="responseObject"></a>
+
+## responseObject : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| status | <code>string</code> | 
+| method | <code>string</code> | 
+| info | <code>Object</code> | 
+
+<a name="OAuthClientCredentials"></a>
+
+## OAuthClientCredentials : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| clientIdentifier | <code>string</code> |  |
+| clientSecret | <code>string</code> |  |
+| redirectUri | <code>string</code> |  |
+| type | <code>string</code> | 'implicit' | 'authorization_code' |
+
+<a name="responseSuccess"></a>
+
+## responseSuccess : <code>function</code>
+This callback is displayed as a global member.
+
+**Kind**: global typedef  
+
+| Param | Type |
+| --- | --- |
+| responseObject | <code>Object</code> | 
+| [jqXHR] | <code>Object</code> | 
+
+<a name="requestParameters"></a>
+
+## requestParameters : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| method | <code>string</code> | 
+| api_key | <code>string</code> | 
+| async | <code>string</code> | 
+| url | <code>string</code> | 
+| url | <code>string</code> | 
+
+<a name="getClientInteractionOptions"></a>
+
+## getClientInteractionOptions : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| activitySince | <code>string</code> | DateTime |
+
+<a name="customVideoEmailOptions"></a>
+
+## customVideoEmailOptions : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| from_name | <code>string</code> | 
+| email_id | <code>string</code> | 
+| email | <code>string</code> | 
+| subject | <code>string</code> | 
+| html_content | <code>string</code> | 
+
+<a name="responseSuccess"></a>
+
+## responseSuccess : <code>function</code>
+This callback is displayed as a global member.
+
+**Kind**: global typedef  
+
+| Param | Type |
+| --- | --- |
+| responseObject | <code>Object</code> | 
+| [jqXHR] | <code>Object</code> | 
+
+<a name="contactProperties"></a>
+
+## contactProperties : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| email | <code>string</code> | Email Address |
+| firstname | <code>string</code> | First Name |
+| lastname | <code>string</code> | Last Name |
+| phone_number | <code>string</code> | Phone Number |
+| address_line_1 | <code>string</code> | Address 1 |
+| address_line_2 | <code>string</code> | Address 2 |
+| city | <code>string</code> | City |
+| state | <code>string</code> | State |
+| country | <code>string</code> | Country` |
+| postal_code | <code>string</code> | Postal Code |
+| company | <code>string</code> | Company |
+| position | <code>string</code> | Position |
+| comments | <code>string</code> | Comments |
+| listlist | <code>string</code> | Array of List Ids the Contact is subscribed to |
+| id | <code>string</code> | Contact Id |
+
+<a name="videoProperties"></a>
+
+## videoProperties : <code>object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| vid_id | <code>string</code> | 
+| title | <code>string</code> | 
+| filename | <code>string</code> | 
 
