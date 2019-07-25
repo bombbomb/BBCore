@@ -6,7 +6,9 @@ const pump = require('pump');
 const package = require('./package.json');
 const header = require('gulp-header');
 const KarmaServer = require('karma').Server;
-const jsMarkdown = require('gulp-jsdoc-to-markdown');
+const jsdoc2md = require('jsdoc-to-markdown');
+const fs = require('fs');
+const path = require('path');
 
 const paths = {
     src : 'src/**/*.js',
@@ -46,12 +48,11 @@ gulp.task('combine-docs', gulp.series('combine-js', () => {
         .pipe(gulp.dest(paths.root));
 }));
 
-gulp.task('make-docs', gulp.series('combine-docs', (cb) => {
-    return gulp.src(`${paths.build}/${paths.outputFile}`)
-        .pipe(jsMarkdown())
-        .pipe(concat('BBCore.combined.md'))
-        .pipe(gulp.dest(paths.docSource));
-}));
+gulp.task('make-docs', done => {
+    const output = jsdoc2md.renderSync({ files: filepathsToConcat.map(filepath => path.join(__dirname, filepath)) });
+    fs.writeFileSync(path.join(paths.docSource, 'BBCore.combined.md'), output);
+    return done();
+});
 
 gulp.task('docs', gulp.series('make-docs'));
 
