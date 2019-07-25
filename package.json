@@ -13,8 +13,7 @@
     "karma-coverage": "1.1.2",
     "karma-jasmine": "2.0.1",
     "karma-phantomjs-launcher": "1.0.4",
-    "pump": "3.0.0",
-    "uglify": "0.1.5"
+    "pump": "3.0.0"
   },
   "description": "A Javascript API to use BombBomb services",
   "main": "Gruntfile.js",
