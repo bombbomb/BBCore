@@ -2,27 +2,25 @@
   "name": "BBCore",
   "version": "0.1.0",
   "devDependencies": {
-    "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-header": "^2.0.5",
-    "gulp-jsdoc-to-markdown": "^1.2.2",
-    "gulp-jsdoc3": "^2.0.0",
-    "gulp-uglify": "^3.0.1",
-    "karma": "^3.1.3",
-    "karma-coverage": "^1.1.2",
-    "karma-jasmine": "^2.0.1",
-    "karma-phantomjs-launcher": "^1.0.4",
-    "pump": "^3.0.0",
-    "uglify": "^0.1.5"
+    "del": "5.0.0",
+    "gulp": "4.0.2",
+    "gulp-concat": "2.6.1",
+    "gulp-header": "2.0.9",
+    "gulp-uglify": "3.0.2",
+    "jsdoc-to-markdown": "5.0.0",
+    "karma": "4.2.0",
+    "karma-coverage": "1.1.2",
+    "karma-jasmine": "2.0.1",
+    "karma-phantomjs-launcher": "1.0.4",
+    "pump": "3.0.0"
   },
   "description": "A Javascript API to use BombBomb services",
   "main": "Gruntfile.js",
   "scripts": {
     "clean": "gulp clean",
-    "build" : "gulp test && gulp build && gulp uglify && gulp add-core-header",
-    "docs" : "gulp docs",
-    "test" : "gulp test"
+    "build": "gulp test && gulp build && gulp uglify && gulp add-core-header",
+    "docs": "gulp docs",
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
