@@ -34,11 +34,33 @@ const today = `${dateObject.getFullYear()}-${dateObject.getMonth() + 1}-${dateOb
 const coreHeader = `/*! ${package.name} ${today} */\n`
 const docTitle = 'README.md';
 
-gulp.task('build', ['combine-js', 'docs']);
-gulp.task('docs', ['make-docs']);
+gulp.task('combine-js', () => {
+    return gulp.src(filepathsToConcat)
+        .pipe(concat(paths.outputFile))
+        .pipe(gulp.dest(paths.build));
+});
 
-gulp.task('clean', () => { 
+gulp.task('combine-docs', gulp.series('combine-js', () => {
+    return gulp.src(['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/build/BBCore.combined.md'])
+        .pipe(concat(docTitle))
+        .pipe(gulp.dest(paths.root));
+}));
+
+gulp.task('make-docs', gulp.series('combine-docs', (cb) => {
+    return gulp.src(`${paths.build}/${paths.outputFile}`)
+        .pipe(jsMarkdown())
+        .pipe(concat('BBCore.combined.md'))
+        .pipe(gulp.dest(paths.docSource));
+}));
+
+gulp.task('docs', gulp.series('make-docs'));
+
+gulp.task('build', gulp.series('combine-js', 'docs'));
+
+
+gulp.task('clean', done => {
     del([paths.build, paths.root + docTitle]);
+    done();
 });
 
 gulp.task('test', (done) => {
@@ -48,19 +70,14 @@ gulp.task('test', (done) => {
     }, done).start();
 });
 
-gulp.task('combine-js', () => {
-    return gulp.src(filepathsToConcat)
-        .pipe(concat(paths.outputFile))
-        .pipe(gulp.dest(paths.build));    
-});
-
-gulp.task('uglify', ['combine-js'], () => {
+gulp.task('uglify', gulp.series('combine-js', done => {
         pump([
             gulp.src(`${paths.build}/${paths.outputFile}`),
             uglify(),
-            gulp.dest(paths.build)    
+            gulp.dest(paths.build)
         ]);
-});
+        done();
+}));
 
 gulp.task('add-core-header', () => {
     return gulp.src(`${paths.build}/${paths.outputFile}`)
@@ -68,18 +85,9 @@ gulp.task('add-core-header', () => {
         .pipe(gulp.dest(paths.build));
 });
 
-gulp.task('make-docs', ['combine-docs'], (cb) => {
-    return gulp.src(`${paths.build}/${paths.outputFile}`)
-        .pipe(jsMarkdown())
-        .pipe(concat('BBCore.combined.md'))
-        .pipe(gulp.dest(paths.docSource));
-});
 
-gulp.task('combine-docs', ['combine-js'], () => {
-    return gulp.src(['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/build/BBCore.combined.md'])
-        .pipe(concat(docTitle))
-        .pipe(gulp.dest(paths.root));
-});
+
+
 
 gulp.task('default', () => {
     console.log('Enter a task to perform an action.');
