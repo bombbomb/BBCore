@@ -42,12 +42,6 @@ gulp.task('combine-js', () => {
         .pipe(gulp.dest(paths.build));
 });
 
-gulp.task('combine-docs', gulp.series('combine-js', () => {
-    return gulp.src(['docs/01_Intro.md', 'docs/02_Usage.md', 'docs/build/BBCore.combined.md'])
-        .pipe(concat(docTitle))
-        .pipe(gulp.dest(paths.root));
-}));
-
 gulp.task('make-docs', done => {
     const output = jsdoc2md.renderSync({ files: filepathsToConcat.map(filepath => path.join(__dirname, filepath)) });
     fs.writeFileSync(path.join(paths.docSource, 'BBCore.combined.md'), output);
@@ -85,10 +79,6 @@ gulp.task('add-core-header', () => {
         .pipe(header(coreHeader))
         .pipe(gulp.dest(paths.build));
 });
-
-
-
-
 
 gulp.task('default', () => {
     console.log('Enter a task to perform an action.');
