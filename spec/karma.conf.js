@@ -9,8 +9,8 @@ module.exports = function(config) {
             { pattern: '../src/libs/jquery.js', watched: false, included: true }
         ],
         preprocessors: {
-            '../src/*.js': ['coverage'],
-            '../src/modules/*.js': ['coverage']
+            '../src/*.js': [],
+            '../src/modules/*.js': []
         },
         coverageReporter: {
             type : 'lcovonly',
@@ -18,7 +18,7 @@ module.exports = function(config) {
             subdir: 'report-lcov',
             file: 'lcov.info'
         },
-        reporters: ['dots', 'coverage'],
+        reporters: ['dots'],
         browsers: ['PhantomJS']
     });
 };
