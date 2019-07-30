@@ -9,7 +9,6 @@
     "gulp-uglify": "3.0.2",
     "jsdoc-to-markdown": "5.0.0",
     "karma": "4.2.0",
-    "karma-coverage": "1.1.2",
     "karma-jasmine": "2.0.1",
     "karma-phantomjs-launcher": "1.0.4",
     "pump": "3.0.0"
