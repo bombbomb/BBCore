@@ -167,7 +167,7 @@ BBCore.prototype.validateAccessToken = function (onSuccess) {
  * Detects if accessToken provided is an api_key or an accessToken
  */
 BBCore.prototype.isAccessToken = function (value) {
-    if(typeof value === 'string' && value.length > 32 && value.includes('.')) {
+    if(typeof value === 'string' && value.length > 32 && value.indexOf('.') > -1) {
         return true;
     }
 
