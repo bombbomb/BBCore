@@ -16,7 +16,7 @@ To begin, include the `BBCore` and `jQuery` libraries in your html (The latest v
 Then instantiate BBCore:
 
 ```javascript
-var bb = new BBCore({ accessToken: '<your api key>'});
+var bb = new BBCore({ accessToken: '<your access token or api key>', onerror: OnInvalidTokenCallback});
 ```
 
 ## Usage Examples
