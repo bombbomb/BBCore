@@ -163,6 +163,12 @@ BBCore.prototype.validateAccessToken = function (onSuccess) {
     });
 };
 
+/**
+ * Detects if accessToken provided is an api_key or an accessToken
+ */
+BBCore.prototype.isAccessToken = function (value) {
+    return typeof value === 'string' && value.length > 32 && value.indexOf('.') > -1;
+}
 
 /**
  * Returns bool for authentication state

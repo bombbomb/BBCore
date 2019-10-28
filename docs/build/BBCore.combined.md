@@ -67,6 +67,7 @@
         * [.saveCredentials(uid, pwd)](#BBCore+saveCredentials)
         * [.validateSession(onSuccess, onError)](#BBCore+validateSession)
         * [.validateAccessToken(onSuccess)](#BBCore+validateAccessToken)
+        * [.isAccessToken()](#BBCore+isAccessToken)
         * [.isAuthenticated()](#BBCore+isAuthenticated) ⇒ <code>boolean</code> \| <code>\*</code>
         * [.invalidateSession()](#BBCore+invalidateSession) ⇒ <code>boolean</code> \| <code>\*</code>
         * [.verifyKey(key, complete)](#BBCore+verifyKey)
@@ -190,6 +191,12 @@ Authenticates from previously stored credentials
 | --- |
 | onSuccess | 
 
+<a name="BBCore+isAccessToken"></a>
+
+### bbCore.isAccessToken()
+Detects if accessToken provided is an api_key or an accessToken
+
+**Kind**: instance method of [<code>BBCore</code>](#BBCore)  
 <a name="BBCore+isAuthenticated"></a>
 
 ### bbCore.isAuthenticated() ⇒ <code>boolean</code> \| <code>\*</code>
@@ -662,6 +669,7 @@ Returns the first matched contact from
         * [.saveCredentials(uid, pwd)](#BBCore+saveCredentials)
         * [.validateSession(onSuccess, onError)](#BBCore+validateSession)
         * [.validateAccessToken(onSuccess)](#BBCore+validateAccessToken)
+        * [.isAccessToken()](#BBCore+isAccessToken)
         * [.isAuthenticated()](#BBCore+isAuthenticated) ⇒ <code>boolean</code> \| <code>\*</code>
         * [.invalidateSession()](#BBCore+invalidateSession) ⇒ <code>boolean</code> \| <code>\*</code>
         * [.verifyKey(key, complete)](#BBCore+verifyKey)
@@ -785,6 +793,12 @@ Authenticates from previously stored credentials
 | --- |
 | onSuccess | 
 
+<a name="BBCore+isAccessToken"></a>
+
+### bbCore.isAccessToken()
+Detects if accessToken provided is an api_key or an accessToken
+
+**Kind**: instance method of [<code>BBCore</code>](#BBCore)  
 <a name="BBCore+isAuthenticated"></a>
 
 ### bbCore.isAuthenticated() ⇒ <code>boolean</code> \| <code>\*</code>
