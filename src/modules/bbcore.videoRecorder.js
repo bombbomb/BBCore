@@ -109,9 +109,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     var inst = this;
     // get recorder and inject into target
     this.getVideoRecorder(rec_opts, function (data) {
-        if (!inst.currentVideoId && data.info.vid_id) {
-            inst.currentVideoId = data.info.vid_id;
-        }
+        inst.currentVideoId = data.info.vid_id;
         console.log('startVideoRecorder :' + inst.currentVideoId);
         inst.__vidRecHndl.html(data.info.content);
 
