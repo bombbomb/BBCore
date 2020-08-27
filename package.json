@@ -15,9 +15,9 @@
   "description": "A Javascript API to use BombBomb services",
   "main": "Gruntfile.js",
   "scripts": {
-    "clean": "gulp clean",
     "build": "npm run test && gulp build && gulp uglify && gulp add-core-header",
-    "docs": "gulp docs",
+    "clean": "gulp clean",
+    "docs": "gulp make-docs",
     "test": "jest",
     "watch:tests": "jest --watch",
     "build:local": "gulp build"
