@@ -85,6 +85,7 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     }
     var url = params.url ? params.url : this.getRequestUrl();
     url = BBCore._addParameterToUrl(url, 'xsrc', 'bbcore-' + BBCore.CONFIG.VERSION);
+    
     return jQuery.ajax({
         url: url,
         async: asyncSetting,

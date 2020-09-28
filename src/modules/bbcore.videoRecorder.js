@@ -11,15 +11,19 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
     }
     var defOpts = {height: 240, width: 320, force_ssl: false};
     if (typeof options.height === 'undefined') {
-        options = jQuery.extend({}, defOpts, (options ?  options : {}));
+      options = {
+        ...defOpts,
+        ...options,
+      }
     }
 
-    var reqParams = jQuery.extend({}, options, {
-        module: 'videos',
-        page: 'EmbeddedRecorder',
-        popup: 1,
-        nohtml: 1
-    });
+    var reqParams = {
+      ...options,
+      module: 'videos',
+      page: 'EmbeddedRecorder',
+      popup: 1,
+      nohtml: 1
+    };
     var inst = this;
     this.getVideoId(function (vidId) {
         var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?',
@@ -60,7 +64,10 @@ BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
         opts = null;
     }
     var defOpts = {height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null};
-    mergedOpts = jQuery.extend(defOpts, opts);
+    mergedOpts = {
+      ...defOpts,
+      ...opts
+    };
     if (!this.isAuthenticated()) {
         this.onError({message: "Must authenticate session before invoking methods."});
         return;
@@ -98,9 +105,9 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     if (opts.recordComplete && !recordComplete) {
         recordComplete = opts.recordComplete;
     }
-    this.__vidRecHndl = opts.target ? jQuery(opts.target) : jQuery('body').append('<div id="b2recorder"></div>');
+    this.__vidRecHndl = opts.target ? document.querySelector(opts.target) : document.querySelector('body').append('<div id="b2recorder"></div>');
 
-    var rec_opts = jQuery.extend({}, opts);
+    var rec_opts = { ...opts };
     delete rec_opts.type;
     delete rec_opts.target;
     delete rec_opts.recordComplete;
