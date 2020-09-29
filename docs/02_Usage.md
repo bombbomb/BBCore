@@ -1,9 +1,8 @@
 ## Quick Start
 
-To begin, include the `BBCore` and `jQuery` libraries in your html (The latest version is available at `https://static.bombbomb.com/js/BBCore.min.js`):
+To begin, include the `BBCore` library in your html (The latest version is available at `https://static.bombbomb.com/js/BBCore.min.js`):
 
 ```html
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://static.bombbomb.com/js/BBCore.min.js"></script>
 ```
 
@@ -60,7 +59,7 @@ bb.videoQuickSend({
 &nbsp;
 
 
-### Register to receive real-time feedback via web hooks 
+### Register to receive real-time feedback via web hooks
 Have your system be notified in real-time as events happen in your customer's BombBomb account.
 [BombBomb's Webhooks](http://support.bombbomb.com/customer/portal/articles/2062941-bombbomb-webhooks) make
 it easy to keep your system up to date.
@@ -90,4 +89,3 @@ Download the free BombBomb app for your <a href="https://itunes.apple.com/us/app
 &nbsp;
 
 &nbsp;
-

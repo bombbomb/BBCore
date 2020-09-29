@@ -9,6 +9,7 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         onComplete = options;
         options = {};
     }
+
     var defOpts = {height: 240, width: 320, force_ssl: false};
     if (typeof options.height === 'undefined') {
       options = {
@@ -16,6 +17,8 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         ...options,
       }
     }
+
+
 
     var reqParams = {
       ...options,
@@ -25,6 +28,10 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
       nohtml: 1
     };
     var inst = this;
+    console.log('getembed')
+    console.log(reqParams)
+    console.log(options)
+
     this.getVideoId(function (vidId) {
         var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?',
             legacyToken = inst.getKey()
@@ -64,10 +71,12 @@ BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
         opts = null;
     }
     var defOpts = {height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null};
+
     mergedOpts = {
       ...defOpts,
       ...opts
     };
+
     if (!this.isAuthenticated()) {
         this.onError({message: "Must authenticate session before invoking methods."});
         return;
@@ -100,12 +109,20 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         recorderLoaded: null,
         recordComplete: recordComplete
     };
+
     opts = opts || defOpts;
 
     if (opts.recordComplete && !recordComplete) {
         recordComplete = opts.recordComplete;
     }
-    this.__vidRecHndl = opts.target ? document.querySelector(opts.target) : document.querySelector('body').append('<div id="b2recorder"></div>');
+
+    if (opts.target) {
+      this.__vidRecHndl =  document.querySelector(opts.target)
+    } else {
+      const elem = document.createElement('div');
+      elem.id = 'b2recorder'
+      this.__vidRecHndl = document.querySelector('body').appendChild(elem);
+    }
 
     var rec_opts = { ...opts };
     delete rec_opts.type;
@@ -113,14 +130,18 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     delete rec_opts.recordComplete;
     delete rec_opts.recorderLoaded;
 
+    console.log('here')
+    console.log(opts)
+    console.log(rec_opts)
+
     var inst = this;
     // get recorder and inject into target
     this.getVideoRecorder(rec_opts, function (data) {
         if (!inst.currentVideoId && data.info.vid_id) {
             inst.currentVideoId = data.info.vid_id;
         }
-        console.log('startVideoRecorder :' + inst.currentVideoId);
-        inst.__vidRecHndl.html(data.info.content);
+
+        inst.__vidRecHndl.innerHTML = data.info.content;
 
         if (opts.recorderLoaded) {
             opts.recorderLoaded.call(inst, data.info);
