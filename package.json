@@ -7,10 +7,9 @@
     "gulp-concat": "2.6.1",
     "gulp-header": "2.0.9",
     "gulp-uglify": "3.0.2",
+    "jest": "^26.4.2",
+    "jest-junit": "^11.1.0",
     "jsdoc-to-markdown": "5.0.0",
-    "karma": "4.2.0",
-    "karma-jasmine": "2.0.1",
-    "karma-phantomjs-launcher": "1.0.4",
     "pump": "3.0.0"
   },
   "description": "A Javascript API to use BombBomb services",
@@ -19,7 +18,8 @@
     "clean": "gulp clean",
     "build": "gulp test && gulp build && gulp uglify && gulp add-core-header",
     "docs": "gulp docs",
-    "test": "gulp test",
+    "test": "jest",
+    "watch:tests": "jest --watch",
     "build:local": "gulp build"
   },
   "repository": {

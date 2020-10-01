@@ -3,3 +3,4 @@ atlassian-ide-plugin.xml
 .idea/*
 spec/coverage
 build/BBCore.combined.js
+junit.xml
