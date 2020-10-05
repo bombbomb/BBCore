@@ -58,22 +58,6 @@ describe("BBCore", function() {
         setupTest(false, false);
     });
 
-    it('should do thing 1', () => {
-      expect(true).toBeTruthy()
-    })
-
-    it('should do thing 2', () => {
-      expect(bbCore).toBeTruthy()
-    })
-
-    it('should do thing 3', () => {
-      expect(BBCore.CONFIG).toBeTruthy()
-    })
-
-    it('should do thing 4', () => {
-      expect(bbCore.getVideos).toBeTruthy()
-    })
-
     it("ver", function() {
         expect(bbCore.ver()).toBe(BBCore.CONFIG.VERSION);
     });
@@ -423,17 +407,6 @@ xdescribe("BBCore.auth", function() {
         expect(bbCore.isOAuthTokenValid).toHaveBeenCalled();
         expect(tokenForRequest).toBe(fakeTokenPayload.token_type+' '+fakeTokenPayload.access_token);
 
-    });
-
-    it("detects accessTokens vs API keys", function() {
-        var key = 'a1a1a1a1-1aaa-11a1-1aa1-a11a11aa1111';
-        var token = 'aaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAA.aaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAah!';
-        var isKey = bbCore.isAccessToken(key);
-        expect(isKey).toBe(false);
-
-        var isToken = bbCore.isAccessToken(token);
-        expect(isToken).toBe(true);
-       
     });
 
 });
