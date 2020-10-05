@@ -131,16 +131,26 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     var inst = this;
     // get recorder and inject into target
     this.getVideoRecorder(rec_opts, function (data) {
-        if (!inst.currentVideoId && data.info.vid_id) {
-            inst.currentVideoId = data.info.vid_id;
-        }
+        inst.currentVideoId = data.info.vid_id;
 
         console.log('startVideoRecorder :' + inst.currentVideoId);
+        console.log(data.info.content);
+
         inst.__vidRecHndl.innerHTML = data.info.content;
 
         if (opts.recorderLoaded) {
             opts.recorderLoaded.call(inst, data.info);
         }
+
+        const ev = new CustomEvent('message');
+        ev.origin = 'https://dev.app.bombbomb.com'
+        ev.data = {
+          action: 'iframeResize',
+          ratio: 2
+        }
+        console.log(ev)
+        window.dispatchEvent(ev)
+
     });
 
     // add the callbacks for the recorder to this instance calls.
