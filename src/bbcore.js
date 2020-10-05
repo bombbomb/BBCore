@@ -153,7 +153,6 @@ function BBCore(options) {
  @prop SERVER_API_URL
  @constant
  */
-
 BBCore.CONFIG =
 {
     VERSION: "1.0",

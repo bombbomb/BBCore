@@ -18,7 +18,6 @@ BBCore.prototype.getRequestUrl = function () {
  * @typedef {object} requestParameters
  * @prop {string} [method]
  * @prop {string} [api_key]
- * @prop {string} [async]
  * @prop {string} [url]
  * @prop {string} [url]
  */
@@ -67,22 +66,13 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
 
     var requestHeaders = {};
     var inst = this;
-    var asyncSetting = true;
-
-    if (params.async !== undefined) {
-      console.log('async: ',params.async);
-    }
-
-    if (typeof params.async !== 'undefined') {
-        asyncSetting = params.async;
-    }
 
     var requestToken = this.getOAuthTokenForRequest();
     if (requestToken && requestToken.length)
     {
         requestHeaders['Authorization'] = requestToken;
         typeof params.api_key !== 'undefined' && delete params.api_key
-    } 
+    }
     else if(this.isAccessToken(params.api_key)) {
         requestHeaders['Authorization'] = params.api_key;
         delete params.api_key;
