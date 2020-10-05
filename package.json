@@ -16,7 +16,7 @@
   "main": "Gruntfile.js",
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp test && gulp build && gulp uglify && gulp add-core-header",
+    "build": "npm run test && gulp build && gulp uglify && gulp add-core-header",
     "docs": "gulp docs",
     "test": "jest",
     "watch:tests": "jest --watch",

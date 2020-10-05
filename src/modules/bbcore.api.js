@@ -77,16 +77,15 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         asyncSetting = params.async;
     }
 
-    var requestToken = this.getOAuthTokenForRequest(),
-        legacyJWT = this.getJsonWebToken();
+    var requestToken = this.getOAuthTokenForRequest();
     if (requestToken && requestToken.length)
     {
         requestHeaders['Authorization'] = requestToken;
         typeof params.api_key !== 'undefined' && delete params.api_key
-    }
-    else if (legacyJWT && legacyJWT.length)
-    {
-        requestHeaders['BB-JWT'] = legacyJWT;
+    } 
+    else if(this.isAccessToken(params.api_key)) {
+        requestHeaders['Authorization'] = params.api_key;
+        delete params.api_key;
     }
     var url = params.url ? params.url : this.getRequestUrl();
     url = BBCore._addParameterToUrl(url, 'xsrc', 'bbcore-' + BBCore.CONFIG.VERSION);

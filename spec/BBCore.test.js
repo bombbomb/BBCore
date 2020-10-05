@@ -425,6 +425,17 @@ xdescribe("BBCore.auth", function() {
 
     });
 
+    it("detects accessTokens vs API keys", function() {
+        var key = 'a1a1a1a1-1aaa-11a1-1aa1-a11a11aa1111';
+        var token = 'aaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAA.aaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAaaAaaAAaaaAAAaAAaaAaaaAAAah!';
+        var isKey = bbCore.isAccessToken(key);
+        expect(isKey).toBe(false);
+
+        var isToken = bbCore.isAccessToken(token);
+        expect(isToken).toBe(true);
+       
+    });
+
 });
 
 xdescribe("BBCore.contacts", function() {

@@ -47,9 +47,7 @@ gulp.task('make-docs', done => {
     return done();
 });
 
-gulp.task('docs', gulp.series('make-docs'));
-
-gulp.task('build', gulp.series('combine-js', 'docs'));
+gulp.task('build', gulp.series('combine-js', 'make-docs'));
 
 
 gulp.task('clean', done => {
