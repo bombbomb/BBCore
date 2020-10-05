@@ -57,7 +57,6 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         params.api_key = this.getKey();
     }
     if ((method !== "ValidateSession" && params.grant_type !== "authorization_code") && !this.authenticated) {
-      console.log('dead')
         this.onError.call(this, {
             status: 'failure',
             methodName: 'InvalidSession',
@@ -100,7 +99,6 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     xhr.onload = (result) => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         const res = JSON.parse(result.target.response);
-        console.log(res)
         if (res.status === "success") {
             // if the result returned a
             if (method === "GetVideoGuid" && res.info && res.info.video_id) {
@@ -112,12 +110,10 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         } else if ((params.grant_type === "authorization_code" || params.grant_type === "refresh_token")) {
             success.call(inst, res);
         } else {
-          console.log('on erroir')
             inst.onError.call(inst, res);
         }
 
       } else {
-        console.log('err here')
         let resp = {
           status: 'unknown',
           jqXHR: jqXHR,
