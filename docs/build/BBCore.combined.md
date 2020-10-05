@@ -1284,6 +1284,7 @@ This callback is displayed as a global member.
 | --- | --- |
 | [method] | <code>string</code> | 
 | [api_key] | <code>string</code> | 
+| [async] | <code>string</code> | 
 | [url] | <code>string</code> | 
 | [url] | <code>string</code> | 
 
