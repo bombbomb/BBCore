@@ -134,23 +134,37 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         inst.currentVideoId = data.info.vid_id;
 
         console.log('startVideoRecorder :' + inst.currentVideoId);
-        console.log(data.info.content);
+        // `getVideoRecorder` returns html and js in the form of a string. In the old version of BBCore,
+        // script tags were handled by jquery (by use of the eval method). Since we don't want to rely
+        // on jQuery or end up having double event listeners, we go with the jquery way of mounting this
+        // js if the cleint already supplies jQuery, or hardcode it ourselves in jQuery isn't around.
+        if (window.jQuery) {
+            this.__vidRecHndl = opts.target ? jQuery(opts.target) : jQuery('body').append('<div id="b2recorder"></div>');
+            inst.__vidRecHndl.html(data.info.content);
+        } else {
+          window.addEventListener('message', function(event) {
+              if (~event.origin.indexOf('app.bombbomb.com')) {
+                  if (event.data.action == 'reportVideoRecorded') {
+                      window.reportVideoRecorded(event.data.flname, event.data.log);
+                  } else if (event.data.action == 'iframeResize') {
+                      var frame = document.getElementById(inst.currentVideoId);
+                      var fw = parseInt(frame.clientWidth, 10) || parseInt(frame.width, 10);
+                      var fsw = parseInt(frame.style.width, 10);
 
-        inst.__vidRecHndl.innerHTML = data.info.content;
+                      if (fw && fw > fsw || isNaN(fsw)) {
+                          frame.style.height = (fw * event.data.ratio) + "px";
+                      } else if (fsw) {
+                          frame.style.height = (fsw * event.data.ratio) + "px";
+                      }
+                  }
+              }
+          });
+          inst.__vidRecHndl.innerHTML = data.info.content;
+        }
 
         if (opts.recorderLoaded) {
             opts.recorderLoaded.call(inst, data.info);
         }
-
-        const ev = new CustomEvent('message');
-        ev.origin = 'https://dev.app.bombbomb.com'
-        ev.data = {
-          action: 'iframeResize',
-          ratio: 2
-        }
-        console.log(ev)
-        window.dispatchEvent(ev)
-
     });
 
     // add the callbacks for the recorder to this instance calls.
