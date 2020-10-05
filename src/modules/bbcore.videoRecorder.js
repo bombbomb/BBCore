@@ -135,7 +135,8 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
             inst.currentVideoId = data.info.vid_id;
         }
 
-        inst.__vidRecHndl.innerHTML = data.info.content;
+        console.log('startVideoRecorder :' + inst.currentVideoId);
+        inst.__vidRecHndl.html(data.info.content);
 
         if (opts.recorderLoaded) {
             opts.recorderLoaded.call(inst, data.info);
