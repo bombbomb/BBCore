@@ -153,7 +153,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     };
 
     window.reportVideoRecorded = function (flname, log) {
-        console.log('reportVideoRecorded triggered');	        console.log('reportVideoRecorded triggered');
+        console.log('reportVideoRecorded triggered');
         recordComplete({videoId: inst.currentVideoId, filename: flname, log: log});
     };
 };
