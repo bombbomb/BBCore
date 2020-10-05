@@ -1,11 +1,25 @@
-global.BBCore = function(){}
+const fs = require('fs');
+const vm = require('vm');
 
-require('../src/bbcore.js')
-require('../src/modules/bbcore.api.js')
-require('../src/modules/bbcore.auth.js')
-require('../src/modules/bbcore.contacts.js')
-require('../src/modules/bbcore.email.js')
-require('../src/modules/bbcore.extras.js')
-require('../src/modules/bbcore.helpers.js')
-require('../src/modules/bbcore.video.js')
-require('../src/modules/bbcore.videoRecorder.js')
+global.localStorage = {
+  removeItem: jest.fn(),
+  getItem: jest.fn()
+}
+
+const globalContext = vm.createContext(global);
+
+[
+  'src/bbcore.js',
+  'src/modules/bbcore.api.js',
+  'src/modules/bbcore.auth.js',
+  'src/modules/bbcore.contacts.js',
+  'src/modules/bbcore.email.js',
+  'src/modules/bbcore.extras.js',
+  'src/modules/bbcore.helpers.js',
+  'src/modules/bbcore.video.js',
+  'src/modules/bbcore.videoRecorder.js',
+].forEach(file => {
+  const content = fs.readFileSync(file);
+  const parts = file.split('/');
+  vm.runInContext(content, globalContext, { filename: parts[parts.length - 1] });
+});

@@ -1,9 +1,10 @@
+
 //
 // BBCore Video Tests
 //
 
 var apiServerUrl = 'http://dev.app.bombbomb.com';
-// var requestUrl = apiServerUrl + BBCore.CONFIG.API_END_POINT;
+var requestUrl = apiServerUrl + BBCore.CONFIG.API_END_POINT;
 var testGuid = '11111111-1111-1111-1111-111111111111';
 
 var bbCore = null;
@@ -11,7 +12,7 @@ var successCallbackSpy = null;
 
 function setupTest(spyOnBBCoreOnError, spyOnBBCoreSendRequest) {
     bbCore = new BBCore({ apiServer: apiServerUrl, storage: global.storage || [] });
-    successCallbackSpy = jasmine.createSpy('successCallbackSpy');
+    successCallbackSpy = jest.fn()
 
     return
     if (spyOnBBCoreOnError) {
@@ -37,15 +38,18 @@ function simulateUnauthenticatedApi(bbCore) {
     bbCore.authenticated = false;
 }
 
-function setupMockApiRequest(result, error) {
-    spyOn(fetch).and.callFake(function (e) {
-        if (error) {
-            e.error(result);
-        }
-        else {
-            e.success(result);
-        }
-    });
+const spyOnGlobalFetch = (result = {}) => {
+  const spy = jest.fn(
+    () => new Promise(
+      res => res({
+        json: () => new Promise(
+          inner => inner(result)
+        )
+      })
+    ));
+
+    global.fetch = spy;
+    return spy;
 }
 
 describe("BBCore", function() {
@@ -54,17 +58,27 @@ describe("BBCore", function() {
         setupTest(false, false);
     });
 
-    it('should do a thing', () => {
+    it('should do thing 1', () => {
       expect(true).toBeTruthy()
     })
 
+    it('should do thing 2', () => {
+      expect(bbCore).toBeTruthy()
+    })
+
+    it('should do thing 3', () => {
+      expect(BBCore.CONFIG).toBeTruthy()
+    })
+
+    it('should do thing 4', () => {
+      expect(bbCore.getVideos).toBeTruthy()
+    })
+
     it("ver", function() {
-      console.log(bbCore)
-      console.log(bbCore.prototype)
         expect(bbCore.ver()).toBe(BBCore.CONFIG.VERSION);
     });
 
-    xit("onError: func_or_deet is a function", function() {
+    it("onError: func_or_deet is a function", function() {
         var func = function() {};
 
         bbCore.onError(func, null);
@@ -72,7 +86,7 @@ describe("BBCore", function() {
         expect(bbCore.onerror).toBe(func);
     });
 
-    xit("onError: func_or_deet is a function", function() {
+    it("onError: func_or_deet is a function", function() {
         var deet = { id: testGuid };
         var xhr = {};
         var funcCallbackSpy = jasmine.createSpy();
@@ -83,7 +97,7 @@ describe("BBCore", function() {
         expect(funcCallbackSpy).toHaveBeenCalledWith(deet, xhr);
     });
 
-    xit("__mergeProperties", function() {
+    it("__mergeProperties", function() {
         var baseProperties = { thisThing: '', otherThing: '', lastThing: { tops: 'bottom' } };
         var expectedResult = { thisThing: 'one', otherThing: 'two', lastThing: { tops: 'bottom', a: '1', b: '2'  } };
         var result = bbCore.__mergeProperties(baseProperties,{ thisThing: 'one', otherThing: 'two', lastThing: { a: '1', b: '2' } });
@@ -91,7 +105,7 @@ describe("BBCore", function() {
         expect(JSON.stringify(result)).toEqual(JSON.stringify(expectedResult));
     });
 
-    xit("__mergeProperties against Class", function() {
+    it("__mergeProperties against Class", function() {
         var BaseClass = function BaseThing(opts) {
             this.first = '';
             this.second = '';
@@ -106,7 +120,7 @@ describe("BBCore", function() {
 
 });
 
-xdescribe("BBCore.api", function() {
+describe("BBCore.api", function() {
     var result = {
         responseSuccess: {"status":"success","methodName":"GetVideos","info":[{"id":testGuid,"name":"Video Title","description":"Video Description","status":"1","thumbUrl":"thumbnailUrl","shortUrl":"shortUrl","height":"480","width":"640","created":"2\/06\/15 10:33:05 am","vidUrl":"videoDeliveryUrl"}]},
         responseFailure: { status: 'failure', methodName: 'InvalidSession', info: { errormsg: 'Invalid login' } }
@@ -131,22 +145,29 @@ xdescribe("BBCore.api", function() {
     });
 
     it("sendRequest - unauthenticated request errors an does not make async request", function() {
-        bbCore.logout();
 
-        spyOn($, 'ajax');
+        const spy = spyOnGlobalFetch();
+        bbCore.onError = jest.fn()
+
+        bbCore.logout();
 
         bbCore.sendRequest('GetVideos', { video_id: testGuid });
 
         expect(bbCore.onError).toHaveBeenCalledWith(result.responseFailure, null);
-        expect($.ajax).not.toHaveBeenCalled();
+        expect(spy).not.toHaveBeenCalled();
     });
 
     xit("sendRequest", function() {
-        setupMockApiRequest(result.responseSuccess);
+        global.FormData = jest.fn(() => ({append: () => {}}))
+        spyOnGlobalFetch(result.responseSuccess);
 
-        bbCore.sendRequest('GetVideos', { video_id: testGuid }, successCallbackSpy);
 
-        expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
+        const successSpy = jest.fn();
+        jest.spyOn(successSpy, 'call')
+
+        bbCore.sendRequest('GetVideos', { video_id: testGuid }, successSpy);
+        expect(successSpy.call).toHaveBeenCalled()
+        // expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
     });
 
     xit("sendRequest - replace method with params", function() {
@@ -565,18 +586,18 @@ xdescribe("BBCore.contacts", function() {
     });
 });
 
-xdescribe("BBCore.email", function() {
+describe("BBCore.email", function() {
     beforeEach(function() {
         setupAuthenticatedTest(false, true);
     });
 
-    it("getEmails", function() {
+    xit("getEmails", function() {
         bbCore.getEmails(successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
 
-    it("sendCustomVideoEmail", function() {
+    xit("sendCustomVideoEmail", function() {
         var options = {html_content: 'html content', subject: 'email subject', email: 'test@test.com', email_id: testGuid, from_name: 'from@test.com'};
 
         bbCore.sendCustomVideoEmail(options, successCallbackSpy);
@@ -585,36 +606,36 @@ xdescribe("BBCore.email", function() {
     });
 });
 
-xdescribe("BBCore.extras", function() {
+describe("BBCore.extras", function() {
     beforeEach(function() {
         setupAuthenticatedTest(false, true);
     });
 
-    it("getDrips", function() {
+    xit("getDrips", function() {
         bbCore.getDrips(null, successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
 
-    it("getForms", function() {
+    xit("getForms", function() {
         bbCore.getForms(null, successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
 
-    it("getClientIntegrations", function() {
+    xit("getClientIntegrations", function() {
         bbCore.getClientIntegrations(successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
-    it("getClientIntegrations with Options", function() {
+    xit("getClientIntegrations with Options", function() {
         bbCore.getClientIntegrations({ integrationCode: 'GAPPS' }, successCallbackSpy);
 
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), successCallbackSpy);
     });
 });
 
-xdescribe("BBCore.video", function() {
+describe("BBCore.video", function() {
     var validVideoId = testGuid;
 
     beforeEach(function() {
@@ -761,7 +782,7 @@ xdescribe("BBCore.video", function() {
         });
     });
 
-    it("getVideoId: current video id has not been set yet", function() {
+    xit("getVideoId: current video id has not been set yet", function() {
         spyOn(bbCore, 'getNewVideoGuid');
 
         bbCore.setVideoId(null);
@@ -770,19 +791,19 @@ xdescribe("BBCore.video", function() {
         expect(bbCore.getNewVideoGuid).toHaveBeenCalledWith(successCallbackSpy);
     });
 
-    it("hasVideoId", function() {
+    xit("hasVideoId", function() {
         bbCore.setVideoId(validVideoId);
 
         expect(bbCore.hasVideoId()).toBe(true);
     });
 
-    it("hasVideoId: without a video id set", function() {
+    xit("hasVideoId: without a video id set", function() {
         bbCore.setVideoId(null);
 
         expect(bbCore.hasVideoId()).toBe(false);
     });
 
-    it("getNewVideoGuid", function() {
+    xit("getNewVideoGuid", function() {
         spyOn(bbCore, 'sendRequest').and.callThrough();
         spyOn($, 'ajax').and.callFake(function(e) {
             e.success({ status: "success", info: { video_id: validVideoId }});
@@ -795,7 +816,7 @@ xdescribe("BBCore.video", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith(validVideoId);
     });
 
-    it("videoQuickSend", function() {
+    xit("videoQuickSend", function() {
         spyOn(bbCore, "sendRequest");
 
         bbCore.videoQuickSend({ video_id: validVideoId, subject: "quick send subject", email_address: "test@test.com"});
@@ -803,7 +824,7 @@ xdescribe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalled();
     });
 
-    it("videoQuickSend: using alternative properties", function() {
+    xit("videoQuickSend: using alternative properties", function() {
         var message = "message";
         var email = "test@test.com";
 
@@ -814,7 +835,7 @@ xdescribe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ mobile_message: message, email_address: email}), successCallbackSpy);
     });
 
-    it("videoQuickSend: using current video id", function() {
+    xit("videoQuickSend: using current video id", function() {
         spyOn(bbCore, "sendRequest");
 
         bbCore.setVideoId(validVideoId);
@@ -823,7 +844,7 @@ xdescribe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: validVideoId }), successCallbackSpy);
     });
 
-    it("videoQuickSend: with undefined video_id and no current video id generates a new video id", function() {
+    xit("videoQuickSend: with undefined video_id and no current video id generates a new video id", function() {
         spyOn(bbCore, 'getNewVideoGuid').and.callFake(function(pCall) {
             pCall.call(bbCore, testGuid);
         });
@@ -835,7 +856,7 @@ xdescribe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: testGuid }), successCallbackSpy);
     });
 
-    it("videoQuickSend: with undefined video_id and no current video id fails to generate a new video id", function() {
+    xit("videoQuickSend: with undefined video_id and no current video id fails to generate a new video id", function() {
         spyOn(bbCore, 'getNewVideoGuid').and.callFake(function(pCall) {
             pCall.call(bbCore, null);
         });
@@ -851,7 +872,7 @@ xdescribe("BBCore.video", function() {
 
     // TODO: test videoQuickSend erroring async request when trying to generate a new video id
 
-    it("videoQuickSend: attempts to send without a subject", function() {
+    xit("videoQuickSend: attempts to send without a subject", function() {
         spyOn(bbCore, "sendRequest");
 
         bbCore.videoQuickSend({ video_id: validVideoId, email_address: "test@test.com"});
@@ -859,7 +880,7 @@ xdescribe("BBCore.video", function() {
         expect(bbCore.sendRequest).toHaveBeenCalled();
     });
 
-    it("videoQuickSend: attempts to send without an email address", function() {
+    xit("videoQuickSend: attempts to send without an email address", function() {
         spyOn(bbCore, "sendRequest");
 
         bbCore.videoQuickSend({ video_id: validVideoId, subject: "quick send subject" });
@@ -868,7 +889,7 @@ xdescribe("BBCore.video", function() {
     });
 });
 
-xdescribe("BBCore.videoRecorder", function() {
+describe("BBCore.videoRecorder", function() {
     var result = {
         withOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 640, height: 480, https: true }},
         withDefaultOptionsSuccess: { status: "success", info: { user_id: '<Guid>', email: 'test@test.com', client_id: '<Guid>', vid_id: '<Guid>', content: '<Video Recorder Html>', width: 320, height: 240, https: false }},
@@ -879,7 +900,7 @@ xdescribe("BBCore.videoRecorder", function() {
         setupAuthenticatedTest(true, false);
     });
 
-    it("getEmbeddedRecorderUrl with Legacy Access Token", function() {
+    xit("getEmbeddedRecorderUrl with Legacy Access Token", function() {
         var apiKey = "api key";
         var requestParams = $.param({ width: 640, height: 480, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
@@ -894,7 +915,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
 
-    it("getEmbeddedRecorderUrl using OAuth", function() {
+    xit("getEmbeddedRecorderUrl using OAuth", function() {
         var apiKey = "api key";
         var requestParams = $.param({ width: 640, height: 480, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1 });
         var expectedUrl = apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid;
@@ -913,7 +934,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
 
-    it("getEmbeddedRecorderUrl: with undefined height uses default options", function() {
+    xit("getEmbeddedRecorderUrl: with undefined height uses default options", function() {
         var apiKey = "api key";
         var requestParams = $.param({ height: 240, width: 320, force_ssl: true, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
@@ -928,7 +949,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
 
-    it("getEmbeddedRecorderUrl: with undefined options uses default options", function() {
+    xit("getEmbeddedRecorderUrl: with undefined options uses default options", function() {
         var apiKey = "api key";
         var requestParams = $.param({ height: 240, width: 320, force_ssl: false, module: 'videos', page: 'EmbeddedRecorder', popup: 1, nohtml: 1, api_key: apiKey });
         var expectedUrl = apiServerUrl + '/app/?module=login&actn=login&api_key=' + apiKey + '&redir=' + btoa(apiServerUrl + '/app/?' + requestParams + '&vguid=' + testGuid);
@@ -943,7 +964,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith({ url: expectedUrl, video_id: testGuid });
     });
 
-    it("getVideoRecorder: error when unauthenticated", function() {
+    xit("getVideoRecorder: error when unauthenticated", function() {
         bbCore.logout();
 
         expect(bbCore.isAuthenticated()).toBe(false);
@@ -992,7 +1013,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(window.reportVideoRecorded !== undefined).toBe(true);
     });
 
-    it("startVideoRecorder: with default options", function() {
+    xit("startVideoRecorder: with default options", function() {
         spyOn(bbCore, 'getVideoRecorder');
 
         bbCore.startVideoRecorder(successCallbackSpy);
@@ -1003,7 +1024,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(window.reportVideoRecorded !== undefined).toBe(true);
     });
 
-    it("startVideoRecorder: specify recordComplete callback in options", function() {
+    xit("startVideoRecorder: specify recordComplete callback in options", function() {
         var options = { recordComplete: successCallbackSpy };
         var videoFilename = "video file name";
         var log = "log";
@@ -1021,7 +1042,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(window.reportVideoRecorded !== undefined).toBe(true);
     });
 
-    it("startVideoRecorder: specify recordComplete callback in options", function() {
+    xit("startVideoRecorder: specify recordComplete callback in options", function() {
         var options = { recordComplete: successCallbackSpy };
         var streamName = "stream name";
         var videoFilename = "video file name";
@@ -1039,7 +1060,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(bbCore.liveStreamStopRecord).toHaveBeenCalledWith(streamName);
     });
 
-    it("destroyVideoRecorder", function() {
+    xit("destroyVideoRecorder", function() {
         bbCore.__vidRecHndl = $('body').append('<div id="b2recorder"></div>');
 
         bbCore.destroyVideoRecorder();
@@ -1049,7 +1070,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(window.reportVideoRecorded).toBe(null);
     });
 
-    it("liveStreamStartRecord", function() {
+    xit("liveStreamStartRecord", function() {
         var streamName = "video stream name";
         var filename = "video file name";
 
@@ -1060,7 +1081,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({streamname: streamName, filename: filename}));
     });
 
-    it("liveStreamStopRecord", function() {
+    xit("liveStreamStopRecord", function() {
         var streamName = "video stream name";
 
         spyOn(bbCore, 'sendRequest');
@@ -1101,7 +1122,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(successCallbackSpy).toHaveBeenCalledWith(result);
     });
 
-    it("saveRecording", function() {
+    xit("saveRecording", function() {
         spyOn(bbCore, 'sendRequest');
 
         bbCore.saveRecording({ vid_id: testGuid });
@@ -1109,7 +1130,7 @@ xdescribe("BBCore.videoRecorder", function() {
         expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.any(Object), jasmine.objectContaining({ vid_id: testGuid }), jasmine.any(Function));
     });
 
-    it("saveRecording: with an undefind vid_id does not make an async request", function() {
+    xit("saveRecording: with an undefind vid_id does not make an async request", function() {
         spyOn(bbCore, 'sendRequest');
 
         bbCore.saveRecording({  });
