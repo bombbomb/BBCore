@@ -137,7 +137,7 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         // `getVideoRecorder` returns html and js in the form of a string. In the old version of BBCore,
         // script tags were handled by jquery (by use of the eval method). Since we don't want to rely
         // on jQuery or end up having double event listeners, we go with the jquery way of mounting this
-        // js if the cleint already supplies jQuery, or hardcode it ourselves in jQuery isn't around.
+        // js if the client already supplies jQuery, or hardcode it ourselves if jQuery isn't around.
         if (window.jQuery) {
             this.__vidRecHndl = opts.target ? jQuery(opts.target) : jQuery('body').append('<div id="b2recorder"></div>');
             inst.__vidRecHndl.html(data.info.content);
