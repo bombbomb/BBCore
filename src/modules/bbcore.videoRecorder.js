@@ -18,8 +18,6 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
       }
     }
 
-
-
     var reqParams = {
       ...options,
       module: 'videos',
@@ -28,9 +26,6 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
       nohtml: 1
     };
     var inst = this;
-    console.log('getembed')
-    console.log(reqParams)
-    console.log(options)
 
     this.getVideoId(function (vidId) {
         var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?',
@@ -42,7 +37,7 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
             reqParams.api_key = legacyToken;
             embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + legacyToken +
               '&redir=' + btoa(embeddedVideoRecorderUrl +
-              Object.keys(reqParams).map(key => key + '=' + encodeURIComponent(reqParams[key])).join('&') + 
+              Object.keys(reqParams).map(key => key + '=' + encodeURIComponent(reqParams[key])).join('&') +
               (vidId ? '&vguid=' + vidId : ''));
             onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
         }
@@ -147,12 +142,20 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         }
     });
 
-    window.addEventListener('message', message => {
-      if(message.data.action === 'reportVideoRecorded') {
-        console.log('reportVideoRecorded triggered');
-        recordComplete({videoId: inst.currentVideoId, filename: message.data.flname, log: message.data.log});
-      }
-    })
+    // add the callbacks for the recorder to this instance calls.
+    window.bbStreamStartRecord = function (strname, flname) {
+        console.log('bbStreamStartRecord triggered');
+        inst.liveStreamStartRecord.call(inst, strname, flname);
+    };
+    window.bbStreamStopRecord = function (strname) {
+        console.log('bbStreamStopRecord triggered');
+        inst.liveStreamStopRecord.call(inst, strname);
+    };
+
+    window.reportVideoRecorded = function (flname, log) {
+        console.log('reportVideoRecorded triggered');	        console.log('reportVideoRecorded triggered');
+        recordComplete({videoId: inst.currentVideoId, filename: flname, log: log});
+    };
 };
 
 BBCore.prototype.destroyVideoRecorder = function () {
@@ -162,6 +165,16 @@ BBCore.prototype.destroyVideoRecorder = function () {
     window.bbStreamStartRecord = null;
     window.bbStreamStopRecord = null;
     window.reportVideoRecorded = null;
+};
+
+BBCore.prototype.liveStreamStartRecord = function (streamname, filename) {
+    this.__vidRecording = true;
+    this.sendRequest({method: 'liveStreamStartRecord', streamname: streamname, filename: filename});
+};
+
+BBCore.prototype.liveStreamStopRecord = function (streamname) {
+    this.__vidRecording = false;
+    this.sendRequest({method: 'liveStreamStopRecord', streamname: streamname});
 };
 
 /**
