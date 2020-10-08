@@ -5,7 +5,6 @@ const uglify = require('gulp-uglify');
 const pump = require('pump');
 const package = require('./package.json');
 const header = require('gulp-header');
-const KarmaServer = require('karma').Server;
 const jsdoc2md = require('jsdoc-to-markdown');
 const fs = require('fs');
 const path = require('path');
@@ -54,13 +53,6 @@ gulp.task('build', gulp.series('combine-js', 'make-docs'));
 gulp.task('clean', done => {
     del([paths.build, paths.root + docTitle]);
     done();
-});
-
-gulp.task('test', (done) => {
-    new KarmaServer({
-        configFile: paths.karmaConfig,
-        singleRun: true
-    }, done).start();
 });
 
 gulp.task('uglify', gulp.series('combine-js', done => {

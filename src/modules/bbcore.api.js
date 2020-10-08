@@ -77,56 +77,63 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     {
         requestHeaders['Authorization'] = requestToken;
         typeof params.api_key !== 'undefined' && delete params.api_key
-    } 
+    }
     else if(this.isAccessToken(params.api_key)) {
         requestHeaders['Authorization'] = params.api_key;
         delete params.api_key;
     }
     var url = params.url ? params.url : this.getRequestUrl();
     url = BBCore._addParameterToUrl(url, 'xsrc', 'bbcore-' + BBCore.CONFIG.VERSION);
-    return jQuery.ajax({
-        url: url,
-        async: asyncSetting,
-        type: "post",
-        dataType: "json",
-        crossDomain: true,
-        data: params,
-        headers: requestHeaders,
-        success: function (result) {
-            // set state of bb instance
-            // ?? could evaluate the two last statuses and
-            inst.lastresponse = result.status;
-            if (result.status === "success") {
-                // if the result returned a
-                if (method === "GetVideoGuid" && result.info && result.info.video_id) {
-                    inst.currentVideoId = result.info.video_id;
-                }
-                if (success) {
-                    success.call(inst, result);
-                }
-            }
-            else if ((params.grant_type === "authorization_code" || params.grant_type === "refresh_token")) {
-                success.call(inst, result);
-            }
-            else {
-                inst.onError.call(inst, result);
-            }
-        },
-        error: function (jqXHR) {
-            var resp = {status: 'unknown', jqXHR: jqXHR};
-            if (typeof jqXHR.responseJSON !== 'undefined') {
-                resp = jqXHR.responseJSON;
-            }
-            inst.lastresponse = resp.status;
-            if ("success" === resp.status) {
-                success.call(inst, resp, jqXHR);
-            } else {
-                inst.onError.call(inst, resp, jqXHR);
-            }
 
-            if (error) {
-                error(inst, resp);
+    let formData = new FormData();
+    Object.keys(params).forEach(key => {
+      formData.append(key, params[key])
+    })
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url, asyncSetting)
+    Object.keys(requestHeaders).forEach(headerKey => {
+      xhr.setRequestHeader(headerKey, requestHeaders[headerKey]);
+    })
+
+    xhr.onload = (result) => {
+      if(xhr.readyState === 4 && xhr.status === 200) {
+        const res = JSON.parse(result.target.response);
+        if (res.status === "success") {
+            // if the result returned a
+            if (method === "GetVideoGuid" && res.info && res.info.video_id) {
+                inst.currentVideoId = res.info.video_id;
             }
+            if (success) {
+                success.call(inst, res);
+            }
+        } else if ((params.grant_type === "authorization_code" || params.grant_type === "refresh_token")) {
+            success.call(inst, res);
+        } else {
+            inst.onError.call(inst, res);
         }
-    });
+
+      } else {
+        let resp = {
+          status: 'unknown',
+          jqXHR: jqXHR,
+        };
+        if (typeof jqXHR.responseJSON !== 'undefined') {
+            resp = jqXHR.responseJSON;
+        }
+        inst.lastresponse = resp.status;
+        if ("success" === resp.status) {
+            success.call(inst, resp, jqXHR);
+        } else {
+            inst.onError.call(inst, resp, jqXHR);
+        }
+
+        if (error) {
+            error(inst, resp);
+        }
+      }
+    }
+
+    xhr.send(formData)
+
 };

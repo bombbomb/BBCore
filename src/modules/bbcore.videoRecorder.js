@@ -9,18 +9,24 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         onComplete = options;
         options = {};
     }
+
     var defOpts = {height: 240, width: 320, force_ssl: false};
     if (typeof options.height === 'undefined') {
-        options = jQuery.extend({}, defOpts, (options ?  options : {}));
+      options = {
+        ...defOpts,
+        ...options,
+      }
     }
 
-    var reqParams = jQuery.extend({}, options, {
-        module: 'videos',
-        page: 'EmbeddedRecorder',
-        popup: 1,
-        nohtml: 1
-    });
+    var reqParams = {
+      ...options,
+      module: 'videos',
+      page: 'EmbeddedRecorder',
+      popup: 1,
+      nohtml: 1
+    };
     var inst = this;
+
     this.getVideoId(function (vidId) {
         var embeddedVideoRecorderUrl = inst.getServerUrl() + '/app/?',
             legacyToken = inst.getKey()
@@ -29,7 +35,10 @@ BBCore.prototype.getEmbeddedRecorderUrl = function (options, onComplete) {
         if (legacyToken && legacyToken.length && !ignoreLegacyToken)
         {
             reqParams.api_key = legacyToken;
-            embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + legacyToken + '&redir=' + btoa(embeddedVideoRecorderUrl + jQuery.param(reqParams) + (vidId ? '&vguid=' + vidId : ''));
+            embeddedVideoRecorderUrl += 'module=login&actn=login&api_key=' + legacyToken +
+              '&redir=' + btoa(embeddedVideoRecorderUrl +
+              Object.keys(reqParams).map(key => key + '=' + encodeURIComponent(reqParams[key])).join('&') +
+              (vidId ? '&vguid=' + vidId : ''));
             onComplete.call(this, {url: embeddedVideoRecorderUrl, video_id: vidId});
         }
         else
@@ -60,7 +69,12 @@ BBCore.prototype.getVideoRecorder = function (opts, onComplete) {
         opts = null;
     }
     var defOpts = {height: 240, width: 320, force_ssl: false, start: null, stop: null, recorded: null};
-    mergedOpts = jQuery.extend(defOpts, opts);
+
+    mergedOpts = {
+      ...defOpts,
+      ...opts
+    };
+
     if (!this.isAuthenticated()) {
         this.onError({message: "Must authenticate session before invoking methods."});
         return;
@@ -93,14 +107,22 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         recorderLoaded: null,
         recordComplete: recordComplete
     };
+
     opts = opts || defOpts;
 
     if (opts.recordComplete && !recordComplete) {
         recordComplete = opts.recordComplete;
     }
-    this.__vidRecHndl = opts.target ? jQuery(opts.target) : jQuery('body').append('<div id="b2recorder"></div>');
 
-    var rec_opts = jQuery.extend({}, opts);
+    if (opts.target) {
+      this.__vidRecHndl =  document.querySelector(opts.target)
+    } else {
+      const elem = document.createElement('div');
+      elem.id = 'b2recorder'
+      this.__vidRecHndl = document.querySelector('body').appendChild(elem);
+    }
+
+    var rec_opts = { ...opts };
     delete rec_opts.type;
     delete rec_opts.target;
     delete rec_opts.recordComplete;
@@ -109,17 +131,41 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
     var inst = this;
     // get recorder and inject into target
     this.getVideoRecorder(rec_opts, function (data) {
-        if (!inst.currentVideoId && data.info.vid_id) {
-            inst.currentVideoId = data.info.vid_id;
-        }
+        inst.currentVideoId = data.info.vid_id;
+
         console.log('startVideoRecorder :' + inst.currentVideoId);
-        inst.__vidRecHndl.html(data.info.content);
+        // `getVideoRecorder` returns html and js in the form of a string. In the old version of BBCore,
+        // script tags were handled by jquery (by use of the eval method). Since we don't want to rely
+        // on jQuery or end up having double event listeners, we go with the jquery way of mounting this
+        // js if the client already supplies jQuery, or hardcode it ourselves if jQuery isn't around.
+        if (window.jQuery) {
+            this.__vidRecHndl = opts.target ? jQuery(opts.target) : jQuery('body').append('<div id="b2recorder"></div>');
+            inst.__vidRecHndl.html(data.info.content);
+        } else {
+          window.addEventListener('message', function(event) {
+              if (~event.origin.indexOf('app.bombbomb.com')) {
+                  if (event.data.action == 'reportVideoRecorded') {
+                      window.reportVideoRecorded(event.data.flname, event.data.log);
+                  } else if (event.data.action == 'iframeResize') {
+                      var frame = document.getElementById(inst.currentVideoId);
+                      var fw = parseInt(frame.clientWidth, 10) || parseInt(frame.width, 10);
+                      var fsw = parseInt(frame.style.width, 10);
+
+                      if (fw && fw > fsw || isNaN(fsw)) {
+                          frame.style.height = (fw * event.data.ratio) + "px";
+                      } else if (fsw) {
+                          frame.style.height = (fsw * event.data.ratio) + "px";
+                      }
+                  }
+              }
+          });
+          inst.__vidRecHndl.innerHTML = data.info.content;
+        }
 
         if (opts.recorderLoaded) {
             opts.recorderLoaded.call(inst, data.info);
         }
     });
-
 
     // add the callbacks for the recorder to this instance calls.
     window.bbStreamStartRecord = function (strname, flname) {
@@ -135,7 +181,6 @@ BBCore.prototype.startVideoRecorder = function (opts, recordComplete) {
         console.log('reportVideoRecorded triggered');
         recordComplete({videoId: inst.currentVideoId, filename: flname, log: log});
     };
-
 };
 
 BBCore.prototype.destroyVideoRecorder = function () {

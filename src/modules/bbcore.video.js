@@ -1,5 +1,9 @@
 BBCore.prototype.getVideoDeliveryUrl = function (opts) {
-    opts = jQuery.extend({video_id: '', autoplay: 1}, opts);
+    opts = {
+      video_id: '',
+      autoplay: 1,
+      ...opts,
+    };
     var sPrefix = (this.getServerUrl().indexOf('dev') > 0 ? 'dev.' : (this.getServerUrl().indexOf('local') > 0 ? 'local.' : ''));
     return 'http://' + sPrefix + 'bbemaildelivery.com/bbext/?p=video_land&id=' + opts.video_id + '&autoplay=' + opts.autoplay;
 };
@@ -21,7 +25,7 @@ BBCore.prototype.getVideos = function (options, success) {
         success = options;
         options = {};
     }
-    var parameters = jQuery.extend({}, defaults, options);
+    var parameters = { ...defaults, ...options };
 
     if (typeof parameters === "object" && parameters != null) {
         if (parameters.pageSize !== undefined) {

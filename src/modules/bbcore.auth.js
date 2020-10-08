@@ -158,7 +158,7 @@ BBCore.prototype.resumeStoredSession = BBCore.prototype.validateSession;
  */
 BBCore.prototype.validateAccessToken = function (onSuccess) {
     var inst = this;
-    this.sendRequest({method: "ValidateSession", api_key: this.accessToken, async: false, jwt: true}, function (respObj) {
+    this.sendRequest({method: "ValidateSession",api_key: this.accessToken,async: false,jwt: true},function (respObj) {
         inst.__updateSession(respObj, onSuccess);
     });
 };
