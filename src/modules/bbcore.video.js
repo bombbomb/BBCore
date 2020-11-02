@@ -129,6 +129,7 @@ BBCore.prototype.videoQuickSend = function (opts, onSuccess) {
     }
     if (!opts.video_id && this.currentVideoId) {
         opts.video_id = this.currentVideoId;
+        opts.videoId = this.currentVideoId;
     }
 
     // check options
