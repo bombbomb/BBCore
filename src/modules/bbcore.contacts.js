@@ -132,20 +132,3 @@ BBCore.prototype.deleteContactImportAddress = function (opts, success) {
     }
     this.sendRequest(opts, success);
 };
-
-/**
- * @typedef {object} getClientInteractionOptions
- * @prop {string} [activitySince] DateTime
- */
-
-/**
- * Retrieves a list of re
- * @param {getClientInteractionOptions} opts
- * @param {responseSuccess} success
- */
-BBCore.prototype.getClientRecentInteractions = function (opts, success) {
-    opts = opts || {};
-    opts.activitySince = opts.activitySince || '';
-    opts.method = "GetClientRecentInteractions";
-    this.sendRequest(opts, success);
-};
