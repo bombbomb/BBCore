@@ -38,8 +38,6 @@
 </dd>
 <dt><a href="#requestParameters">requestParameters</a> : <code>object</code></dt>
 <dd></dd>
-<dt><a href="#getClientInteractionOptions">getClientInteractionOptions</a> : <code>object</code></dt>
-<dd></dd>
 <dt><a href="#customVideoEmailOptions">customVideoEmailOptions</a> : <code>object</code></dt>
 <dd></dd>
 <dt><a href="#responseSuccess">responseSuccess</a> : <code>function</code></dt>
@@ -88,7 +86,6 @@
         * [.updateContact(opts, success)](#BBCore+updateContact)
         * [.getImportAddressesByType(opts, success)](#BBCore+getImportAddressesByType)
         * [.addContactImportAddress(opts, success)](#BBCore+addContactImportAddress)
-        * [.getClientRecentInteractions(opts, success)](#BBCore+getClientRecentInteractions)
         * [.getEmails(success)](#BBCore+getEmails)
         * [.sendCustomVideoEmail(opts, success)](#BBCore+sendCustomVideoEmail)
         * [.getDrips(opts, success)](#BBCore+getDrips)
@@ -399,18 +396,6 @@ Retrieves an Import Address by a Type
 | Param | Type |
 | --- | --- |
 | opts | <code>object</code> | 
-| success | [<code>responseSuccess</code>](#responseSuccess) | 
-
-<a name="BBCore+getClientRecentInteractions"></a>
-
-### bbCore.getClientRecentInteractions(opts, success)
-Retrieves a list of re
-
-**Kind**: instance method of [<code>BBCore</code>](#BBCore)  
-
-| Param | Type |
-| --- | --- |
-| opts | [<code>getClientInteractionOptions</code>](#getClientInteractionOptions) | 
 | success | [<code>responseSuccess</code>](#responseSuccess) | 
 
 <a name="BBCore+getEmails"></a>
@@ -690,7 +675,6 @@ Returns the first matched contact from
         * [.updateContact(opts, success)](#BBCore+updateContact)
         * [.getImportAddressesByType(opts, success)](#BBCore+getImportAddressesByType)
         * [.addContactImportAddress(opts, success)](#BBCore+addContactImportAddress)
-        * [.getClientRecentInteractions(opts, success)](#BBCore+getClientRecentInteractions)
         * [.getEmails(success)](#BBCore+getEmails)
         * [.sendCustomVideoEmail(opts, success)](#BBCore+sendCustomVideoEmail)
         * [.getDrips(opts, success)](#BBCore+getDrips)
@@ -1003,18 +987,6 @@ Retrieves an Import Address by a Type
 | opts | <code>object</code> | 
 | success | [<code>responseSuccess</code>](#responseSuccess) | 
 
-<a name="BBCore+getClientRecentInteractions"></a>
-
-### bbCore.getClientRecentInteractions(opts, success)
-Retrieves a list of re
-
-**Kind**: instance method of [<code>BBCore</code>](#BBCore)  
-
-| Param | Type |
-| --- | --- |
-| opts | [<code>getClientInteractionOptions</code>](#getClientInteractionOptions) | 
-| success | [<code>responseSuccess</code>](#responseSuccess) | 
-
 <a name="BBCore+getEmails"></a>
 
 ### bbCore.getEmails(success)
@@ -1287,16 +1259,6 @@ This callback is displayed as a global member.
 | [async] | <code>string</code> | 
 | [url] | <code>string</code> | 
 | [url] | <code>string</code> | 
-
-<a name="getClientInteractionOptions"></a>
-
-## getClientInteractionOptions : <code>object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| [activitySince] | <code>string</code> | DateTime |
 
 <a name="customVideoEmailOptions"></a>
 
