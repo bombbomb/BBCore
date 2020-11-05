@@ -97,8 +97,8 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
     })
 
     xhr.onload = (result) => {
+      const res = JSON.parse(result.target.response);
       if(xhr.readyState === 4 && xhr.status === 200) {
-        const res = JSON.parse(result.target.response);
         if (res.status === "success") {
             // if the result returned a
             if (method === "GetVideoGuid" && res.info && res.info.video_id) {
@@ -112,27 +112,31 @@ BBCore.prototype.sendRequest = function (method, params, success, error) {
         } else {
             inst.onError.call(inst, res);
         }
-
       } else {
-        let resp = {
-          status: 'unknown',
-          jqXHR: jqXHR,
-        };
-        if (typeof jqXHR.responseJSON !== 'undefined') {
-            resp = jqXHR.responseJSON;
-        }
-        inst.lastresponse = resp.status;
-        if ("success" === resp.status) {
-            success.call(inst, resp, jqXHR);
-        } else {
-            inst.onError.call(inst, resp, jqXHR);
-        }
-
-        if (error) {
-            error(inst, resp);
-        }
+        // non-200 status code
+        inst.onError.call(inst, res);
       }
-    }
+    };
+    
+    xhr.onerror = (jqXHR)  => {
+      let resp = {
+        status: 'unknown',
+        jqXHR: jqXHR,
+      };
+      if (typeof jqXHR.responseJSON !== 'undefined') {
+        resp = jqXHR.responseJSON;
+      }
+      inst.lastresponse = resp.status;
+      if ("success" === resp.status) {
+        success.call(inst, resp, jqXHR);
+      } else {
+        inst.onError.call(inst, resp, jqXHR);
+      }
+
+      if (error) {
+        error(inst, resp);
+      }
+    };
 
     xhr.send(formData)
 
