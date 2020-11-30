@@ -751,7 +751,7 @@ describe("BBCore.video", function() {
 
         bbCore.deleteVideo(validVideoId, successCallbackSpy);
 
-        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ video_id: validVideoId }), successCallbackSpy);
+        expect(bbCore.sendRequest).toHaveBeenCalledWith(jasmine.objectContaining({ videoId: validVideoId }), successCallbackSpy);
     });
 
     it("getVideoId", function() {
