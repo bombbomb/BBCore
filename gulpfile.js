@@ -1,8 +1,7 @@
 const gulp = require('gulp');
 const concat = require('gulp-concat');
 const del = require('del');
-const uglify = require('gulp-uglify');
-const pump = require('pump');
+const terser = require('gulp-terser'); // see here for minify options: https://github.com/terser/terser#minify-options
 const package = require('./package.json');
 const header = require('gulp-header');
 const jsdoc2md = require('jsdoc-to-markdown');
@@ -12,7 +11,7 @@ const path = require('path');
 const paths = {
     src : 'src/**/*.js',
     build : 'build',
-    outputFile : 'bbcore.min.js',
+    outputFile : 'BBCore.min.js',
     karmaConfig : `${__dirname}/spec/karma.conf.js`,
     docSource : 'docs/build',
     root : './'
@@ -55,14 +54,12 @@ gulp.task('clean', done => {
     done();
 });
 
-gulp.task('uglify', gulp.series('combine-js', done => {
-        pump([
-            gulp.src(`${paths.build}/${paths.outputFile}`),
-            uglify(),
-            gulp.dest(paths.build)
-        ]);
+gulp.task('compress', done => {
+        gulp.src(`${paths.build}/${paths.outputFile}`)
+        .pipe(terser())
+        .pipe(gulp.dest(paths.build))
         done();
-}));
+});
 
 gulp.task('add-core-header', () => {
     return gulp.src(`${paths.build}/${paths.outputFile}`)
