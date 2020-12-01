@@ -63,7 +63,7 @@ BBCore.prototype.getEncodingReport = function (vidId, success) {
  * @arg {responseSuccess}   success
  */
 BBCore.prototype.deleteVideo = function (videoId, success) {
-    this.sendRequest({method: "DeleteVideo", video_id: videoId}, success);
+    this.sendRequest({method: "DeleteVideo", videoId: videoId}, success);
 };
 
 
