@@ -9,6 +9,46 @@ var testGuid = "11111111-1111-1111-1111-111111111111";
 var bbCore = null;
 var successCallbackSpy = null;
 
+let open, send, status, onload, setRequestHeader, response;
+function createXHRmock() {
+  open = jest.fn();
+  status = 200;
+  setRequestHeader = jest.fn();
+
+  response = JSON.stringify({
+    status: "success",
+    info: { video_id: testGuid },
+  });
+  // be aware we use *function* because we need to get *this*
+  // from *new XmlHttpRequest()* call
+  send = jest.fn().mockImplementation(function () {
+    onload = this.onload.bind(this);
+    onerror = this.onerror.bind(this);
+    setRequestHeader = this.setRequestHeader.bind(this);
+  });
+
+  const xhrMockClass = function () {
+    return {
+      open,
+      send,
+      status,
+      setRequestHeader,
+      response,
+      readyState: 4,
+    };
+  };
+
+  global.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass);
+}
+createXHRmock();
+
+function callFakeOnloadWithApiResponse(fakeResponse) {
+  const fakeLoadResponse = {
+    target: { response: fakeResponse },
+  };
+  onload(fakeLoadResponse);
+}
+
 function setupTest(spyOnBBCoreOnError, spyOnBBCoreSendRequest) {
   bbCore = new BBCore({
     apiServer: apiServerUrl,
@@ -16,7 +56,6 @@ function setupTest(spyOnBBCoreOnError, spyOnBBCoreSendRequest) {
   });
   successCallbackSpy = jest.fn();
 
-  return;
   if (spyOnBBCoreOnError) {
     spyOn(bbCore, "onError");
   }
@@ -40,12 +79,12 @@ function simulateUnauthenticatedApi(bbCore) {
   bbCore.authenticated = false;
 }
 
-const spyOnGlobalFetch = (result = {}) => {
+const spyOnGlobalFetch = (fakeResult = {}) => {
   const spy = jest.fn(
     () =>
       new Promise((res) =>
         res({
-          json: () => new Promise((inner) => inner(result)),
+          json: () => new Promise((inner) => inner(fakeResult)),
         })
       )
   );
@@ -93,13 +132,13 @@ describe("BBCore", function () {
       otherThing: "two",
       lastThing: { tops: "bottom", a: "1", b: "2" },
     };
-    var result = bbCore.__mergeProperties(baseProperties, {
+    var testResult = bbCore.__mergeProperties(baseProperties, {
       thisThing: "one",
       otherThing: "two",
       lastThing: { a: "1", b: "2" },
     });
 
-    expect(JSON.stringify(result)).toEqual(JSON.stringify(expectedResult));
+    expect(JSON.stringify(testResult)).toEqual(JSON.stringify(expectedResult));
   });
 
   it("__mergeProperties against Class", function () {
@@ -179,60 +218,43 @@ describe("BBCore.api", function () {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  xit("sendRequest", function () {
-    global.FormData = jest.fn(() => ({ append: () => {} }));
-    spyOnGlobalFetch(result.responseSuccess);
+  it("sendRequest - using success callback", function () {
+    const fakeAppend = jest.fn();
+    global.FormData = jest.fn(() => ({ append: fakeAppend }));
 
     const successSpy = jest.fn();
     jest.spyOn(successSpy, "call");
 
     bbCore.sendRequest("GetVideos", { video_id: testGuid }, successSpy);
-    expect(successSpy.call).toHaveBeenCalled();
-    // expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
+    callFakeOnloadWithApiResponse(response);
+    expect(open).toHaveBeenCalled();
+    expect(fakeAppend).toHaveBeenCalledTimes(3);
+    expect(successSpy).toHaveBeenCalledWith(JSON.parse(response));
   });
 
-  xit("sendRequest - replace method with params", function () {
-    setupMockApiRequest(result.responseSuccess);
-
-    bbCore.sendRequest(
-      { method: "GetVideos", video_id: testGuid },
-      successCallbackSpy
-    );
-
-    expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
-  });
-
-  xit("sendRequest - with a method of GetVideoGuid updates the current video id", function () {
-    var response = { status: "success", info: { video_id: testGuid } };
-
-    setupMockApiRequest(response);
-
+  it("sendRequest - with a method of GetVideoGuid updates the current video id", function () {
     bbCore.sendRequest({ method: "GetVideoGuid" });
-
+    callFakeOnloadWithApiResponse(response);
     expect(bbCore.currentVideoId).toBe(testGuid);
   });
 
-  xit("sendRequest - successful ajax request with a failed result", function () {
-    setupMockApiRequest(result.responseFailure);
-
+  it("sendRequest - successful ajax request with a failed result", function () {
     // simulate successful ajax request to an api method that doesn't exist
     // to represent a failed result
     bbCore.sendRequest({ method: "InvalidMethod" }, successCallbackSpy);
 
+    callFakeOnloadWithApiResponse(JSON.stringify(result.responseFailure));
     expect(successCallbackSpy).not.toHaveBeenCalled();
     expect(bbCore.onError).toHaveBeenCalledWith(result.responseFailure);
   });
 
-  xit("sendRequest - force synchronous request", function () {
-    setupMockApiRequest(result.responseSuccess);
-
+  it("sendRequest - force synchronous request", function () {
     bbCore.sendRequest(
       { method: "GetVideos", video_id: testGuid, async: false },
       successCallbackSpy
     );
-
+    callFakeOnloadWithApiResponse(JSON.stringify(result.responseSuccess));
     expect(successCallbackSpy).toHaveBeenCalledWith(result.responseSuccess);
-    expect($.ajax.calls.argsFor(0)[0].async).toBe(false);
   });
 
   xit("sendRequest - with ajax request error", function () {
