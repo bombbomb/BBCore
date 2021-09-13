@@ -4,8 +4,13 @@ const vm = require("vm");
 global.localStorage = {
   removeItem: jest.fn(),
   getItem: jest.fn(),
+  setItem: jest.fn(),
 };
+window = global;
+window.open = jest.fn();
 
+const location = { href: "https://example.com", hash: "" };
+window.location = location;
 const globalContext = vm.createContext(global);
 
 [
