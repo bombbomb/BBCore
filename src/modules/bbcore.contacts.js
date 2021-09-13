@@ -112,7 +112,7 @@ BBCore.prototype.getImportAddressesByType = function (opts, success) {
  */
 BBCore.prototype.addContactImportAddress = function (opts, success) {
     opts = {
-      opts,
+      ...opts,
       method: 'addContactImportAddress'
     };
     if (!opts.importAddrCode || !opts.importAddrName) {
