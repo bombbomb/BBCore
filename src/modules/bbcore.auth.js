@@ -12,7 +12,7 @@ BBCore.prototype.login = function (uid, pwd, success) {
         {
             locationTarget = window.open("about:blank", "_blank");
         }
-        locationTarget.location = this.getOAuthUrl();
+        locationTarget.location.href = this.getOAuthUrl();
     }
     else
     {
@@ -73,7 +73,7 @@ BBCore.prototype.validateSession = function (onSuccess, onError) {
 
     var oAuthPayload = this.getOAuthPayload();
     var inst = this;
-    var authCode = /[\?\#].*&*(access_token|code)=([^&]+)/gi.exec(window.location);
+    var authCode = /[\?\#].*&*(access_token|code)=([^&]+)/gi.exec(window.location.href);
     if (authCode && authCode.length > 1)
     {
         var tokenOrCode = authCode[2];
